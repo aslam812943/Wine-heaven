@@ -50,11 +50,13 @@ app.use('/', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/category', categoryRoutes);
 app.use(isuser)
-app.use(isadmin)
+
 
 app.use('*',(req,res)=>{
     res.render('user/404')
 })
+
+app.use(isadmin)
 
 const PORT = process.env.PORT || 3005;
 app.listen(PORT, () => console.log(`Server started on port http://localhost:${PORT}`));

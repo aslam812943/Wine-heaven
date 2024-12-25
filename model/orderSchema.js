@@ -40,11 +40,11 @@ const orderSchema = new mongoose.Schema({
         }
         
     }],
-    shippingAddress: {
+    shippingAddress:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Address',
         required: true
-    },
+    }],
     totalAmount: {
         type: Number,
         required: true

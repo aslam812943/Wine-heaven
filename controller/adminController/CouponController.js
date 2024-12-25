@@ -297,7 +297,7 @@ exports.offerActivate = async (req, res) => {
 
         res.redirect('/admin/offers');
     } catch (error) {
-        console.error(error);
+      
         res.status(500).send('An error occurred while deactivating the offer');
     }
 };
@@ -346,8 +346,8 @@ exports.postEditCoupon = async (req, res) => {
         await Coupon.findByIdAndUpdate(couponid,req.body)
         res.redirect('/admin/coupons')
     }catch(error){
-        console.log(error);
-        
+      
+        res.status(500).send('An error occurred while deactivating the offer'); 
     }
       
 };
@@ -367,8 +367,8 @@ exports.getEditOffer = async(req,res)=>{
         res.render('admin/editOffer',{offer})
 
     }catch(error){
-console.log(error);
 
+        res.status(500).send('An error occurred while deactivating the offer');
     }
 }
 
@@ -383,11 +383,11 @@ exports.postEditOffer = async (req,res)=>{
 
         res.redirect("/admin/offers")
 
-        console.log(req.body);
+      
         
 
     }catch(error){
-console.log(error);
 
+        res.status(500).send('An error occurred while deactivating the offer');
     }
 }

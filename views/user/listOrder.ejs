@@ -82,13 +82,13 @@
             <!-- Orders Container -->
             <div class="space-y-6 mt-8">
                 <% if (orders) { %>
-                    <% orders.items.forEach(order => { %>
+                    <% orders.shippingAddress.forEach(order => { %>
                         <div class="bg-white rounded-lg shadow-md border border-gray-100 order-card">
                             <!-- Order Header -->
                             <div class="px-4 py-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
                                 <div>
                                     <h2 class="text-xl font-semibold text-gray-900 text-center sm:text-left">
-                                        Order #<%= order._id.toString().slice(-8).toUpperCase() %>
+                                        Order #<%= orders._id.toString().slice(-8).toUpperCase() %>
                                     </h2>
                                     <p class="text-sm text-gray-500 mt-1 text-center sm:text-left">
                                         Placed on <%= new Date(orders.createdAt).toLocaleDateString('en-US', { 
@@ -235,22 +235,21 @@
                                     <!-- Shipping Address -->
                                     <div class="mt-6 bg-white p-4 rounded-lg border border-gray-200">
                                         <h3 class="text-lg font-semibold text-gray-900 mb-3">Shipping Address</h3>
-                                        <% if (orders.shippingAddress) { %>
-                                            <address class="not-italic text-sm text-gray-700 text-center sm:text-left">
-                                                <p class="text-gray-600">Name: <%= orders.shippingAddress.name %></p>
-                                                <p class="text-gray-600">State: <%= orders.shippingAddress.state %></p>
-                                                <p class="text-gray-600">City: <%= orders.shippingAddress.city %></p>
-                                                <p class="text-gray-600">Address: <%= orders.shippingAddress.address %></p>
-                                                <p class="text-gray-600">Pincode: <%= orders.shippingAddress.pincode %></p>
-                                                <p class="text-gray-600">Mobile: <%= orders.shippingAddress.mobile %></p>
-                                            </address>
-
-
-                                           
+                                        <% if (orders.shippingAddress && orders.shippingAddress.length > 0) { %>
+                                            <% orders.shippingAddress.forEach((address) => { %>
+                                                <address class="not-italic text-sm text-gray-700 text-center sm:text-left">
+                                                    <p class="text-gray-600">Name: <%= address.name %></p>
+                                                    <p class="text-gray-600">State: <%= address.state %></p>
+                                                    <p class="text-gray-600">City: <%= address.city %></p>
+                                                    <p class="text-gray-600">Address: <%= address.address %></p>
+                                                    <p class="text-gray-600">Pincode: <%= address.pincode %></p>
+                                                    <p class="text-gray-600">Mobile: <%= address.mobile %></p>
+                                                </address>
+                                            <% }) %>
                                         <% } else { %>
-                                            
-                                            <p class="text-gray-500">No shipping address available</p>
+                                            <p class="text-gray-600 text-center sm:text-left">No shipping addresses found.</p>
                                         <% } %>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -264,7 +263,7 @@
                         </svg>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2 mt-4">No Orders Yet</h3>
                         <p class="text-gray-500 mb-6">Start exploring our products and place your first order!</p>
-                        <a href="/wine" class="btn bg-blue-600 text-white hover:bg-blue-700">
+                        <a href="/wines" class="btn bg-blue-600 text-white hover:bg-blue-700">
                             Browse Products
                         </a>
                     </div>

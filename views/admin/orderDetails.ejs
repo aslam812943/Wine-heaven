@@ -48,7 +48,7 @@
             <div class="space-y-3 mb-6">
                 <div class="flex justify-between">
                     <span class="text-gray-600">Subtotal</span>
-                    <span class="font-medium">₹<%= (Number(order.totalAmount) + Number(order.discount)).toFixed(0) %>.00</span>
+                    <span class="font-medium">₹<%= (Number(order.totalAmount) + Number(order.discount)-100).toFixed(0) %>.00</span>
 
                 </div>
                 <div class="flex justify-between">
@@ -63,7 +63,7 @@
                 <% } %>
                 <div class="flex justify-between text-lg font-semibold">
                     <span>Total</span>
-                    <span>₹<%= (order.totalAmount+100).toFixed(0) %>.00</span>
+                    <span>₹<%= order.totalAmount.toFixed(0) %>.00</span>
                 </div>
             </div>
 

@@ -216,9 +216,9 @@ exports.order = async (req, res) => {
 
         const orders = await Order.find({ userId })
             .populate('items.productId', 'name image')
+            .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limit)
-            .sort({ createdAt: -1 }); 
+            .limit(limit);
 
 
         res.render('user/orders', {
@@ -256,7 +256,6 @@ exports.ordersList = async (req, res) => {
         res.status(500).send(error.message);
     }
 };
-
 
 
 exports.getWallet = async (req, res) => {
