@@ -128,6 +128,17 @@ exports.editCategory = async (req, res) => {
         }
 
 
+
+        const normalizedCategoryName = name.trim().toUpperCase();
+
+        const existingCategory = await Category.findOne({ name: { $regex: `^${normalizedCategoryName}$`, $options: 'i' } });
+        
+        if (existingCategory) {
+            req.flash('error', 'This category already exists.');
+            return res.redirect('back');
+        }
+
+
         category.name = name || category.name;
 
 
@@ -160,7 +171,8 @@ exports.editCategory = async (req, res) => {
         return res.redirect('/category');
     } catch (error) {
 
-        req.flash('error', 'Server Error');
+        console.log(error);
+        req.flash('error', 'This category already exists.');
         return res.redirect('/category');
     }
 };

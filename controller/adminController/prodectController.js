@@ -42,11 +42,20 @@ exports.addProductPost = async (req, res) => {
     try {
         const { name, price, category, stock, status, description, discount } = req.body;
 
-        const existingProduct = await Product.findOne({ name });
+   const normalizedproductName = name.trim().toUpperCase();
+ 
+         const existingProduct = await Category.findOne({ name: { $regex: `^${normalizedproductName}$`, $options: 'i' } });
+         
+
+if (existingProduct) {
+    req.flash('error', 'This product already exists.');
+    return res.redirect('/admin/products/add');
+}
         if (existingProduct) {
             req.flash('error', 'This product already exists.');
             return res.redirect('/admin/products/add');
         }
+        
 
         if (!req.files || req.files.length < 3) {
             req.flash('error', 'At least 3 images are required.');

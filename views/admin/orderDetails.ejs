@@ -77,12 +77,16 @@
                 <div>
                     <h3 class="font-semibold mb-2">Shipping Information</h3>
                     <% if(order.shippingAddress) { %>
-                        <p class="text-gray-600">Name: <%= order.shippingAddress.name %></p>
-                        <p class="text-gray-600">State: <%= order.shippingAddress.state %></p>
-                        <p class="text-gray-600">City: <%= order.shippingAddress.city %></p>
-                        <p class="text-gray-600">Address: <%= order.shippingAddress.address %></p>
-                        <p class="text-gray-600">Pincode: <%= order.shippingAddress.pincode %></p>
-                        <p class="text-gray-600">Mobile: <%= order.shippingAddress.mobile %></p>
+                        <% order.shippingAddress.forEach((address) => { %>
+                            <address class="not-italic text-sm text-gray-700 text-center sm:text-left">
+                                <p class="text-gray-600">Name: <%= address.name %></p>
+                                <p class="text-gray-600">State: <%= address.state %></p>
+                                <p class="text-gray-600">City: <%= address.city %></p>
+                                <p class="text-gray-600">Address: <%= address.address %></p>
+                                <p class="text-gray-600">Pincode: <%= address.pincode %></p>
+                                <p class="text-gray-600">Mobile: <%= address.mobile %></p>
+                            </address>
+                        <% }) %>
                     <% } %>
                 </div>
             </div>
