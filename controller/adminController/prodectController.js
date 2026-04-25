@@ -153,7 +153,7 @@ exports.updateProductPost = async (req, res) => {
         // Handle image updates
         let finalImages = [...product.images];
 
-     
+
         if (removedImages.length > 0) {
             finalImages = finalImages.filter(img => !removedImages.includes(img));
         }
@@ -173,7 +173,7 @@ exports.updateProductPost = async (req, res) => {
         }
 
         req.flash('success_msg', 'Product updated successfully');
-        return res.redirect('/admin/products');
+        return res.json({ success: true, message: 'Product updated successfully' });
 
     } catch (error) {
 

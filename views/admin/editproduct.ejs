@@ -159,7 +159,7 @@
                                 <div class="flex flex-wrap" id="existingImages">
                                     <% if (product.images && product.images.length> 0) { %>
                                         <% product.images.forEach((image, index)=> { %>
-                                            <div class="img-wrapper" data-public-id="<%= image.public_id %>"
+                                            <div class="img-wrapper" data-image-path="<%= image %>"
                                                 data-index="<%= index %>">
                                                 <img src="<%= image.startsWith('http') ? image : '/uploads/' + image %>"
                                                     alt="Product Image" class="h-32 w-32 object-cover">
@@ -187,6 +187,8 @@
         let newImageIndex = 0;
 
         form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
             let isValid = true;
             const totalImages = document.querySelectorAll('#existingImages .img-wrapper').length + croppedImagesArray.length;
 
@@ -198,13 +200,34 @@
                 document.getElementById('image-error').classList.add('hidden');
             }
 
-            if (!isValid) {
-                e.preventDefault();
-                return false;
-            }
+            if (!isValid) return;
 
-            document.getElementById('croppedImages').value = JSON.stringify(croppedImagesArray);
-            document.getElementById('deletedImages').value = JSON.stringify(deletedImagesArray);
+            const formData = new FormData(form);
+
+        
+            croppedImagesArray.forEach((item, index) => {
+                formData.append('images', item.blob, `image-${Date.now()}-${index}.png`);
+            });
+
+
+            formData.set('deletedImages', JSON.stringify(deletedImagesArray));
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/admin/products';
+                    } else {
+                        Swal.fire('Error', data.message || 'Update failed', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'An unexpected error occurred', 'error');
+                });
         });
 
         document.getElementById('imageInput').addEventListener('change', function (event) {
@@ -234,7 +257,7 @@
                 const url = URL.createObjectURL(blob);
 
                 const imageId = `new-${newImageIndex++}`;
-                croppedImagesArray.push({ id: imageId, url: url });
+                croppedImagesArray.push({ id: imageId, blob: blob, url: url });
 
                 const imgWrapper = document.createElement('div');
                 imgWrapper.className = 'img-wrapper';
@@ -258,8 +281,8 @@
 
         function markImageForDeletion(button, index) {
             const wrapper = button.parentElement;
-            const publicId = wrapper.dataset.publicId;
-            deletedImagesArray.push(publicId);
+            const imagePath = wrapper.dataset.imagePath;
+            deletedImagesArray.push(imagePath);
             wrapper.remove();
         }
 

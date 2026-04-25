@@ -728,7 +728,7 @@
             <div class="gallery" data-aos="fade-right">
                 <div class="main-img-shell">
                     <img id="mainImage"
-                        src="<%= product.images[0].startsWith('http') ? product.images[0] : '/uploads/' + product.images[0] %>"
+                        src="<%= (product.images && product.images.length > 0) ? (product.images[0].startsWith('http') ? product.images[0] : '/uploads/' + product.images[0]) : '/assets/img/no-image.png' %>"
                         alt="<%= product.name %>">
                     <div class="img-badges">
                         <% if (product.stock <=0) { %>
@@ -750,9 +750,8 @@
 
                 <!-- Thumbnails -->
                 <div class="thumbs">
-                    <% product.images.forEach((img, i)=> {
-                        const thumbPath = img.startsWith('http') ? img : '/uploads/' + img;
-                        %>
+                    <% product.images.forEach(function(img, i) { const thumbPath=(img && img.startsWith('http')) ? img
+                        : '/uploads/' + img; %>
                         <div class="thumb <%= i === 0 ? 'active' : '' %>" onclick="swapImage('<%= thumbPath %>', this)">
                             <img src="<%= thumbPath %>" alt="View <%= i+1 %>">
                         </div>
