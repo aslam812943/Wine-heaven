@@ -215,7 +215,7 @@ exports.order = async (req, res) => {
 
 
         const orders = await Order.find({ userId })
-            .populate('items.productId', 'name image')
+            .populate('items.productId', 'name images')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
@@ -238,17 +238,17 @@ exports.order = async (req, res) => {
 exports.ordersList = async (req, res) => {
     try {
         const id = req.params.id
-      
-        
+
+
         const orders = await Order.findById(id)
-        .populate('shippingAddress')
-        .populate('items.productId')
-        .exec();
-;
+            .populate('shippingAddress')
+            .populate('items.productId')
+            .exec();
+        ;
 
         res.render('user/listOrder', {
             orders,
-            // noOrders: false,
+          
 
         });
     } catch (error) {
@@ -267,7 +267,7 @@ exports.getWallet = async (req, res) => {
 
         const wallet = await Wallet.findOne({ userID: userId }).exec();
         if (!wallet) {
-            return res.render('user/wallat', {
+            return res.render('user/wallet', {
                 wallet: { balance: 0, transaction: [] },
                 page,
                 totalpages: 1,
@@ -284,7 +284,7 @@ exports.getWallet = async (req, res) => {
             .sort((a, b) => new Date(b.transaction_date) - new Date(a.transaction_date));
 
 
-        res.render('user/wallat', {
+        res.render('user/wallet', {
             wallet: { ...wallet._doc, transactions: paginatedTransactions },
             page,
             totalpages,
@@ -294,7 +294,7 @@ exports.getWallet = async (req, res) => {
         });
     } catch (error) {
 
-        res.render('user/wallat', {
+        res.render('user/wallet', {
             wallet: { balance: 0, transactions: [] },
             page: 1,
             totalpages: 1,

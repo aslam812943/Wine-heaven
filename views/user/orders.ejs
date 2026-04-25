@@ -178,7 +178,7 @@
                                             <% order.items.slice(0, 3).forEach(item=> { %>
                                                 <div
                                                     class="group relative w-20 h-24 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 shadow-sm transition hover:shadow-md">
-                                                    <img src="<%= item.productImage && item.productImage.startsWith('http') ? item.productImage : '/uploads/' + item.productImage %>"
+                                                    <img src="<%= (item.productId && item.productId.images && item.productId.images.length > 0) ? (item.productId.images[0].startsWith('http') ? item.productId.images[0] : '/uploads/' + item.productId.images[0]) : (item.productImage && item.productImage.startsWith('http') ? item.productImage : '/uploads/' + item.productImage) %>"
                                                         class="w-full h-full object-cover transition group-hover:scale-110">
                                                     <div
                                                         class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">

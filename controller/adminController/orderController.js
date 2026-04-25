@@ -94,7 +94,7 @@ exports.updateOrderStatus = async (req, res) => {
                     wallet_amount: item.productPrice * item.productCount - alldiscount * item.productCount,
                     order_id: order._id,
                     transactionType: 'Credited',
-                    tracsactionWay: 'Return Order',
+                    transactionWay: 'Return Order',
                     transaction_date: new Date(),
                 });
 
@@ -111,7 +111,7 @@ exports.updateOrderStatus = async (req, res) => {
                         wallet_amount: 100,
                         order_id: order._id,
                         transactionType: 'Credited',
-                        tracsactionWay: 'Shipping Refund',
+                        transactionWay: 'Shipping Refund',
                         transaction_date: new Date(),
                     });
                 }

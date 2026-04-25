@@ -63,11 +63,11 @@ exports.validateCoupon = async (req, res) => {
         }
         const todayDate = new Date();
         const validUntil = new Date(coupon.validUntil);
-        
-        
+
+
         const today = new Date(todayDate.setHours(0, 0, 0, 0));
         const validUntilDate = new Date(validUntil.setHours(0, 0, 0, 0));
-        
+
         if (today > validUntilDate) {
             return res.status(400).json({
                 success: false,
@@ -175,18 +175,18 @@ exports.placeOrder = async (req, res) => {
             }
 
             const todayDate = new Date();
-        const validUntil = new Date(coupon.validUntil);
-        
-        
-        const today = new Date(todayDate.setHours(0, 0, 0, 0));
-        const validUntilDate = new Date(validUntil.setHours(0, 0, 0, 0));
-        
-        if (today > validUntilDate) {
-            return res.status(400).json({
-                success: false,
-                message: 'Coupon has expired',
-            });
-        }
+            const validUntil = new Date(coupon.validUntil);
+
+
+            const today = new Date(todayDate.setHours(0, 0, 0, 0));
+            const validUntilDate = new Date(validUntil.setHours(0, 0, 0, 0));
+
+            if (today > validUntilDate) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Coupon has expired',
+                });
+            }
 
             if (coupon.usageLimit !== null && coupon.usedCount >= coupon.usageLimit) {
                 return res.status(400).json({
@@ -221,8 +221,8 @@ exports.placeOrder = async (req, res) => {
         }
 
         const finalAmount = totalAmount - discount;
-      
-        
+
+
         if (paymentMethod === 'Cash on Delivery') {
             if (finalAmount > 1000) {
                 return res.status(400).json({
@@ -302,6 +302,7 @@ exports.placeOrder = async (req, res) => {
                 wallet_amount: finalAmount,
                 order_id: order._id || null,
                 transactionType: 'Debited',
+                transactionWay: 'Order Placement',
                 transaction_date: new Date(),
             });
 
@@ -506,7 +507,7 @@ exports.cancelOrder = async (req, res) => {
             let wallet = await Wallet.findOne({ userID: order.userId });
             if (!wallet) {
                 wallet = new Wallet({
-                    userID:userId,
+                    userID: userId,
                     balance: 0,
                     transaction: [],
                 });
@@ -523,7 +524,7 @@ exports.cancelOrder = async (req, res) => {
                 wallet_amount: item.productPrice * item.productCount - alldiscount * item.productCount,
                 order_id: order._id,
                 transactionType: 'Credited',
-                tracsactionWay: 'Cancel Order',
+                transactionWay: 'Cancel Order',
                 transaction_date: new Date(),
             });
             const allReturnedOrCanceled = order.items.every(
