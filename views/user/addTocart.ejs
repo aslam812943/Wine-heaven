@@ -1,287 +1,428 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Cart</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <title>Your Collection | Wine Heaven</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+    rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'wine-maroon': '#6b0f1a',
+            'wine-gold': '#c9a84c',
+            'wine-cream': '#fdf8f2',
+            'wine-black': '#0a0202',
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    .wine-card {
-      background-color: rgba(255, 255, 255, 0.98);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    :root {
+      --wine-maroon: #6b0f1a;
+      --wine-gold: #c9a84c;
+      --wine-cream: #fdf8f2;
+      --wine-black: #0a0202;
     }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.5);
+
+    body {
+      background-color: var(--wine-cream);
+      font-family: 'Inter', sans-serif;
+      color: var(--wine-black);
     }
-    .modal-content {
-      background-color: #fefefe;
-      margin: 15% auto;
-      padding: 20px;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 500px;
+
+    .playfair {
+      font-family: 'Playfair Display', serif;
     }
-    .bg-gold {
-        background-color:#600018;
-        color: white;
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(107, 15, 26, 0.1);
+      transition: all 0.3s ease;
     }
-    .bg-gold:hover {
-        background-color: #800020;
-        transform: translateY(-2px);
+
+    .glass-card:hover {
+      border-color: var(--wine-gold);
+    }
+
+    .premium-input {
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(107, 15, 26, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .premium-input:focus {
+      border-color: var(--wine-gold);
+      box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.1);
+      outline: none;
+    }
+
+    .btn-premium {
+      background: var(--wine-maroon);
+      color: white;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .btn-premium:hover {
+      background: #4a0a12;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(107, 15, 26, 0.2);
+    }
+
+    .item-row {
+      transition: all 0.3s ease;
+    }
+
+    .item-row:hover {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .banner-gradient {
+      background: linear-gradient(90deg, #6b0f1a 0%, #4a0a12 100%);
+    }
+
+    /* Hide number input spinners */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
   </style>
 </head>
 
-<body class="bg-gray-50 min-h-screen">
+<body class="min-h-screen pb-20">
   <%- include('../partials/userHeader.ejs') %>
 
-  <!-- Free Shipping Banner -->
-  <div class="bg-red text-white text-center py-3">
-    <p class="text-sm md:text-base">Want FREE SHIPPING all year long? Find out how ></p>
-  </div>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-20">
-    <div class="flex flex-col lg:flex-row gap-8">
-      <!-- Order Summary (Left Side) -->
-      <div class="lg:w-80 flex-shrink-0">
-        <div class="wine-card rounded-lg p-6 sticky top-8">
-          <h2 class="text-xl font-medium text-gray-900 mb-6">Order Summary</h2>
-          
-          <div class="space-y-4">
-            <div class="flex justify-between">
-              <span class="text-gray-600">All Price</span>
-              <span><i class="fa-solid fa-indian-rupee-sign"></i><%= subtotal.toFixed(0) %>.00</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-600">Shipping & Handling</span>
-              <span><i class="fa-solid fa-indian-rupee-sign"></i> 100</span>
-            </div>
-            <div class="flex justify-between text-red-700">
-             
-             
-            </div>
-            <div class="border-t border-gray-200 pt-4 flex justify-between font-medium">
-              <span>Total</span>
-              <span><i class="fa-solid fa-indian-rupee-sign"></i><%= total.toFixed(0) %>.00</span>
-            </div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="flex flex-col lg:flex-row gap-12">
+
+        <!-- Cart Items Section -->
+        <div class="flex-grow">
+          <div class="mb-10" data-aos="fade-right">
+            <span class="text-wine-gold uppercase tracking-[0.3em] text-xs font-bold mb-2 block">Your Selection</span>
+            <h1 class="playfair text-4xl font-bold text-wine-black cart-count-badge">Shopping Bag (<%= cart.items.length
+                %>)</h1>
+            <div class="w-16 h-1 bg-wine-gold mt-4"></div>
           </div>
 
-          <% if (cart.items.length > 0) { %>
-            <!-- Checkout Button -->
-            <a href="/checkout" class="block mt-6">
-              <button class="w-full bg-gold py-4 px-8 text-white rounded-lg text-lg transition-all duration-300">
-                Proceed to Checkout
-              </button>
-            </a>
-          <% } %>
-
-          <!-- Secure Checkout Notice -->
-          <div class="mt-4 text-center">
-            <div class="flex items-center justify-center text-gray-500 text-sm">
-              <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              Secure Checkout
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Main Cart Content (Right Side) -->
-      <div class="flex-grow">
-        <div class="wine-card rounded-lg p-6">
-          <div class="flex justify-between items-center border-b border-gray-200 pb-6">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Shopping Cart (<%= cart.items.length %>)</h1>
-          </div>
-
-          <% if (cart.items.length === 0) { %>
-            <div class="text-center py-12">
-              <p class="text-gray-500 text-lg">Your cart is empty.</p>
-              <a href="/wines" class="mt-4 inline-block bg-gold py-4 px-8 text-white rounded-lg text-lg transition-all duration-300">
-                Continue Shopping
+          <% if (cart.items.length===0) { %>
+            <div class="glass-card rounded-[3rem] py-24 text-center" data-aos="zoom-in">
+              <div
+                class="w-24 h-24 bg-wine-maroon/5 rounded-full flex items-center justify-center mx-auto mb-8 text-wine-maroon/20">
+                <i class="fas fa-shopping-basket text-4xl"></i>
+              </div>
+              <h3 class="playfair text-3xl font-bold text-wine-black mb-4">Your Bag is Empty</h3>
+              <p class="text-gray-500 mb-10 max-w-xs mx-auto">Discover our curated collection of premium vintages and
+                find your next favorite.</p>
+              <a href="/wines" class="btn-premium px-10 py-4 rounded-2xl font-bold inline-block">
+                Explore Collection
               </a>
             </div>
-          <% } else { %>
-            <div class="mt-8">
-              <!-- Cart Items -->
+            <% } else { %>
               <div class="space-y-6">
-                <% cart.items.forEach(item => { %>
-                  <div class="flex flex-col md:flex-row items-start md:items-center gap-4 py-6 border-b border-gray-200">
-                    <!-- Product Image -->
-                    <div class="w-24 h-24 flex-shrink-0">
-                      <% if (item.productId.images && item.productId.images.length > 0) { %>
-                        <img src="/uploads/<%= item.productId.images[0] %>" alt="<%= item.productId.name %>" class="w-full h-full object-cover rounded-md">
-                      <% } else { %>
-                        <img src="/path/to/default/image.jpg" alt="Default Image" class="w-full h-full object-cover rounded-md">
-                      <% } %>
-                    </div>
+                <% cart.items.forEach((item, index)=> { %>
+                  <div class="glass-card rounded-[2.5rem] p-6 md:p-8 item-row overflow-hidden relative"
+                    data-aos="fade-up" data-aos-delay="<%= index * 50 %>" data-product-id="<%= item.productId._id %>">
 
-                    <!-- Product Details -->
-                    <div class="flex-grow">
-                      <h3 class="text-lg font-medium text-gray-900"><%= item.productId.name %></h3>
-                     
-                      <div class="mt-2 flex items-center gap-4">
-                        <div class="flex items-center">
-                          <input type="number" 
-                                 name="quantity" 
-                                 value="<%= item.productCount %>" 
-                                 min="1"
-                                 class="quantity-input w-16 border border-gray-300 rounded-md px-3 py-1 text-center" 
-                                 data-product-id="<%= item.productId._id %>"
-                                 data-product-stock="<%= item.productId.stock %>">
+                    <div class="flex flex-col md:flex-row items-center gap-8">
+                      <!-- Product Image -->
+                      <div class="w-40 h-40 shrink-0 relative group">
+                        <div
+                          class="absolute inset-0 bg-wine-maroon/5 rounded-2xl transition-all group-hover:bg-wine-maroon/10">
                         </div>
-<!--                        
-                        <span class="text-sm text-gray-500"><i class="fa-solid fa-indian-rupee-sign"></i><%= item.productId.price %></span> -->
-                        <span class="text-gray-500 line-through text-sm">
-                          ₹<%= item.productId.price %>
-                      </span>
-                      
-                      <!-- Discounted Price -->
-                      <span class="text-green-600 font-semibold rounded-md text-sm">
-                        ₹<%= new Intl.NumberFormat('en-IN').format(item.productId && item.productId.priceAfterDiscount ? item.productId.priceAfterDiscount.toFixed(0) : 0) %>.00
-                    </span>
-                    
-                    
-                        <!-- <p class="text-sm text-gray-500"><%= item.productId.discount %>% off</p>
-                        <p class="text-sm text-gray-500"><%= item.productId.offerDiscout %>% off</p> -->
-                        <% if(item.productId.discount > 0) { %>
-                        <span class="px-2 py-1 bg-red-50 text-red-600 font-semibold rounded-md text-sm">
-                          <%= item.productId.discount %>% OFF
-                      </span>
-                      <% } %>
-                      
-                      <!-- Offer Discount (if exists) -->
-                      <% if(item.productId.offerDiscout > 0) { %>
-                          <span class="px-2 py-1 bg-red-50 text-red-600 font-semibold rounded-md text-sm">
-                              Extra Offer Discount <%= item.productId.offerDiscout %>% OFF
-                          </span>
-                      <% } %>
+                        <% if (item.productId.images && item.productId.images.length> 0) { %>
+                          <img src="/uploads/<%= item.productId.images[0] %>" alt="<%= item.productId.name %>"
+                            class="w-full h-full object-contain rounded-2xl mix-blend-multiply transition-transform group-hover:scale-110 duration-500">
+                          <% } else { %>
+                            <img src="/path/to/default/image.jpg" alt="Default Image"
+                              class="w-full h-full object-cover rounded-2xl">
+                            <% } %>
+                      </div>
+
+                      <!-- Details -->
+                      <div class="flex-grow text-center md:text-left">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                          <div>
+                            <h3 class="playfair text-2xl font-bold text-wine-black">
+                              <%= item.productId.name %>
+                            </h3>
+                            <p class="text-xs text-wine-gold font-bold uppercase tracking-widest mt-1">Premium Vintage
+                            </p>
+                          </div>
+                          <div class="text-right">
+                            <p class="text-gray-400 line-through text-sm">₹<%= item.productId.price %>
+                            </p>
+                            <p class="text-2xl font-bold text-wine-maroon">₹<%= (item.productId.priceAfterDiscount ||
+                                0).toFixed(0) %>
+                            </p>
+                          </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-4">
+                          <!-- Quantity Controls -->
+                          <div class="flex items-center bg-wine-cream rounded-xl p-1 border border-wine-maroon/10">
+                            <button
+                              class="w-8 h-8 flex items-center justify-center text-wine-maroon hover:bg-white rounded-lg transition-colors"
+                              onclick="adjustQty('<%= item.productId._id %>', -1)">
+                              <i class="fas fa-minus text-xs"></i>
+                            </button>
+                            <input type="number" value="<%= item.productCount %>" readonly
+                              class="quantity-input w-12 text-center bg-transparent font-bold text-wine-black"
+                              data-product-id="<%= item.productId._id %>"
+                              data-product-stock="<%= item.productId.stock %>">
+                            <button
+                              class="w-8 h-8 flex items-center justify-center text-wine-maroon hover:bg-white rounded-lg transition-colors"
+                              onclick="adjustQty('<%= item.productId._id %>', 1)">
+                              <i class="fas fa-plus text-xs"></i>
+                            </button>
+                          </div>
+
+                          <% if(item.productId.discount> 0) { %>
+                            <span
+                              class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-bold uppercase tracking-widest rounded-full border border-green-100">
+                              <%= item.productId.discount %>% Bag Discount
+                            </span>
+                            <% } %>
+
+                              <% if(item.productId.offerDiscout> 0) { %>
+                                <span
+                                  class="px-3 py-1 bg-wine-gold/10 text-wine-gold text-[10px] font-bold uppercase tracking-widest rounded-full border border-wine-gold/20">
+                                  Exclusive <%= item.productId.offerDiscout %>% Offer
+                                </span>
+                                <% } %>
+                        </div>
+                      </div>
+
+                      <!-- Actions -->
+                      <div class="shrink-0 flex flex-col items-center md:items-end gap-6">
+                        <div class="text-right">
+                          <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Row Total</p>
+                          <p class="text-xl font-bold text-wine-black item-total-price">
+                            <i class="fa-solid fa-indian-rupee-sign text-sm mr-1"></i>
+                            <%= (item.productId.priceAfterDiscount * item.productCount).toFixed(0) %>
+                          </p>
+                        </div>
+                        <button
+                          class="btn-remove-item w-10 h-10 rounded-full flex items-center justify-center text-red-400 hover:bg-red-50 hover:text-red-600 transition-all border border-red-100"
+                          data-product-id="<%= item.productId._id %>">
+                          <i class="fas fa-trash-alt text-sm"></i>
+                        </button>
                       </div>
 
                     </div>
-
-                    <!-- Price and Actions -->
-                    <div class="flex flex-col items-end gap-2">
-                      <span class="text-lg font-medium"><i class="fa-solid fa-indian-rupee-sign"></i><%= (item.productId.priceAfterDiscount * item.productCount).toFixed(0) %>.00</span>
-                      <form action="/cart/remove" method="POST" class="remove-form">
-                        <input type="hidden" name="productId" value="<%= item.productId._id %>">
-                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm">Remove</button>
-                      </form>
-                    </div>
                   </div>
-                <% }) %>
+                  <% }) %>
+              </div>
+              <% } %>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="lg:w-96 flex-shrink-0" data-aos="fade-left">
+          <div class="glass-card rounded-[2.5rem] p-8 md:p-10 sticky top-32 shadow-xl">
+            <div class="mb-10 text-center">
+              <h2 class="playfair text-24 font-bold text-wine-black">Order Summary</h2>
+              <div class="w-12 h-1 bg-wine-gold mx-auto mt-4"></div>
+            </div>
+
+            <div class="space-y-6 mb-10">
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-gray-500 font-medium tracking-wide">Merchandise Total</span>
+                <span class="text-wine-black font-bold summary-subtotal">₹<%= subtotal.toFixed(0) %></span>
+              </div>
+
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-gray-500 font-medium tracking-wide">Estimated Shipping</span>
+                <span class="text-wine-black font-bold">₹100</span>
+              </div>
+
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-gray-500 font-medium tracking-wide">Taxes & Duties</span>
+                <span class="text-gray-400 italic">Calculated at next step</span>
+              </div>
+
+              <div class="pt-6 border-t border-wine-maroon/5 flex justify-between items-center">
+                <div>
+                  <span class="playfair text-xl font-bold text-wine-black block">Grand Total</span>
+                  <span class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Valuated in INR</span>
+                </div>
+                <span class="text-3xl font-bold text-wine-maroon summary-total">₹<%= total.toFixed(0) %></span>
               </div>
             </div>
-          <% } %>
+
+            <% if (cart.items.length> 0) { %>
+              <a href="/checkout" class="block">
+                <button
+                  class="btn-premium w-full py-5 rounded-[1.5rem] font-bold text-lg flex items-center justify-center gap-3">
+                  Checkout Now
+                  <i class="fas fa-arrow-right text-sm"></i>
+                </button>
+              </a>
+              <% } %>
+
+                <div class="mt-8 pt-6 border-t border-gray-100 flex items-center justify-center gap-6 text-gray-400">
+                  <div class="flex flex-col items-center gap-2">
+                    <i class="fas fa-shield-alt text-lg text-wine-gold/40"></i>
+                    <span class="text-[9px] uppercase tracking-widest font-bold">Secure</span>
+                  </div>
+                  <div class="flex flex-col items-center gap-2">
+                    <i class="fas fa-truck text-lg text-wine-gold/40"></i>
+                    <span class="text-[9px] uppercase tracking-widest font-bold">Tracked</span>
+                  </div>
+                  <div class="flex flex-col items-center gap-2">
+                    <i class="fas fa-undo text-lg text-wine-gold/40"></i>
+                    <span class="text-[9px] uppercase tracking-widest font-bold">Returns</span>
+                  </div>
+                </div>
+          </div>
         </div>
+
       </div>
-    </div>
-  </div>
+    </main>
 
-  <%- include('../partials/userFooter.ejs') %>
+    <%- include('../partials/userFooter.ejs') %>
 
-  <script>
+      <script>
+        AOS.init({ duration: 1000, once: true, easing: 'ease-out-cubic' });
 
+        async function adjustQty(productId, delta) {
+          const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+          if (!input) return;
 
-window.onload = function () {
-        // Check if the reload flag is set
-        if (localStorage.getItem('reloadCartPage') === 'true') {
-            localStorage.removeItem('reloadCartPage'); // Clear the flag
-            window.location.reload(); // Reload the cart page
+          let currentQty = parseInt(input.value);
+          let newQty = currentQty + delta;
+          const stock = parseInt(input.dataset.productStock);
+          const maxAllowed = Math.min(5, stock);
+
+          if (newQty > maxAllowed) {
+            Swal.fire({
+              title: '<span class="playfair">Stock Limit</span>',
+              text: `Maximum ${maxAllowed} units allowed for this selection.`,
+              icon: 'info',
+              confirmButtonColor: '#6b0f1a'
+            });
+            return;
+          }
+
+          if (newQty < 1) return;
+
+          input.value = newQty;
+
+          try {
+            const response = await fetch('/cart/update', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ productId, quantity: newQty })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+            
+              const itemRow = input.closest('.item-row');
+              if (itemRow) {
+                const itemTotalEl = itemRow.querySelector('.item-total-price');
+                if (itemTotalEl) {
+                  itemTotalEl.innerHTML = `<i class="fa-solid fa-indian-rupee-sign text-sm mr-1"></i>${data.itemTotal}`;
+                }
+              }
+
+              // Update summary totals
+              const subtotalEl = document.querySelector('.summary-subtotal');
+              const totalEl = document.querySelector('.summary-total');
+
+              if (subtotalEl) subtotalEl.textContent = `₹${parseFloat(data.subtotal).toFixed(0)}`;
+              if (totalEl) totalEl.textContent = `₹${parseFloat(data.total).toFixed(0)}`;
+
+           
+              const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 800,
+                timerProgressBar: false
+              });
+              Toast.fire({ icon: 'success', title: 'Cart updated' });
+            } else {
+              // Revert on error
+              input.value = currentQty;
+              Swal.fire('Error', data.message || 'Failed to update quantity', 'error');
+            }
+          } catch (err) {
+       
+            input.value = currentQty;
+            Swal.fire('Error', 'Connection failed', 'error');
+          }
         }
-    };
 
+        document.addEventListener('DOMContentLoaded', () => {
+          const removeButtons = document.querySelectorAll('.btn-remove-item');
+          removeButtons.forEach(button => {
+            button.addEventListener('click', async (e) => {
+              const productId = button.getAttribute('data-product-id');
+              const row = button.closest('[data-product-id]');
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const quantityInputs = document.querySelectorAll('.quantity-input');
+              const result = await Swal.fire({
+                title: '<span class="playfair">Remove from Selection?</span>',
+                text: 'This item will be removed from your shopping bag.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#6b0f1a',
+                confirmButtonText: 'Yes, Remove It',
+                cancelButtonText: 'Keep It',
+                background: '#fdf8f2',
+                customClass: { popup: 'rounded-[1.5rem]' }
+              });
 
-      quantityInputs.forEach(input => {
-        input.addEventListener('change', async (event) => {
-          const quantity = parseInt(input.value);
-          const productStock = parseInt(input.getAttribute('data-product-stock'));
-          const maxAllowed = Math.min(5, productStock); // Use the lower value between 5 and actual stock
+              if (result.isConfirmed) {
+                try {
+                  const response = await fetch('/cart/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId })
+                  });
 
-          if (quantity > maxAllowed) {
-            event.preventDefault();
-            input.value = maxAllowed;
-            
-            await Swal.fire({
-              icon: 'error',
-              title: 'Stock Limit Reached',
-              text: `Sorry, you can only add up to ${maxAllowed} items due to current stock availability.`,
-              confirmButtonColor: '#600018',
-              showClass: {
-                popup: 'animate__animated animate__fadeInDown'
-              },
-              hideClass: {
-                popup: 'animate__animated animate__fadeOutUp'
+                  const data = await response.json();
+                  if (data.success) {
+                    row.style.transform = 'translateX(100px)';
+                    row.style.opacity = '0';
+                    setTimeout(() => {
+                      row.remove();
+                      if (data.cartEmpty) {
+                        location.reload();
+                      } else {
+                        document.querySelectorAll('.summary-subtotal').forEach(el => el.textContent = `₹${data.subtotal.toFixed(0)}`);
+                        document.querySelectorAll('.summary-total').forEach(el => el.textContent = `₹${data.total.toFixed(0)}`);
+                        const countBadge = document.querySelector('.cart-count-badge');
+                        if (countBadge) {
+                          const currentCount = document.querySelectorAll('.item-row').length;
+                          countBadge.textContent = `Shopping Bag (${currentCount})`;
+                        }
+                      }
+                    }, 300);
+                  }
+                } catch (err) {
+                  console.error(err);
+                }
               }
             });
-          } else if (quantity <= 0) {
-            event.preventDefault();
-            input.value = 1;
-            
-            await Swal.fire({
-              icon: 'warning',
-              title: 'Invalid Quantity',
-              text: 'Quantity must be at least 1',
-              confirmButtonColor: '#600018',
-              showClass: {
-                popup: 'animate__animated animate__fadeInDown'
-              },
-              hideClass: {
-                popup: 'animate__animated animate__fadeOutUp'
-              }
-            });
-          } else {
-            const productId = input.getAttribute('data-product-id');
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/cart/update';
-            form.innerHTML = `
-              <input type="hidden" name="productId" value="${productId}">
-              <input type="hidden" name="quantity" value="${quantity}">
-            `;
-            document.body.appendChild(form);
-            form.submit();
-          }
-        });
-      });
-
-      // Add confirmation for remove action
-      const removeForms = document.querySelectorAll('.remove-form');
-      removeForms.forEach(form => {
-        form.addEventListener('submit', async (event) => {
-          event.preventDefault();
-          
-          const result = await Swal.fire({
-            title: 'Remove Item?',
-            text: 'Are you sure you want to remove this item from your cart?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#600018',
-            cancelButtonColor: '#718096',
-            confirmButtonText: 'Yes, remove it!',
-            cancelButtonText: 'Cancel'
           });
-
-          if (result.isConfirmed) {
-            form.submit();
-          }
         });
-      });
-    });
-  </script>
+      </script>
 </body>
+
 </html>

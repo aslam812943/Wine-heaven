@@ -1,6 +1,7 @@
 
 const Wishlist = require('../../model/whishlist');
 const Product = require('../../model/prodectSchema');
+const Cart = require('../../model/cartSchema');
 
 
 
@@ -102,6 +103,10 @@ exports.renderWishlistPage = async (req, res) => {
             return res.redirect('/login');
         }
 
+        
+        const cart = await Cart.findOne({ userId });
+        const cartProductIds = cart ? cart.items.map(item => item.productId.toString()) : [];
+
         const wishlist = await Wishlist.findOne({ user: userId })
             .populate({
                 path: 'products',
@@ -119,7 +124,8 @@ exports.renderWishlistPage = async (req, res) => {
         const wishlistProducts = wishlist ? wishlist.products.map(product => ({
             ...product,
             firstImage: product.images && product.images.length > 0 ? product.images[0] : 'default.jpg',
-            isAvailable: product.status === 'available'
+            isAvailable: product.status === 'available',
+            isInCart: cartProductIds.includes(product._id.toString())
         })) : [];
 
         res.render('user/wishlist', {
@@ -128,11 +134,8 @@ exports.renderWishlistPage = async (req, res) => {
             hasWishlistItems: wishlistProducts.length > 0
         });
     } catch (error) {
-
-        res.status(500).render('error', {
-            message: 'Error loading wishlist',
-            error: error.message
-        });
+        console.error("Wishlist Page Error:", error);
+        res.status(500).send(error.message || 'Error loading wishlist');
     }
 };
 

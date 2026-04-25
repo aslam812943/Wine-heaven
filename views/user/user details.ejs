@@ -1,255 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Details</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Profile Information | Wine Heaven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        .bg-gold {
-            background-color:#600018;
-            color: rgb(252, 247, 247);
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'wine-maroon': '#6b0f1a',
+                        'wine-gold': '#c9a84c',
+                        'wine-cream': '#fdf8f2',
+                        'wine-black': '#0a0202',
+                    }
+                }
+            }
         }
-        /* .bg-gold:hover {
-            background-color: #800020;
+    </script>
+
+    <style>
+        :root {
+            --wine-maroon: #6b0f1a;
+            --wine-gold: #c9a84c;
+            --wine-cream: #fdf8f2;
+            --wine-black: #0a0202;
+        }
+
+        body {
+            background-color: var(--wine-cream);
+            font-family: 'Inter', sans-serif;
+            color: var(--wine-black);
+        }
+
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(107, 15, 26, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(107, 15, 26, 0.05);
+        }
+
+        .input-premium {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(107, 15, 26, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .input-premium:focus {
+            border-color: var(--wine-gold);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.1);
+            outline: none;
+        }
+
+        .btn-wine {
+            background: var(--wine-maroon);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-wine:hover {
+            background: #4a0a12;
             transform: translateY(-2px);
-        } */
-        .bg-charcoal {
-            background-color:#600018;
+            box-shadow: 0 4px 12px rgba(107, 15, 26, 0.2);
+        }
+
+        .btn-gold-outline {
+            border: 1px solid var(--wine-gold);
+            color: var(--wine-gold);
+            transition: all 0.3s ease;
+        }
+
+        .btn-gold-outline:hover {
+            background: var(--wine-gold);
             color: white;
         }
-        .overlay {
-            background-color: rgba(0, 0, 0, 0.4);
+
+        .error-label {
+            color: #d11124;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: none;
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <%-include('../partials/userHeader.ejs')%>
 
-    <div class="flex min-h-screen mt-20">
-        <!-- Sidebar -->
-      
+<body class="min-h-screen">
+    <%- include('../partials/userHeader.ejs') %>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col items-center justify-center p-6 mt-20">
-            <div class="bg-white shadow-md rounded-lg p-6 w-full max-w-2xl">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">User Details</h2>
-
-                <!-- Name Section -->
-                <div class="mb-4">
-                    <label class="block text-gray-700">Name:</label>
-                    <% if (user) { %>
-                        <input type="text" value="<%= user.name %>" id="nameInput" class="border border-gray-300 rounded-md p-2 w-full" disabled>
-                        <span id="nameError" class="text-red-500 hidden">Invalid name: must be at least 3 characters, start with a capital letter, and not start with a space.</span>
-                        <button id="editNameButton" class="bg-charcoal text-white px-4 py-2 rounded-md mt-2" onclick="enableEditName()">Edit</button>
-                      
-                        <form action="/updateDetails" method="POST" id="editNameForm" onsubmit="return validateName()" class="hidden mt-4">
-                            <input type="text" name="name"  maxlength="15"  id="editNameInput" class="border border-gray-300 rounded-md p-2 w-full" value="<%= user.name %>">
-                            <p id="nameEr" class="text-red-500 ">Name Maximum Length 15.</p>
-                            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md mt-2">Save Changes</button>  
-                        </form>
-                    <% } else { %>
-                        <form action="/updateDetails" method="POST" onsubmit="return validateName()" class="flex flex-col md:flex-row">
-                            <input type="text" name="name" placeholder="Enter name" class="border border-gray-300 rounded-md p-2 w-full md:w-auto">
-                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 ml-0 md:ml-2 mt-2 md:mt-0 rounded-md hover:bg-blue-600">Save</button>
-                        </form>
-                    <% } %>
+        <main class="container mx-auto px-4 pt-32 pb-12 flex justify-center">
+            <div class="w-full max-w-2xl" data-aos="fade-up">
+                <!-- Header Section -->
+                <div class="mb-10 text-center">
+                    <span class="text-wine-gold uppercase tracking-[0.3em] text-xs font-bold mb-2 block">Member
+                        Profile</span>
+                    <h1 class="playfair text-3xl md:text-4xl font-bold text-wine-black mb-4">Account Information</h1>
+                    <div class="w-16 h-1 bg-wine-gold mx-auto"></div>
                 </div>
 
-                <!-- Email Section -->
-                <% if (user) { %>
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Email:</label>
-                        <input type="text" value="<%= user.email %>" class="border border-gray-300 rounded-md p-2 w-full" disabled>
+                <div class="glass-card rounded-[2rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                    <!-- Decorative background icon -->
+                    <div class="absolute -right-10 -top-10 opacity-[0.03] pointer-events-none">
+                        <i class="fas fa-user-circle text-[15rem]"></i>
                     </div>
-                <% } %>
 
-                <!-- Phone Section -->
-                <div class="mb-4">
-                    <label class="block text-gray-700">Phone:</label>
-                    <% if (user && user.phone) { %>
-                        <input type="text" value="<%= user.phone %>" id="phoneInput" class="border border-gray-300 rounded-md p-2 w-full" disabled>
-                        <span id="phoneError" class="text-red-500 hidden">Invalid phone number: must be 10 digits and cannot start with 0.</span>
-                        <button id="editPhoneButton" class="bg-charcoal text-white px-4 py-2 rounded-md mt-2" onclick="enableEditPhone()">Edit</button>
-                        <form action="/updateDetails" method="POST" id="editPhoneForm" onsubmit="return validatePhone()" class="hidden mt-4">
-                            <input type="text" name="phone" maxlength="10" id="editPhoneInput" class="border border-gray-300 rounded-md p-2 w-full" value="<%= user.phone %>">
-                            <p id="nameEr" class="text-red-500 ">Number Maximum Length 10.</p>
-                            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md mt-2">Save Changes</button>  
-                        </form>
-                    <% } else { %>
-                        <form action="/updateDetails" method="POST" onsubmit="return validatePhone()" class="flex flex-col md:flex-row">
-                            <input type="text" name="phone" placeholder="Enter phone number" class="border border-gray-300 rounded-md p-2 w-full md:w-auto">
-                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 ml-0 md:ml-2 mt-2 md:mt-0 rounded-md hover:bg-blue-600">Save</button>
-                        </form>
+                    <div class="relative z-10 space-y-8">
+                        <!-- Profile Header (Initials) -->
+                        <div class="flex items-center space-x-6 mb-12">
+                            <div
+                                class="w-20 h-20 rounded-2xl bg-wine-maroon flex items-center justify-center text-white shadow-lg shadow-wine-maroon/20">
+                                <span class="text-3xl font-bold playfair">
+                                    <%= user ? user.name.charAt(0).toUpperCase() : 'U' %>
+                                </span>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-wine-black">
+                                    <%= user ? user.name : 'User' %>
+                                </h2>
+                                <p class="text-wine-gold font-medium text-sm">Premium Wine Collector</p>
+                            </div>
+                        </div>
 
-                        <!-- <form action="/updateDetails" method="POST" onsubmit="return validatePhone()" class="flex flex-col md:flex-row">
-                            <input type="text" name="phone" placeholder="Enter phone number" class="border border-gray-300 rounded-md p-2 w-full md:w-auto">
-                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 ml-0 md:ml-2 mt-2 md:mt-0 rounded-md hover:bg-blue-600">Save</button>
-                        </form> -->
-                    <% } %>
+                        <!-- Name Section -->
+                        <div class="group">
+                            <label
+                                class="block text-[10px] uppercase tracking-widest text-wine-gold font-bold mb-2">Full
+                                Name</label>
+                            <% if (user) { %>
+                                <div class="flex items-center space-x-3" id="nameDisplay">
+                                    <input type="text" value="<%= user.name %>" id="nameInput"
+                                        class="input-premium px-4 py-3 rounded-xl w-full font-medium" disabled>
+                                    <button onclick="enableEditName()" class="btn-gold-outline p-3 rounded-xl"
+                                        title="Edit Name">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+
+                                <form action="/updateDetails" method="POST" id="editNameForm"
+                                    onsubmit="return validateName()"
+                                    class="hidden space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                                    <div class="relative">
+                                        <input type="text" name="name" maxlength="15" id="editNameInput"
+                                            class="input-premium px-4 py-3 rounded-xl w-full font-medium"
+                                            value="<%= user.name %>">
+                                        <p id="nameError" class="error-label">Name must be 3-15 chars, start with a
+                                            capital, and no leading spaces.</p>
+                                    </div>
+                                    <div class="flex space-x-3">
+                                        <button type="submit"
+                                            class="btn-wine flex-1 py-3 rounded-xl font-bold text-sm">Update
+                                            Name</button>
+                                        <button type="button" onclick="cancelEditName()"
+                                            class="bg-gray-100 text-gray-500 px-6 py-3 rounded-xl font-bold text-sm hover:bg-gray-200">Cancel</button>
+                                    </div>
+                                </form>
+                                <% } %>
+                        </div>
+
+                        <!-- Email Section (ReadOnly) -->
+                        <div>
+                            <label
+                                class="block text-[10px] uppercase tracking-widest text-wine-gold font-bold mb-2">Email
+                                Address</label>
+                            <div class="relative">
+                                <input type="text" value="<%= user ? user.email : '' %>"
+                                    class="input-premium px-4 py-3 rounded-xl w-full font-medium text-gray-400 cursor-not-allowed"
+                                    disabled>
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2">
+                                    <i class="fas fa-lock text-gray-300 text-xs" title="Email cannot be changed"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phone Section -->
+                        <div>
+                            <label
+                                class="block text-[10px] uppercase tracking-widest text-wine-gold font-bold mb-2">Phone
+                                Number</label>
+                            <% if (user) { %>
+                                <div class="flex items-center space-x-3" id="phoneDisplay">
+                                    <input type="text" value="<%= user.phone || 'Not provided' %>" id="phoneInput"
+                                        class="input-premium px-4 py-3 rounded-xl w-full font-medium" disabled>
+                                    <button onclick="enableEditPhone()" class="btn-gold-outline p-3 rounded-xl"
+                                        title="Edit Phone">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+
+                                <form action="/updateDetails" method="POST" id="editPhoneForm"
+                                    onsubmit="return validatePhone()"
+                                    class="hidden space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                                    <div class="relative">
+                                        <input type="text" name="phone" maxlength="10" id="editPhoneInput"
+                                            class="input-premium px-4 py-3 rounded-xl w-full font-medium"
+                                            value="<%= user.phone %>" placeholder="Enter 10-digit number">
+                                        <p id="phoneError" class="error-label">Enter a valid 10-digit number (cannot
+                                            start with 0).</p>
+                                    </div>
+                                    <div class="flex space-x-3">
+                                        <button type="submit"
+                                            class="btn-wine flex-1 py-3 rounded-xl font-bold text-sm">Update
+                                            Phone</button>
+                                        <button type="button" onclick="cancelEditPhone()"
+                                            class="bg-gray-100 text-gray-500 px-6 py-3 rounded-xl font-bold text-sm hover:bg-gray-200">Cancel</button>
+                                    </div>
+                                </form>
+                                <% } %>
+                        </div>
+
+                        <!-- Password Management -->
+                        <% if (passwordd) { %>
+                            <div class="pt-6 border-t border-gray-100">
+                                <div id="resetButtonContainer">
+                                    <button onclick="showResetPasswordForm()"
+                                        class="btn-gold-outline w-full py-4 rounded-xl font-bold text-sm flex items-center justify-center">
+                                        <i class="fas fa-key mr-2"></i> Security Settings & Password Reset
+                                    </button>
+                                </div>
+
+                                <form action="/resetPassword" method="POST" id="resetPasswordForm"
+                                    class="hidden space-y-5 animate-in fade-in zoom-in-95 duration-300">
+                                    <h4 class="playfair text-lg font-bold text-wine-black mb-2">Change Password</h4>
+
+                                    <div>
+                                        <label
+                                            class="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Current
+                                            Password</label>
+                                        <input type="password" name="currentPassword"
+                                            class="input-premium px-4 py-3 rounded-xl w-full" required>
+                                    </div>
+
+                                    <div>
+                                        <label
+                                            class="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">New
+                                            Password</label>
+                                        <input type="password" name="newPassword" id="newPassword"
+                                            class="input-premium px-4 py-3 rounded-xl w-full" required>
+                                    </div>
+
+                                    <div>
+                                        <label
+                                            class="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Confirm
+                                            New Password</label>
+                                        <input type="password" name="confirmNewPassword" id="confirmNewPassword"
+                                            class="input-premium px-4 py-3 rounded-xl w-full" required>
+                                    </div>
+
+                                    <div class="flex space-x-3 pt-2">
+                                        <button type="submit"
+                                            class="btn-wine flex-1 py-3 rounded-xl font-bold text-sm shadow-lg shadow-wine-maroon/20">Update
+                                            Security</button>
+                                        <button type="button" onclick="cancelResetPasswordForm()"
+                                            class="bg-gray-100 text-gray-500 px-6 py-3 rounded-xl font-bold text-sm">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <% } %>
+                    </div>
                 </div>
-
-                <%if(passwordd){%>
-                <% if (error_msg) { %>
-                    <p id="errorMsg" class="text-red-500 text-center"><%= error_msg %></p>
-                <% } %>
-                <% if (success_msg) { %>
-                    <p id="successMsg" class="text-green-500 text-center"><%= success_msg %></p>
-                <% } %>
-                <button id="resetPasswordButton" class="bg-charcoal text-white px-4 py-2 rounded-md mt-4" onclick="showResetPasswordForm()">Reset Password</button>
-
-                <!-- Password Reset Form (Hidden by default) -->
-                <form action="/resetPassword" method="POST" id="resetPasswordForm" class="hidden mt-4">
-                    <label for="currentPassword" class="block text-sm font-medium text-gray-1000">Current Password</label>
-                    <input 
-                        type="password" 
-                        name="currentPassword" 
-                        id="currentPassword" 
-                        class="border border-gray-300 rounded-md p-2 w-full" 
-                        placeholder="Enter current password" 
-                        required
-                    >
-                
-                    <label for="newPassword" class="block text-sm font-medium text-gray-1000 mt-4">New Password</label>
-                    <input 
-                        type="password" 
-                        name="newPassword" 
-                        id="newPassword" 
-                        class="border border-gray-300 rounded-md p-2 w-full" 
-                        placeholder="Enter new password" 
-                        required
-                    >
-                
-                    <label for="confirmNewPassword" class="block text-sm font-medium text-gray-1000 mt-4">Confirm New Password</label>
-                    <input 
-                        type="password" 
-                        name="confirmNewPassword" 
-                        id="confirmNewPassword" 
-                        class="border border-gray-300 rounded-md p-2 w-full" 
-                        placeholder="Confirm new password" 
-                        required
-                    >
-                
-                    <button 
-                        type="submit" 
-                        class="bg-green-500 text-white px-4 py-2 rounded-md mt-4"
-                    >
-                        Save New Password
-                    </button>
-                    <button 
-                    type="button" 
-                    class="bg-red-500 text-white px-4 py-2 rounded-md mt-4"
-                    onclick="cancelResetPasswordForm()"
-                >
-                    Cancel
-                </button>
-                </form>
-                
-               
-                    <!-- <form action="/updateDetails" method="POST" onsubmit="return validatePhone()" class="flex flex-col md:flex-row">
-                        <input type="text" name="phone" placeholder="Enter phone number" class="border border-gray-300 rounded-md p-2 w-full md:w-auto">
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 ml-0 md:ml-2 mt-2 md:mt-0 rounded-md hover:bg-blue-600">Save</button>
-                    </form> -->
-
-                    <!-- <form action="/updateDetails" method="POST" onsubmit="return validatePhone()" class="flex flex-col md:flex-row">
-                        <input type="text" name="phone" placeholder="Enter phone number" class="border border-gray-300 rounded-md p-2 w-full md:w-auto">
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 ml-0 md:ml-2 mt-2 md:mt-0 rounded-md hover:bg-blue-600">Save</button>
-                    </form> -->
-               
             </div>
-            <%}%>
-        </div>
-    </div>
+        </main>
 
-    <!-- Success Message Popup -->
-    <% if (updateSuccess) { %>
-        <script>
-            Swal.fire({
-                title: 'Updated Successfully!',
-                text: 'Your profile has been updated.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-        </script>
-    <% } %>
+        <%- include('../partials/userFooter.ejs') %>
 
-<script>
+            <!-- Notifications -->
+            <% if (updateSuccess) { %>
+                <script>
+                    Swal.fire({
+                        title: '<span class="playfair">Success!</span>',
+                        text: 'Your profile has been elegantly updated.',
+                        icon: 'success',
+                        confirmButtonColor: '#6b0f1a',
+                        background: '#fdf8f2'
+                    });
+                </script>
+                <% } %>
 
-    
- function cancelResetPasswordForm() {
-            document.getElementById('resetPasswordForm').classList.add('hidden');
-            document.getElementById('resetPasswordButton').classList.remove('hidden');
-        }
+                    <script>
+                        AOS.init({ duration: 1000, once: true, easing: 'ease-out-cubic' });
 
-function validateName() {
-        const nameInput = document.querySelector('input[name="name"]');
-        if (nameInput.value.length > 13) {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Name cannot exceed 13 characters.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return false;
-        }
-        return true; 
-    }
+                        // Password Reset Form Toggle
+                        function showResetPasswordForm() {
+                            document.getElementById('resetPasswordForm').classList.remove('hidden');
+                            document.getElementById('resetButtonContainer').classList.add('hidden');
+                        }
 
+                        function cancelResetPasswordForm() {
+                            document.getElementById('resetPasswordForm').classList.add('hidden');
+                            document.getElementById('resetButtonContainer').classList.remove('hidden');
+                        }
 
+                        // Name Edit Toggle
+                        function enableEditName() {
+                            document.getElementById('nameDisplay').classList.add('hidden');
+                            document.getElementById('editNameForm').classList.remove('hidden');
+                            document.getElementById('editNameInput').focus();
+                        }
 
-    // Function to hide the messages after a set time (1 minute)
-    setTimeout(() => {
-        const errorMsg = document.getElementById('errorMsg');
-        const successMsg = document.getElementById('successMsg');
-        
-       
-        if (errorMsg) errorMsg.style.display = 'none';
-        if (successMsg) successMsg.style.display = 'none';
-    }, 3000); 
-</script>
+                        function cancelEditName() {
+                            document.getElementById('nameDisplay').classList.remove('hidden');
+                            document.getElementById('editNameForm').classList.add('hidden');
+                        }
 
-    <script>
- 
-function showResetPasswordForm() {
-        document.getElementById('resetPasswordForm').classList.remove('hidden');
-    }
-        function enableEditName() {
-            document.getElementById('nameInput').disabled = false;
-            document.getElementById('editNameButton').style.display = 'none';
-            document.getElementById('editNameForm').style.display = 'block';
-        }
+                        // Phone Edit Toggle
+                        function enableEditPhone() {
+                            document.getElementById('phoneDisplay').classList.add('hidden');
+                            document.getElementById('editPhoneForm').classList.remove('hidden');
+                            document.getElementById('editPhoneInput').focus();
+                        }
 
-        function enableEditPhone() {
-            document.getElementById('phoneInput').disabled = false;
-            document.getElementById('editPhoneButton').style.display = 'none';
-            document.getElementById('editPhoneForm').style.display = 'block';
-        }
+                        function cancelEditPhone() {
+                            document.getElementById('phoneDisplay').classList.remove('hidden');
+                            document.getElementById('editPhoneForm').classList.add('hidden');
+                        }
 
-        function validateName() {
-            const nameInput = document.getElementById('editNameInput').value.trim();
-            const nameError = document.getElementById('nameError');
-            nameError.classList.add('hidden');
+                        // Validations
+                        function validateName() {
+                            const val = document.getElementById('editNameInput').value.trim();
+                            const err = document.getElementById('nameError');
+                            err.style.display = 'none';
 
-            if (nameInput.length < 3 || nameInput.charAt(0) === ' ' || nameInput.charAt(0) !== nameInput.charAt(0).toUpperCase()) {
-                nameError.classList.remove('hidden');
-                return false;
-            }
-            return true;
-        }
+                            if (val.length < 3 || val.charAt(0) !== val.charAt(0).toUpperCase()) {
+                                err.style.display = 'block';
+                                return false;
+                            }
+                            return true;
+                        }
 
-        function validatePhone() {
-            const phoneInput = document.getElementById('editPhoneInput').value.trim();
-            const phoneError = document.getElementById('phoneError');
-            phoneError.classList.add('hidden');
+                        function validatePhone() {
+                            const val = document.getElementById('editPhoneInput').value.trim();
+                            const err = document.getElementById('phoneError');
+                            err.style.display = 'none';
 
-            const phonePattern = /^[1-9][0-9]{9}$/;
-            if (!phonePattern.test(phoneInput)) {
-                phoneError.classList.remove('hidden');
-                return false;
-            }
-            return true;
-        }
-    </script>
+                            if (!/^[1-9][0-9]{9}$/.test(val)) {
+                                err.style.display = 'block';
+                                return false;
+                            }
+                            return true;
+                        }
+                    </script>
 </body>
+
 </html>

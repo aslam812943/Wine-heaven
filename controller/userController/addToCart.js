@@ -77,63 +77,49 @@ exports.updateQuantity = async (req, res) => {
         const userId = req.session.userId;
 
         if (!userId) {
-            return res.redirect('/login');
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
 
         let cart = await Cart.findOne({ userId }).populate('items.productId');
 
         if (!cart) {
-
-            cart = new Cart({ userId, items: [] });
-            await cart.save();
+            return res.status(404).json({ success: false, message: 'Cart not found' });
         }
 
         const product = await Product.findById(productId);
         if (!product) {
-            return res.status(404).send('Product not found');
+            return res.status(404).json({ success: false, message: 'Product not found' });
         }
-
 
         const itemIndex = cart.items.findIndex((item) => item.productId._id.toString() === productId);
 
         if (itemIndex > -1) {
-
             const item = cart.items[itemIndex];
             item.productCount = parseInt(quantity, 10);
             item.productPrice = product.priceAfterDiscount;
             item.productDiscountPrice = product.priceAfterDiscount - (product.priceAfterDiscount * (product.productAllDiscount / 100));
         } else {
-
-            cart.items.push({
-                productId,
-                productCount: parseInt(quantity, 10),
-                productPrice: product.priceAfterDiscount,
-                productDiscountPrice: product.priceAfterDiscount - (product.priceAfterDiscount * (product.productAllDiscount / 100)),
-            });
+            return res.status(404).json({ success: false, message: 'Item not in cart' });
         }
 
         await cart.save();
 
-
         const subtotal = cart.items.reduce((sum, item) => sum + (item.productPrice * item.productCount), 0);
-        // const discount = cart.items.reduce(
-        //  (sum, item) => sum + (item.productPrice - item.productDiscountPrice) * item.productCount,
-        // 0
-        //  );
         const total = subtotal + 100;
 
         cart.payableAmount = total;
         await cart.save();
 
-        res.render('user/addTocart', {
-            cart,
+        res.status(200).json({
+            success: true,
+            message: 'Quantity updated',
             subtotal,
-
             total,
+            itemTotal: (cart.items[itemIndex].productPrice * cart.items[itemIndex].productCount).toFixed(0)
         });
     } catch (error) {
-
-        res.status(500).send('Internal Server Error');
+        console.error("Update Quantity Error:", error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
 
@@ -143,25 +129,32 @@ exports.removeFromCart = async (req, res) => {
         const { productId } = req.body;
         const userId = req.session.userId;
         if (!userId) {
-            return res.redirect('/login');
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
 
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         if (!cart) {
-            return res.send('Cart not found');
+            return res.status(404).json({ success: false, message: 'Cart not found' });
         }
 
         cart.items = cart.items.filter(item => item.productId._id.toString() !== productId);
         await cart.save();
 
         const subtotal = cart.items.reduce((sum, item) => sum + (item.productPrice * item.productCount), 0);
-        const discount = cart.items.reduce((sum, item) => sum + ((item.productPrice - item.productDiscountPrice) * item.productCount), 0);
-        const total = subtotal - discount;
+        const total = subtotal + 100;
+        cart.payableAmount = total;
+        await cart.save();
 
-        res.render('user/addTocart', { cart, subtotal, discount, total });
+        res.status(200).json({
+            success: true,
+            message: 'Item removed',
+            subtotal,
+            total,
+            cartEmpty: cart.items.length === 0
+        });
     } catch (error) {
-
-        res.status(500).send('Internal Server Error');
+        console.error("Remove From Cart Error:", error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
 

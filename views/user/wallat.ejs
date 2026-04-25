@@ -1,142 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wallet</title>
+    <title>My Wallet | Wine Heaven</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'wine-primary': '#600018',
-                        'wine-hover': '#800020',
-                        'wine-dark': '#0a0202'
+                        'wine-maroon': '#6b0f1a',
+                        'wine-gold': '#c9a84c',
+                        'wine-cream': '#fdf8f2',
+                        'wine-black': '#0a0202',
                     }
                 }
             }
         }
     </script>
+
     <style>
-        .wine-card {
-            backdrop-filter: blur(5px);
-            background-color: rgba(255, 255, 255, 0.95);
+        :root {
+            --wine-maroon: #6b0f1a;
+            --wine-gold: #c9a84c;
+            --wine-cream: #fdf8f2;
+            --wine-black: #0a0202;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--wine-cream);
+            font-family: 'Inter', sans-serif;
+            color: var(--wine-black);
+        }
+
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(107, 15, 26, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(107, 15, 26, 0.05);
+        }
+
+        .wine-gradient {
+            background: linear-gradient(135deg, var(--wine-maroon), #4a0a12);
+        }
+
+        .gold-glow:hover {
+            box-shadow: 0 0 20px rgba(201, 168, 76, 0.3);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--wine-gold);
+            border-radius: 10px;
+        }
+
+        .transaction-row {
+            transition: all 0.3s ease;
+        }
+
+        .transaction-row:hover {
+            background: rgba(107, 15, 26, 0.02);
+            transform: scale(1.005);
         }
     </style>
 </head>
-<body class="bg-gray-100">
+
+<body class="min-h-screen">
     <%- include('../partials/userHeader.ejs') %>
-    <div class="flex mt-20">
-        <!-- Sidebar -->
-      
 
-        <!-- Main Content -->
-        <div class="flex-grow  p-8">
-            <div class="max-w-4xl mx-auto wine-card shadow-lg rounded-lg overflow-hidden">
-                <div class="bg-gray-400 text-black p-6">
-                    <div class="flex justify-between items-center">
-                        <h1 class="text-2xl font-bold">My Wallet</h1>
-                        <div class="text-xl font-semibold">
-                            Balance: <i class="fa-solid fa-indian-rupee-sign"></i><%= wallet && wallet.balance ? wallet.balance.toFixed(0) : '0.00' %>.00
+        <main class="container mx-auto px-4 pt-32 pb-12">
+            <!-- Hero Section -->
+            <div class="mb-12 text-center" data-aos="fade-down">
+                <span class="text-wine-gold uppercase tracking-[0.3em] text-sm font-bold mb-2 block">Premium
+                    Account</span>
+                <h1 class="playfair text-4xl md:text-5xl font-bold text-wine-black mb-4">My Private Reserve</h1>
+                <div class="w-24 h-1 bg-wine-gold mx-auto"></div>
+            </div>
+
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Balance & Summary Cards -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <!-- Main Balance Card -->
+                        <div class="wine-gradient rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden"
+                            data-aos="fade-right">
+                            <div class="absolute -right-10 -bottom-10 opacity-10">
+                                <i class="fas fa-wallet text-[12rem]"></i>
+                            </div>
+                            <div class="relative z-10">
+                                <p class="text-wine-gold/80 font-medium mb-1 uppercase tracking-wider text-xs">Current
+                                    Balance</p>
+                                <h2 class="playfair text-5xl font-bold mb-8">
+                                    <span class="text-2xl align-top mr-1">₹</span>
+                                    <%= wallet && wallet.balance ? wallet.balance.toFixed(0) : '0' %><span
+                                            class="text-2xl">.00</span>
+                                </h2>
+                                <div class="flex justify-between items-end">
+                                    <div
+                                        class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20">
+                                        <p class="text-[10px] uppercase opacity-70">Status</p>
+                                        <p class="text-sm font-semibold tracking-wide">Active Member</p>
+                                    </div>
+                                    <i class="fas fa-crown text-wine-gold text-2xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="glass-card rounded-2xl p-5" data-aos="fade-up" data-aos-delay="100">
+                                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mb-3">
+                                    <i class="fas fa-arrow-down text-green-600"></i>
+                                </div>
+                                <p class="text-gray-500 text-xs font-semibold uppercase tracking-tight mb-1">Total
+                                    Credited</p>
+                                <p class="text-lg font-bold text-wine-black">
+                                    ₹<%= wallet && wallet.transaction ? wallet.transaction .filter(t=> t.transactionType
+                                        === 'Credited')
+                                        .reduce((sum, t) => sum + (t.wallet_amount || 0), 0)
+                                        .toFixed(0) : '0' %>.00
+                                </p>
+                            </div>
+                            <div class="glass-card rounded-2xl p-5" data-aos="fade-up" data-aos-delay="200">
+                                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mb-3">
+                                    <i class="fas fa-arrow-up text-red-600"></i>
+                                </div>
+                                <p class="text-gray-500 text-xs font-semibold uppercase tracking-tight mb-1">Total
+                                    Debited</p>
+                                <p class="text-lg font-bold text-wine-black">
+                                    ₹<%= wallet && wallet.transaction ? wallet.transaction .filter(t=> t.transactionType
+                                        === 'Debited')
+                                        .reduce((sum, t) => sum + (t.wallet_amount || 0), 0)
+                                        .toFixed(0) : '0' %>.00
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <div class="bg-gray-300 text-black rounded-lg p-4 text-center">
-                            <h3 class="text-lg font-semibold">Total Credited</h3>
-                            <p class="text-xl">
-                                <i class="fa-solid fa-indian-rupee-sign"></i>
-                                <%= wallet && wallet.transaction ? 
-                                    wallet.transaction
-                                    .filter(t => t.transactionType === 'Credited')
-                                    .reduce((sum, t) => sum + (t.wallet_amount || 0), 0)
-                                    .toFixed(0) : '0.00' %>.00
-                            </p>
-                        </div>
-                        <div class="bg-gray-300 text-black rounded-lg p-4 text-center">
-                            <h3 class="text-lg font-semibold">Total Debited</h3>
-                            <p class="text-xl">
-                                <i class="fa-solid fa-indian-rupee-sign"></i>
-                                <%= wallet && wallet.transaction ? 
-                                    wallet.transaction
-                                    .filter(t => t.transactionType === 'Debited')
-                                    .reduce((sum, t) => sum + (t.wallet_amount || 0), 0)
-                                    .toFixed(0) : '0.00' %>.00
-                            </p>
-                        </div>
-                    </div>
+                    <!-- Transaction History -->
+                    <div class="lg:col-span-2">
+                        <div class="glass-card rounded-3xl p-8 h-full" data-aos="fade-left">
+                            <div class="flex justify-between items-center mb-8">
+                                <h3 class="playfair text-2xl font-bold text-wine-black">Recent Transactions</h3>
+                                <!-- <div class="text-wine-gold text-sm font-semibold cursor-pointer hover:underline">
+                                    Filter <i class="fas fa-sliders-h ml-1"></i>
+                                </div> -->
+                            </div>
 
-                    <% if (wallet && wallet.transaction && wallet.transaction.length > 0) { %>
-                        <div class="overflow-x-auto">
-                            <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
-                                <thead class="bg-gray-300 text-black">
-                                    <tr>
-                                        <th class="p-3 text-left">Date</th>
-                                        <!-- <th class="p-3 text-left">Transaction ID</th> -->
-                                        <th class="p-3 text-left">Type</th>
-                                        <th class="p-3 text-left">Status</th>
-                                        <th class="p-3 text-right">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% wallet.transaction
-                                        .sort((a, b) => new Date(b.transaction_date) - new Date(a.transaction_date))
-                                        .forEach(function(transaction) { %>
-                                        <tr class="border-b hover:bg-gray-50">
-                                            <td class="p-3">
-                                                <%= new Date(transaction.transaction_date).toLocaleDateString() %>
-                                            </td>
-                                            <!-- <td class="p-3"><%= transaction.order_id || 'N/A' %></td> -->
-                                            <td class="p-3">
-                                                <span class="<%= 
-                                                    transaction.transactionType === 'Credited' 
-                                                    ? 'text-green-600' 
-                                                    : 'text-red-600' 
-                                                %>">
-                                                    <%= transaction.transactionType || 'Unknown' %>
-                                                </span>
-                                            </td>
-                                            <td class="p-0  ">
-                                                <%= transaction.tracsactionWay %>
-                                            </td>
-                                            <td class="p-3 text-right">
-                                                ₹<%= transaction.wallet_amount ? transaction.wallet_amount.toFixed(0) : '0.00' %>.00
-                                            </td>
-                                        </tr>
-                                    <% }); %>
-                                </tbody>
-                            </table>
+                            <% if (wallet && wallet.transaction && wallet.transaction.length> 0) { %>
+                                <div class="overflow-x-auto custom-scrollbar">
+                                    <table class="w-full">
+                                        <thead>
+                                            <tr class="text-left border-b border-wine-maroon/10">
+                                                <th
+                                                    class="pb-4 text-xs font-bold text-gray-500 uppercase tracking-widest px-2">
+                                                    Details</th>
+                                                <th
+                                                    class="pb-4 text-xs font-bold text-gray-500 uppercase tracking-widest px-2">
+                                                    Method</th>
+                                                <th
+                                                    class="pb-4 text-xs font-bold text-gray-500 uppercase tracking-widest text-right px-2">
+                                                    Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-wine-maroon/5">
+                                            <% wallet.transaction .sort((a, b)=> new Date(b.transaction_date) - new
+                                                Date(a.transaction_date))
+                                                .forEach(function(transaction) { %>
+                                                <tr class="transaction-row">
+                                                    <td class="py-5 px-2">
+                                                        <div class="flex items-center">
+                                                            <div
+                                                                class="w-10 h-10 rounded-xl <%= transaction.transactionType === 'Credited' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600' %> flex items-center justify-center mr-4">
+                                                                <i
+                                                                    class="fas <%= transaction.transactionType === 'Credited' ? 'fa-plus' : 'fa-minus' %> text-sm"></i>
+                                                            </div>
+                                                            <div>
+                                                                <p class="font-bold text-wine-black text-sm">
+                                                                    <%= transaction.transactionType || 'Transaction' %>
+                                                                </p>
+                                                                <p class="text-xs text-gray-400 font-medium">
+                                                                    <%= new
+                                                                        Date(transaction.transaction_date).toLocaleDateString(undefined,
+                                                                        { day: 'numeric' , month: 'short' ,
+                                                                        year: 'numeric' }) %>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="py-5 px-2">
+                                                        <span
+                                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                            <%= transaction.tracsactionWay || 'N/A' %>
+                                                        </span>
+                                                    </td>
+                                                    <td class="py-5 px-2 text-right">
+                                                        <p
+                                                            class="font-bold text-sm <%= transaction.transactionType === 'Credited' ? 'text-green-600' : 'text-red-600' %>">
+                                                            <%= transaction.transactionType==='Credited' ? '+' : '-' %>
+                                                                ₹<%= transaction.wallet_amount ?
+                                                                    transaction.wallet_amount.toFixed(0) : '0' %>.00
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Pagination -->
+                                <div class="flex items-center justify-between mt-8 pt-6 border-t border-wine-maroon/10">
+                                    <p class="text-xs text-gray-500">Page <%= page %> of <%= totalpages %>
+                                    </p>
+                                    <nav class="flex space-x-2">
+                                        <% if (page> 1) { %>
+                                            <a href="/wallet?page=<%= page - 1 %>&limit=<%= limit %>"
+                                                class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-wine-maroon/10 text-wine-maroon hover:bg-wine-maroon hover:text-white transition-colors duration-300">
+                                                <i class="fas fa-chevron-left text-xs"></i>
+                                            </a>
+                                            <% } %>
+
+                                                <% for (let i=1; i <=totalpages; i++) { %>
+                                                    <a href="/wallet?page=<%= i %>&limit=<%= limit %>"
+                                                        class="w-9 h-9 flex items-center justify-center rounded-xl font-bold text-xs transition-all duration-300 <%= i === page ? 'bg-wine-maroon text-white shadow-lg shadow-wine-maroon/20' : 'bg-white border border-wine-maroon/10 text-wine-maroon hover:bg-wine-maroon/5' %>">
+                                                        <%= i %>
+                                                    </a>
+                                                    <% } %>
+
+                                                        <% if (page < totalpages) { %>
+                                                            <a href="/wallet?page=<%= page + 1 %>&limit=<%= limit %>"
+                                                                class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-wine-maroon/10 text-wine-maroon hover:bg-wine-maroon hover:text-white transition-colors duration-300">
+                                                                <i class="fas fa-chevron-right text-xs"></i>
+                                                            </a>
+                                                            <% } %>
+                                    </nav>
+                                </div>
+                                <% } else { %>
+                                    <div class="flex flex-col items-center justify-center py-20 text-center">
+                                        <div
+                                            class="w-24 h-24 bg-wine-cream rounded-full flex items-center justify-center mb-6">
+                                            <i class="fas fa-wallet text-4xl text-wine-gold/40"></i>
+                                        </div>
+                                        <h4 class="playfair text-xl font-bold text-wine-black mb-2">No Transactions Yet
+                                        </h4>
+                                        <p class="text-gray-500 max-w-xs text-sm">When you complete an order or receive
+                                            a refund, your transactions will appear here.</p>
+                                        <a href="/wines"
+                                            class="mt-8 px-8 py-3 bg-wine-maroon text-white rounded-full font-bold text-sm hover:transform hover:-translate-y-1 transition-all duration-300 gold-glow">
+                                            Start Exploring
+                                        </a>
+                                    </div>
+                                    <% } %>
                         </div>
-                    <% } else { %>
-                        <div class="text-center text-gray-500 p-6">
-                            <i class="fas fa-wallet text-4xl mb-4"></i>
-                            <p>No transactions found</p>
-                        </div>
-                    <% } %>
-                    <div class="flex justify-center mt-4">
-                        <% if (page > 1) { %>
-                            <a href="/wallet?page=<%= page - 1 %>&limit=<%= limit %>" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded">Previous</a>
-                        <% } %>
-                        <% for (let i = 1; i <= totalpages; i++) { %>
-                            <a href="/wallet?page=<%= i %>&limit=<%= limit %>" 
-                               class="px-3 py-1 mx-1 <%= i === page ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300' %> rounded">
-                                <%= i %>
-                            </a>
-                        <% } %>
-                        <% if (page < totalpages) { %>
-                            <a href="/wallet?page=<%= page + 1 %>&limit=<%= limit %>" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded">Next</a>
-                        <% } %>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-   
-    
-    <%- include('../partials/userFooter.ejs') %>
+        </main>
+
+        <%- include('../partials/userFooter.ejs') %>
+
+            <script>
+                AOS.init({
+                    duration: 1000,
+                    once: true,
+                    easing: 'ease-out-cubic'
+                });
+            </script>
 </body>
+
 </html>

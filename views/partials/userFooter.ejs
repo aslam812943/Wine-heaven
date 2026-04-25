@@ -1,70 +1,292 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wine Heaven</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        .bg-burgundy {
-            background-color: #600018;
-        }
-        .text-creamy-white {
-            color: #F5F5DC;
-        }
-        .text-gold {
-            color: #FFD700;
-        }
-
-        /* Responsive styles for the footer */
-        @media (max-width: 768px) {
-            footer {
-                text-align: center;
-            }
-            footer .container {
-                flex-direction: column; /* Stack the items vertically */
-            }
-            footer .mb-4 {
-                margin-bottom: 1rem; /* Add spacing between stacked elements */
-            }
-        }
-
-        @media (min-width: 769px) and (max-width: 1024px) {
-            footer .container {
-                flex-wrap: wrap; /* Wrap content for medium screens */
-                justify-content: space-around;
-            }
-        }
-    </style>
-</head>
-<body style="font-family: 'Garamond';" class="bg-gray-100 flex flex-col min-h-screen">
-    <div class="flex-grow"></div>
-    <footer class="bg-burgundy text-creamy-white py-6 border-t-2 border-white">
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
-            <!-- Links -->
-            <div class="mb-4 md:mb-0">
-                <!-- You can add footer links here -->
-                <p class="font-bold">Wine Heaven</p>
-            </div>
-            <!-- Contact Information -->
-            <div class=" text-center md:mb-0">
-                <p>Contact us: (+91) 9128-4783</p>
-                <p>Email: contact@wineheaven.com</p>
-            </div>
-            <!-- Social Media Icons -->
-            <div class="flex space-x-4">
-                <a href="#" class="hover:opacity-75">
-                    <img src="uplods/instagram.png" alt="Icon" class="h-7 w-7 rounded-full object-cover">
-                </a>
-                
-                <a href="#" class="hover:opacity-75">
-                    <img src="uplods/github.png" alt="Icon" class="h-7 w-7 rounded-full text-creamy-white object-cover">
-                </a>
-                <a href="#" class="hover:opacity-75">
-                    <img src="uplods/wine.png" alt="Icon" class="h-7 w-7 rounded-full object-cover">
-                </a>
+<footer class="wh-footer">
+    <!-- Main grid -->
+    <div class="footer-main">
+        <!-- Brand column -->
+        <div class="footer-brand">
+            <a href="/" class="footer-logo">
+                <div class="footer-logo-icon"><i class="fa-solid fa-wine-glass"></i></div>
+                <div class="footer-logo-text">
+                    Wine Heaven
+                    <span>Est. Premium Collection</span>
+                </div>
+            </a>
+            <p class="footer-tagline">
+                Curating the world's most exquisite vintages from the most prestigious estates, delivered with
+                uncompromising elegance.
+            </p>
+            <div class="footer-socials">
+                <a href="#" class="social-btn" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="social-btn" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="social-btn" title="Twitter / X"><i class="fa-brands fa-x-twitter"></i></a>
             </div>
         </div>
-    </footer>
-</body>
-</html>
+
+        <!-- Quick Links -->
+        <div class="footer-col">
+            <div class="footer-col-title">Collection</div>
+            <ul>
+                <li><a href="/"><i class="fa-solid fa-chevron-right"></i> Home</a></li>
+                <li><a href="/wines"><i class="fa-solid fa-chevron-right"></i> Vintage Gallery</a></li>
+                <li><a href="/about"><i class="fa-solid fa-chevron-right"></i> Our Heritage</a></li>
+                <li><a href="/contact"><i class="fa-solid fa-chevron-right"></i> Concierge</a></li>
+            </ul>
+        </div>
+
+        <!-- My Account -->
+        <div class="footer-col">
+            <div class="footer-col-title">Privileges</div>
+            <ul>
+                <li><a href="/profile"><i class="fa-solid fa-chevron-right"></i> Profile</a></li>
+                <li><a href="/orders"><i class="fa-solid fa-chevron-right"></i> Orders</a></li>
+                <li><a href="/cart"><i class="fa-solid fa-chevron-right"></i> Cellar Cart</a></li>
+                <li><a href="/wishlist"><i class="fa-solid fa-chevron-right"></i> Curator List</a></li>
+            </ul>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-col">
+            <div class="footer-col-title">Connect</div>
+            <div class="contact-item">
+                <i class="fa-solid fa-phone"></i>
+                <span><a href="tel:+919128478300">(+91) 9128-4783</a></span>
+            </div>
+            <div class="contact-item">
+                <i class="fa-solid fa-envelope"></i>
+                <span><a href="mailto:contact@wineheaven.com">concierge@wineheaven.com</a></span>
+            </div>
+            <div class="contact-item">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>Boutique India — Premium Estates</span>
+            </div>
+        </div>
+    </div><!-- /footer-main -->
+
+    <div class="footer-divider"></div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bottom">
+        <p class="footer-copy">
+            &copy; <%= new Date().getFullYear() %> <span>Wine Heaven</span>. Crafted for excellence.
+        </p>
+        <div class="footer-bottom-links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Refunds</a>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .wh-footer {
+        background: #0a0104;
+        border-top: 1px solid rgba(201, 168, 76, 0.15);
+        color: rgba(255, 255, 255, .6);
+        font-family: 'Inter', sans-serif;
+        padding-top: 40px;
+    }
+
+    .footer-main {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 50px 32px;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1.2fr;
+        gap: 50px;
+    }
+
+    .footer-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        margin-bottom: 25px;
+    }
+
+    .footer-logo-icon {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, #c9a84c 0%, #a07828 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #fff;
+    }
+
+    .footer-logo-text {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
+    }
+
+    .footer-logo-text span {
+        display: block;
+        font-size: 9px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 400;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #c9a84c;
+        margin-top: 5px;
+    }
+
+    .footer-tagline {
+        font-size: 14px;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, .4);
+        max-width: 300px;
+        margin-bottom: 25px;
+    }
+
+    .footer-socials {
+        display: flex;
+        gap: 12px;
+    }
+
+    .social-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, .05);
+        border: 1px solid rgba(255, 255, 255, .08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, .5);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .social-btn:hover {
+        background: rgba(201, 168, 76, .1);
+        border-color: #c9a84c;
+        color: #c9a84c;
+        transform: translateY(-3px);
+    }
+
+    .footer-col-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        color: #c9a84c;
+        margin-bottom: 25px;
+    }
+
+    .footer-col ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .footer-col ul a {
+        font-size: 14px;
+        color: rgba(255, 255, 255, .45);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .footer-col ul a:hover {
+        color: #fff;
+        padding-left: 5px;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, .45);
+        margin-bottom: 15px;
+    }
+
+    .contact-item i {
+        color: #c9a84c;
+        font-size: 14px;
+        width: 20px;
+    }
+
+    .contact-item a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .contact-item a:hover {
+        color: #fff;
+    }
+
+    .footer-divider {
+        height: 1px;
+        background: linear-gradient(to right, transparent, rgba(201, 168, 76, .15), transparent);
+        margin: 0 32px;
+    }
+
+    .footer-bottom {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 25px 32px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: rgba(255, 255, 255, .3);
+    }
+
+    .footer-copy span {
+        color: #c9a84c;
+    }
+
+    .footer-bottom-links {
+        display: flex;
+        gap: 25px;
+    }
+
+    .footer-bottom-links a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .footer-bottom-links a:hover {
+        color: rgba(255, 255, 255, .6);
+    }
+
+    @media (max-width: 992px) {
+        .footer-main {
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .footer-main {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .footer-brand,
+        .footer-socials {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .contact-item {
+            justify-content: center;
+        }
+
+        .footer-bottom {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>

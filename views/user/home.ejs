@@ -1,318 +1,690 @@
 <%-include('../partials/userHeader.ejs')%>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <style>
-       .smooth-scroll {
-    scroll-behavior: smooth;
-  }
+        :root {
+            --wine-maroon: #6b0f1a;
+            --wine-maroon-dark: #4a0a12;
+            --wine-gold: #c9a84c;
+            --wine-cream: #fdf8f2;
+            --wine-black: #0a0202;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--wine-cream);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #000;
+        }
 
         .bg-video {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
             object-fit: cover;
-            z-index: -1;
+            z-index: 0;
+            filter: brightness(0.6) contrast(1.1);
         }
 
-        .bg-goldd {
-
-            background-color: #800020;
-            ;
-            color: white;
-
-
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom,
+                    rgba(10, 2, 2, 0.4) 0%,
+                    rgba(10, 2, 2, 0.6) 100%);
+            z-index: 1;
         }
 
-        .bg-goldd:hover {
-            background-color: #600018;
-            ;
-            transform: translateY(-2px);
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            color: #fff;
+            max-width: 900px;
+            padding: 0 20px;
+            text-align: center;
         }
 
-        .overlay {
-            background-color: rgba(0, 0, 0, 0.4);
+        .hero-title {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1.2s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
         }
 
-        .bg-gold {
-            background-color: #60001890;
-            color: white;
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2.5rem;
+            letter-spacing: 1px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.2s cubic-bezier(0.2, 0.6, 0.2, 1) 0.3s forwards;
         }
 
-        .bg-gold:hover {
-            background-color: #8000209e;
-            transform: translateY(-2px);
-        }
-
-        .bg-charcoal {
-            background-color: #0a0202;
-            color: white;
-        }
-
-        .wine-card {
-            backdrop-filter: blur(5px);
-            background-color: rgba(255, 255, 255, 0.95);
-        }
-
-        .featured-section {
-            background: linear-gradient(45deg, #1a0f0f, #2c1810);
-        }
-
-        .testimonial-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-        }
-
-        .scroll-indicator {
-            animation: bounce 5s infinite;
-        }
-
-        .border-2:hover {
-            background-color: rgba(255, 255, 255, 0.513);
-        }
-
-        @keyframes bounce {
-
-            0%,
-            20%,
-            50%,
-            80%,
-            100% {
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
                 transform: translateY(0);
             }
+        }
 
-            40% {
-                transform: translateY(-20px);
+        .btn-premium {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 36px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 50px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--wine-gold), #a07828);
+            color: white;
+            box-shadow: 0 10px 25px rgba(201, 168, 76, 0.3);
+            border: none;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(201, 168, 76, 0.45);
+            background: linear-gradient(135deg, #d4ba70, var(--wine-gold));
+        }
+
+        .btn-outline-white {
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            color: white;
+            margin-left: 1rem;
+        }
+
+        .btn-outline-white:hover {
+            background: white;
+            color: var(--wine-black);
+            transform: translateY(-5px);
+        }
+
+        .scroll-down {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .scroll-down:hover {
+            bottom: 30px;
+        }
+
+        .scroll-mouse {
+            width: 26px;
+            height: 42px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 13px;
+            position: relative;
+        }
+
+        .scroll-dot {
+            width: 4px;
+            height: 8px;
+            background: var(--wine-gold);
+            border-radius: 2px;
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            margin-left: -2px;
+            animation: scrollMove 2s infinite;
+        }
+
+        @keyframes scrollMove {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
             }
 
-            60% {
-                transform: translateY(-10px);
+            30% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(18px);
+                opacity: 0;
             }
         }
 
-        /* .body{ */
-        /* font-family: Georgia, 'Times New Roman', Times, serif; */
-        /* } */
+        /* Section Headlines */
+        .section-tag {
+            color: var(--wine-gold);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            display: block;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            color: var(--wine-black);
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .show-all-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 5rem;
+        }
+
+        .btn-premium-outline {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 40px;
+            border: 1px solid var(--wine-gold);
+            color: var(--wine-gold);
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .btn-premium-outline:hover {
+            background: var(--wine-gold);
+            color: #fff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(201, 168, 76, 0.3);
+        }
+
+        .btn-icon {
+            transition: transform 0.4s ease;
+        }
+
+        .btn-premium-outline:hover .btn-icon {
+            transform: translateX(8px);
+        }
     </style>
 
     <!-- Hero Section -->
-    <section style="font-family: 'Garamond', 'Georgia', serif;" class="relative h-screen flex items-center justify-center text-center">
-        <video autoplay muted loop class="bg-video  object-cover z-[-1]">
+    <section class="hero-section">
+        <video autoplay muted loop playsinline class="bg-video">
             <source src="/uplods/mixkit-pouring-red-wine-from-a-bottle-very-close-view-22734-full-hd.mp4"
                 type="video/mp4">
         </video>
+        <div class="hero-overlay"></div>
 
-        <div class="relative z-10 text-white max-w-4xl px-4 text-center">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">Discover the Art of Fine Wine</h1>
-            <p class="text-base md:text-xl mb-6 md:mb-8 font-bold">Indulge in exceptional wines crafted with passion and
-                precision</p>
-            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <a href="#categories"
-                    class="bg-gold py-4 px-8 rounded-full text-lg transition-all duration-300 inline-block">
+        <div class="hero-content">
+            <h1 class="hero-title">Experience the Essence of Fine Living</h1>
+            <p class="hero-subtitle">Curating the world's most exquisite vintages for the discerning palate.</p>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+                <a href="#categories" class="btn-premium btn-gold">
                     Explore Collection
                 </a>
-                <a href="/about"
-                    class="border-2 border-white py-4 px-8 rounded-full text-lg transition-all duration-300 inline-block  hover:text-gray-900 md:text-lg md:py-4 md:px-8">
+                <a href="/about" class="btn-premium btn-outline-white">
                     Our Story
                 </a>
             </div>
-            <a href="#produc" id="scrollLink">
-            <div class="absolute bottom- -100  left-1/2 transform -translate-x-1/2 scroll-indicator animate-bounce">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
+        </div>
+
+        <a href="#produc" id="scrollLink" class="scroll-down">
+            <div class="scroll-mouse">
+                <div class="scroll-dot"></div>
             </div>
         </a>
+    </section>
+
+    <style>
+        /* Categories Section */
+        .categories-section {
+            padding: 100px 20px;
+            background: var(--wine-black);
+            position: relative;
+        }
+
+        .categories-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .categories-inner {
+            display: flex;
+            gap: 30px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 20px 0 40px;
+            scrollbar-width: none;
+           
+        }
+
+        .categories-inner::-webkit-scrollbar {
+            display: none;
+      
+        }
+
+        .category-card {
+            flex: 0 0 320px;
+            height: 450px;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .category-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .category-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+
+        .category-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .category-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10, 2, 2, 0.9) 0%, rgba(10, 2, 2, 0) 60%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px;
+        }
+
+        .category-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .category-btn {
+            font-size: 0.8rem;
+            color: var(--wine-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover .category-btn {
+            opacity: 1;
+            gap: 15px;
+        }
+
+        /* Products Section Refined */
+        .products-section {
+            padding: 80px 20px;
+            background: var(--wine-cream);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            border: 1px solid rgba(107, 15, 26, 0.05);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(107, 15, 26, 0.12);
+            border-color: rgba(201, 168, 76, 0.25);
+        }
+
+        .product-media {
+            height: 280px;
+          
+            position: relative;
+            overflow: hidden;
+            background: #fdfdfd;
+        }
+
+        .product-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+          
+            padding: 20px;
+            transition: transform 0.6s ease;
+        }
+
+        .product-card:hover .product-media img {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+   
+        .card-actions-bar {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 5;
+        }
+
+        .product-card:hover .card-actions-bar {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .bar-action {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--wine-maroon);
+            transition: all 0.2s ease;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .bar-action:hover {
+            background: var(--wine-maroon);
+            color: #fff;
+            transform: scale(1.15);
+        }
+
+        .product-info {
+            padding: 20px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(to bottom, #fff, #fffafb);
+        }
+
+        .product-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--wine-black);
+            margin-bottom: 5px;
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.3s;
+        }
+
+        .product-name:hover {
+            color: var(--wine-maroon);
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--wine-maroon);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .view-link {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--wine-gold);
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0 auto;
+            position: relative;
+            padding-bottom: 4px;
+        }
+
+        .view-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1.5px;
+            background: var(--wine-gold);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s ease;
+        }
+
+        .product-card:hover .view-link::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .view-link i {
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover .view-link i {
+            transform: translateX(3px);
+        }
+    </style>
+
+    <!-- Categories Section -->
+    <section id="categories" class="categories-section">
+        <div class="categories-container">
+            <span class="section-tag" data-aos="fade-up">Curated Collections</span>
+            <h2 class="section-title text-white" data-aos="fade-up" data-aos-delay="100">Our Fine Vintages</h2>
+
+            <div class="categories-inner" data-aos="fade-left" data-aos-delay="200">
+                <% categories.forEach((category, i)=> { %>
+                    <a href="/categorys/<%= category._id %>" class="category-card" data-aos="fade-up"
+                        data-aos-delay="<%= 100 * (i + 1) %>">
+                        <img src="<%= category.imageUrl %>" alt="<%= category.name %>" loading="lazy">
+                        <div class="category-overlay">
+                            <h3 class="category-name">
+                                <%= category.name %>
+                            </h3>
+                            <span class="category-btn">
+                                Explore <i class="fa-solid fa-arrow-right"></i>
+                            </span>
+                        </div>
+                    </a>
+                    <% }); %>
+            </div>
         </div>
     </section>
 
-    <!-- Categories Section -->
-    <div id="categories" class="bg-black p-8 mx-auto">
-        <div class="container mx-auto xl:max-w-7xl">
-            <h2 class="text-5xl font-bold text-center mb-12 text-white">Our Collection</h2>
-            <div class="categories-container relative overflow-hidden">
-                <div
-                    class="categories-inner flex gap-8 snap-x snap-mandatory scroll-smooth transition-transform duration-500 ease-linear">
-                    <% categories.forEach(category=> { %>
-                        <div
-                            class="flex-shrink-0 wine-card    rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-95 snap-center w-72">
-                            <div class="relative h-80 overflow-hidden">
-                                <img src="<%= category.imageUrl %>" alt="<%= category.name %>"
-                                    class="h-full w-full object-cover" />
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                                <div class="absolute bottom-0 left-0 right-0 p-6">
-                                    <h3 class="text-2xl font-bold text-white mb-2">
-                                        <%= category.name %>
-                                    </h3>
-                                </div>
-                            </div>
-                            <a href="/categorys/<%= category._id %>" class="block">
-                                <button
-                                    class="bg-goldd w-full py-4 text-white font-semibold transition-all duration-300 hover:bg-opacity-90">
-                                    Explore Collection
+    <!-- Featured Products Section -->
+    <section id="produc" class="products-section">
+        <div class="container mx-auto">
+            <span class="section-tag" data-aos="fade-up">Seasonal Highlights</span>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Masterpiece Selection</h2>
+
+            <div class="product-grid">
+                <% products.forEach((product, i)=> { %>
+                    <div class="product-card" data-aos="fade-up" data-aos-delay="<%= 100 * (i % 4) %>">
+                        <div class="product-media">
+                            <img src="/uploads/<%= product.images[0] %>" alt="<%= product.name %>" loading="lazy">
+                            <div class="card-actions-bar">
+                                <button onclick="addToWishlist('<%= product._id%>', this)" class="bar-action"
+                                    title="Add to Wishlist">
+                                    <i class="fa-regular fa-heart"></i>
                                 </button>
+                                <button onclick="addtocart('<%= product._id%>', this)" class="bar-action"
+                                    title="Add to Cart">
+                                    <i class="fa-solid fa-cart-shopping"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <div>
+                                <a href="/products/<%= product._id %>" class="product-name">
+                                    <%= product.name %>
+                                </a>
+                                <span class="product-price">₹<%= product.price %></span>
+                            </div>
+                            <a href="/products/<%= product._id %>" class="view-link">
+                                Discover <i class="fa-solid fa-arrow-right"></i>
                             </a>
                         </div>
-                        <% }); %>
-                </div>
-            </div>
-        </div >
-    </div>
-
-
-    <!-- Trending Products -->
-     <div id="produc"></div>
-     <div ></div>
-    <div class="  py-16 " >
-        <div class="container mx-auto xl:max-w-7xl px-4">
-            <h2 class="text-5xl font-bold text-center mb-12 text-black">Featured Wines</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                <% products.forEach(product=> { %>
-                    <div
-                        class="bg-white text-white rounded-xl shadow-lg border overflow-hidden transform transition-all duration-300 hover:scale-110 relative">
-
-                        <div class="absolute top-0 right-4 text-white z-10 flex space-x-2">
-                            <button id="add-wishlist" onclick="addToWishlist('<%= product._id%>', this)"
-                                class="bg-gold hover:bg-gold text-white p-2 rounded-full transition-all duration-300 mt-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="text-white"> <!-- Change class here to text-white -->
-                                    <path
-                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div class="absolute top-12 right-4 z-10 flex space-x-2">
-
-
-                            <button id="add-to-cart-btn" onclick="addtocart('<%=product._id%>',this)"
-                                class="bg-gold hover:bg-gold text-white p-2 rounded-full transition-all duration-300 mt-4">
-                                <input id="productId" type="hidden" name="productId" value="<%= product._id %>">
-                                <i class="fas fa-shopping-cart"></i>
-
-                                <circle cx="9" cy="21" r="1"></circle>
-                                <circle cx="20" cy="21" r="1"></circle>
-                                <path d="M1 1h4l1.68 8.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61l1.6-7.17H5.21"></path>
-                                <path d="M7 13h10"></path>
-                                </svg>
-                            </button>
-
-                        </div>
-                        <div class="relative h-[400px]">
-                            <img src="/uploads/<%= product.images[0] %>" alt="<%= product.name %>"
-                                class="h-full w-full object-cover" />
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                            <div class="absolute bottom-0 left-0 right-0 p-6">
-                                <input type="hidden" name="product" id="productId" value="<%=product._id%>">
-                                <h3 class="text-2xl font-bold text-white mb-2">
-                                    <%= product.name %>
-                                </h3>
-                            </div>
-                        </div>
-                        <a href="/products/<%= product._id %>" class="block">
-                            <button class="bg-goldd w-full py-4 text-white font-semibold transition-all duration-300 ">
-                                View Product
-                            </button>
-                        </a>
                     </div>
                     <% }); %>
             </div>
 
-            <!-- "Show All Wines" Button -->
             <% if (showAllButton) { %>
-                <div class="text-center mt-8">
-                    <a href="/wines"
-                        class="bg-goldd py-4 px-8 text-white rounded-full text-lg transition-all duration-300 inline-block">
-                        Show All Wines
+                <div class="show-all-container" data-aos="fade-up">
+                    <a href="/wines" class="btn-premium-outline">
+                        View All Masterpieces
+                        <span class="btn-icon"><i class="fa-solid fa-arrow-right-long"></i></span>
                     </a>
                 </div>
                 <% } %>
         </div>
-    </div>
+    </section>
 
     <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1200,
+            once: true,
+            offset: 100,
+            easing: 'ease-out-cubic'
+        });
 
-function smoothScrollTo(target, duration) {
-        const targetElement = document.querySelector(target);
-        const targetPosition = targetElement.getBoundingClientRect().top;
-        const startPosition = window.pageYOffset;
-        const startTime = performance.now();
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
 
-        function scrollAnimation(currentTime) {
-            const timeElapsed = currentTime - startTime;
-            const run = easeInOut(timeElapsed, startPosition, targetPosition, duration);
-            window.scrollTo(0, run);
-            if (timeElapsed < duration) {
-                requestAnimationFrame(scrollAnimation);
-            }
-        }
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
 
-        function easeInOut(t, b, c, d) {
-            let tAdjusted = t / (d / 2);
-            if (tAdjusted < 1) return (c / 2) * tAdjusted * tAdjusted + b;
-            tAdjusted--;
-            return (-c / 2) * (tAdjusted * (tAdjusted - 2) - 1) + b;
-        }
-
-        requestAnimationFrame(scrollAnimation);
-    }
-
-    document.getElementById('scrollLink').addEventListener('click', function(event) {
-        event.preventDefault();
-        smoothScrollTo('#produc', 2000); // Duration in milliseconds (1000ms = 1 second)
-    });
-async function addtocart(productId, tartget) {
-   
-    try {
+        async function addtocart(productId, target) {
+            try {
                 const response = await fetch('/cartt', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ productId }),
                 });
 
                 if (response.ok) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Success',
-                        text: 'Product added to cart successfully!',
-                        confirmButtonColor: '#600018',
+                        title: 'Selection Added',
+                        text: 'This vintage has been added to your cart.',
+                        confirmButtonColor: '#6b0f1a',
+                        background: '#fdf8f2'
                     });
                 } else {
                     const error = await response.json();
                     Swal.fire({
                         icon: 'info',
-                        //  title: 'Error',
-                        text: error.message || 'Failed to add product to cart.',
-                        confirmButtonColor: '#600018'
+                        text: error.message || 'Unable to add this selection.',
+                        confirmButtonColor: '#6b0f1a'
                     });
                 }
             } catch (error) {
                 console.error("Fetch error:", error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error',
+                    title: 'System Error',
                     text: 'An unexpected error occurred.',
-                    confirmButtonColor: '#600018'
+                    confirmButtonColor: '#6b0f1a'
                 });
-            } 
-    
-    
-}
+            }
+        }
 
-     async   function addToWishlist(productId, tartget) {
+        async function addToWishlist(productId, target) {
             try {
                 const response = await fetch('/wishlistt', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ productId }),
                 });
 
@@ -320,58 +692,65 @@ async function addtocart(productId, tartget) {
                     const data = await response.json();
                     Swal.fire({
                         icon: data.action === 'added' ? 'success' : 'info',
-                        title: data.action === 'added'
-                            ? 'Added to Wishlist'
-                            : 'Removed from Wishlist',
+                        title: data.action === 'added' ? 'Added to Curator List' : 'Selection Removed',
                         text: data.message,
-                        confirmButtonColor: '#600018',
+                        confirmButtonColor: '#6b0f1a',
                     });
                 } else {
                     const error = await response.json();
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: error.message || 'Failed to update the wishlist.',
-                        confirmButtonColor: '#600018',
+                        text: error.message || 'Failed to update your list.',
+                        confirmButtonColor: '#6b0f1a',
                     });
                 }
             } catch (error) {
                 console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Unexpected Error',
+                    title: 'System Error',
                     text: 'An unexpected error occurred.',
-                    confirmButtonColor: '#600018',
+                    confirmButtonColor: '#6b0f1a',
                 });
-            }  
+            }
         }
 
-
-
-        const categoriesContainer = document.querySelector('.categories-container');
+        // --- SEAMLESS INFINITE SCROLL FOR CATEGORIES ---
         const categoriesInner = document.querySelector('.categories-inner');
-        let scrollAmount = 0;
-        const scrollSpeed = 1.5;
-        let scrollInterval;
+        if (categoriesInner) {
+        
+            const items = [...categoriesInner.children];
+            items.forEach(item => {
+                const clone = item.cloneNode(true);
+                categoriesInner.appendChild(clone);
+            });
 
-        function startAutoScroll() {
-            scrollInterval = setInterval(() => {
-                scrollAmount += scrollSpeed;
-                if (scrollAmount >= categoriesInner.scrollWidth - categoriesContainer.clientWidth) {
-                    scrollAmount = 0;
+            let isHovered = false;
+            let scrollAmount = 0;
+            const scrollSpeed = 0.8; // Pixels per frame
+
+            categoriesInner.addEventListener('mouseenter', () => isHovered = true);
+            categoriesInner.addEventListener('mouseleave', () => isHovered = false);
+
+            function step() {
+                if (!isHovered) {
+                    scrollAmount += scrollSpeed;
+
+                    
+                    const originalWidth = categoriesInner.scrollWidth / 2;
+
+                    if (scrollAmount >= originalWidth) {
+                        scrollAmount = 0;
+                    }
+
+                    categoriesInner.scrollLeft = scrollAmount;
                 }
-                categoriesContainer.scrollLeft = scrollAmount;
-            }, 30); // Adjust the interval to control the smoothness of scrolling
+                requestAnimationFrame(step);
+            }
+
+            requestAnimationFrame(step);
         }
-
-        function stopAutoScroll() {
-            clearInterval(scrollInterval);
-        }
-
-        categoriesContainer.addEventListener('mouseover', stopAutoScroll);
-        categoriesContainer.addEventListener('mouseout', startAutoScroll);
-
-        startAutoScroll();
     </script>
 
     <%-include('../partials/userFooter.ejs')%>

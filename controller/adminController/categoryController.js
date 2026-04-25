@@ -32,27 +32,36 @@ exports.listCategories = async (req, res) => {
 
 
 exports.renderAddpage = (req, res) => {
-    return res.render('admin/addCategories')
+    try {
+        
+        res.render('admin/addCategories');
+    } catch (error) {
+        console.error("Render Add Page Error:", error);
+        res.status(500).send("Error rendering add category page: " + error.message);
+    }
 }
 
 
 
 exports.addCategory = async (req, res) => {
     try {
+     
         const { name, croppedImage } = req.body;
 
-
         if (!name || !croppedImage) {
+          
             req.flash('error', 'Please provide all required fields.');
             return res.redirect('/category/add');
         }
 
-
         const normalizedCategoryName = name.trim().toUpperCase();
+        const existingCategory = await Category.findOne({
+            name: { $regex: `^${normalizedCategoryName}$`, $options: 'i' },
+            isDeleted: false
+        });
 
-        const existingCategory = await Category.findOne({ name: { $regex: `^${normalizedCategoryName}$`, $options: 'i' } });
-        
         if (existingCategory) {
+   
             req.flash('error', 'This category already exists.');
             return res.redirect('/category/add');
         }
@@ -68,29 +77,26 @@ exports.addCategory = async (req, res) => {
             try {
                 const result = await cloudinary.uploader.upload(tmpFilePath);
                 imageUrl = result.secure_url;
-
                 fs.unlinkSync(tmpFilePath);
+         
             } catch (uploadError) {
-
-
                 req.flash('error', 'Error uploading image. Please try again.');
                 return res.redirect('/category/add');
             }
         }
 
-
         const category = new Category({
-            name,
+            name: name.trim(),
             imageUrl,
         });
 
         await category.save();
-
+     
         req.flash('success', 'Category added successfully!');
         return res.redirect('/category');
     } catch (error) {
-
-        req.flash('error', 'An error occurred while adding the category. Please try again.');
+       
+        req.flash('error', 'An error occurred while adding the category: ' + error.message);
         return res.redirect('/category/add');
     }
 };
@@ -130,9 +136,12 @@ exports.editCategory = async (req, res) => {
 
 
         const normalizedCategoryName = name.trim().toUpperCase();
+        const existingCategory = await Category.findOne({
+            name: { $regex: `^${normalizedCategoryName}$`, $options: 'i' },
+            isDeleted: false,
+            _id: { $ne: id }
+        });
 
-        const existingCategory = await Category.findOne({ name: { $regex: `^${normalizedCategoryName}$`, $options: 'i' } });
-        
         if (existingCategory) {
             req.flash('error', 'This category already exists.');
             return res.redirect('back');
@@ -170,9 +179,8 @@ exports.editCategory = async (req, res) => {
         req.flash('success', 'Category updated successfully!');
         return res.redirect('/category');
     } catch (error) {
-
-        console.log(error);
-        req.flash('error', 'This category already exists.');
+        console.error(error);
+        req.flash('error', 'An error occurred while updating the category.');
         return res.redirect('/category');
     }
 };
@@ -184,11 +192,11 @@ exports.editCategory = async (req, res) => {
 exports.deleteCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        await Category.findByIdAndDelete(id)
-        res.redirect('/category')
+        await Category.findByIdAndUpdate(id, { isDeleted: true });
+        res.redirect('/category');
     } catch (error) {
-        return res.redirect('/category')
-
+        console.error(error);
+        return res.redirect('/category');
     }
 };
 

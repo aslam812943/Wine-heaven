@@ -1,274 +1,693 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wine Heaven</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        .bg-wine {
-            background-color: #600018;
+        /* ===== HEADER TOKENS ===== */
+        :root {
+            --nav-h: 68px;
+            --maroon: #6b0f1a;
+            --maroon-dk: #4a0a12;
+            --gold: #c9a84c;
+            --cream: #fdf8f2;
         }
-        /* Responsive mobile menu styles */
-        @media (max-width: 768px) {
-            .mobile-menu-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.5);
-                z-index: 40;
+
+        /* Push page content below fixed header */
+        body {
+            padding-top: var(--nav-h);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ===== NAV BAR ===== */
+        #main-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: var(--nav-h);
+            background: rgba(26, 4, 8, 0.96);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.18);
+            transition: box-shadow .3s;
+        }
+
+        #main-nav.scrolled {
+            box-shadow: 0 4px 32px rgba(107, 15, 26, .35);
+        }
+
+        .nav-inner {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 28px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        /* ── LOGO ── */
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--gold) 0%, #a07828 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(201, 168, 76, .35);
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.18rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: .3px;
+            line-height: 1;
+        }
+
+        .logo-text span {
+            display: block;
+            font-size: .6rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-top: 2px;
+        }
+
+        /* ── DESKTOP NAV LINKS ── */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, .78);
+            text-decoration: none;
+            transition: color .2s, background .2s;
+            position: relative;
+        }
+
+        .nav-links a i {
+            font-size: 12px;
+            opacity: .8;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            right: 50%;
+            height: 1.5px;
+            background: var(--gold);
+            border-radius: 2px;
+            transition: left .25s, right .25s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, .07);
+        }
+
+        .nav-links a:hover::after {
+            left: 14px;
+            right: 14px;
+        }
+
+        /* ── RIGHT SECTION ── */
+        .nav-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* icon buttons */
+        .nav-icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, .75);
+            text-decoration: none;
+            font-size: 15px;
+            transition: background .2s, color .2s, transform .2s;
+            position: relative;
+        }
+
+        .nav-icon-btn:hover {
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* user dropdown */
+        .user-menu {
+            position: relative;
+        }
+
+        .user-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 10px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: background .2s, border-color .2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .user-trigger:hover {
+            background: rgba(255, 255, 255, .14);
+            border-color: rgba(201, 168, 76, .4);
+        }
+
+        .user-trigger .avatar {
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, var(--gold), #a07828);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .user-trigger i {
+            font-size: 10px;
+            opacity: .7;
+            transition: transform .2s;
+        }
+
+        .user-trigger.open i {
+            transform: rotate(180deg);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 210px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, .18), 0 0 0 1px rgba(0, 0, 0, .06);
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px) scale(.97);
+            transform-origin: top right;
+            transition: opacity .22s, transform .22s, visibility .22s;
+        }
+
+        .user-dropdown.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .drop-header {
+            padding: 10px 12px 12px;
+            border-bottom: 1px solid #f0e8e8;
+            margin-bottom: 6px;
+        }
+
+        .drop-header .drop-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a0a0e;
+        }
+
+        .drop-header .drop-sub {
+            font-size: 11px;
+            color: #9a8090;
+            margin-top: 1px;
+        }
+
+        .drop-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            color: #3a2030;
+            text-decoration: none;
+            transition: background .18s, color .18s;
+        }
+
+        .drop-item i {
+            width: 16px;
+            text-align: center;
+            color: var(--maroon);
+            font-size: 12px;
+        }
+
+        .drop-item:hover {
+            background: #f9f0f0;
+            color: var(--maroon);
+        }
+
+        .drop-item.danger {
+            color: #c0392b;
+        }
+
+        .drop-item.danger i {
+            color: #c0392b;
+        }
+
+        .drop-item.danger:hover {
+            background: #fff3f3;
+        }
+
+        .drop-sep {
+            height: 1px;
+            background: #f0e8e8;
+            margin: 6px 0;
+        }
+
+        /* auth buttons */
+        .btn-login {
+            padding: 7px 16px;
+            border: 1px solid rgba(255, 255, 255, .25);
+            border-radius: 9px;
+            color: rgba(255, 255, 255, .85);
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background .2s, border-color .2s, color .2s;
+            white-space: nowrap;
+        }
+
+        .btn-login:hover {
+            background: rgba(255, 255, 255, .1);
+            border-color: rgba(255, 255, 255, .4);
+            color: #fff;
+        }
+
+        .btn-register {
+            padding: 7px 18px;
+            background: linear-gradient(135deg, var(--gold) 0%, #a07828 100%);
+            border: none;
+            border-radius: 9px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity .2s, transform .2s, box-shadow .2s;
+            box-shadow: 0 2px 10px rgba(201, 168, 76, .35);
+            white-space: nowrap;
+        }
+
+        .btn-register:hover {
+            opacity: .88;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(201, 168, 76, .45);
+        }
+
+        /* ── HAMBURGER ── */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(255, 255, 255, .08);
+            border-radius: 9px;
+            cursor: pointer;
+            padding: 7px;
+            margin-left: auto;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 2px;
+            background: #fff;
+            border-radius: 2px;
+            transition: transform .3s, opacity .3s;
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* ── MOBILE DRAWER ── */
+        .mobile-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .3s, visibility .3s;
+        }
+
+        .mobile-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: min(300px, 80vw);
+            height: 100%;
+            background: #1a0408;
+            z-index: 999;
+            transform: translateX(-100%);
+            transition: transform .32s cubic-bezier(.4, 0, .2, 1);
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            overflow-y: auto;
+        }
+
+        .mobile-drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(201, 168, 76, .15);
+        }
+
+        .drawer-close {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, .08);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drawer-links {
+            padding: 12px 12px;
+            flex: 1;
+        }
+
+        .drawer-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, .75);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background .2s, color .2s;
+        }
+
+        .drawer-link i {
+            width: 18px;
+            text-align: center;
+            color: var(--gold);
+            font-size: 13px;
+        }
+
+        .drawer-link:hover {
+            background: rgba(255, 255, 255, .07);
+            color: #fff;
+        }
+
+        .drawer-sep {
+            height: 1px;
+            background: rgba(255, 255, 255, .08);
+            margin: 8px 0;
+        }
+
+        .drawer-foot {
+            padding: 16px;
+            border-top: 1px solid rgba(201, 168, 76, .15);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .drawer-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity .2s;
+        }
+
+        .drawer-btn-outline {
+            border: 1px solid rgba(255, 255, 255, .25);
+            color: #fff;
+        }
+
+        .drawer-btn-gold {
+            background: linear-gradient(135deg, var(--gold), #a07828);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 14px rgba(201, 168, 76, .3);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 860px) {
+
+            .nav-links,
+            .nav-right {
                 display: none;
             }
-            .mobile-menu-overlay.active {
-                display: block;
+
+            .hamburger {
+                display: flex;
             }
-            #mobile-menu {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 80%;
-                max-width: 300px;
-                height: 100%;
-                background-color: #600018;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease-in-out;
-                z-index: 50;
-            }
-            #mobile-menu.menu-open {
-                transform: translateX(0);
+        }
+
+        @media (min-width: 861px) {
+
+            .mobile-overlay,
+            .mobile-drawer {
+                display: none !important;
             }
         }
     </style>
 </head>
-<body style="font-family: 'Garamond';" class="bg-gray-100">
-    <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
 
-    <nav class="bg-wine shadow-lg fixed w-full z-50 top-0">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex justify-between items-center h-20">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <a href="/" class="flex ">
-                        <!-- <i class="fas fa-wine-glass-alt text-2xl text-white mr-2"></i> -->
-                        <img style="width: 45px; height: 50px;" src="/uplods/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdjk4Ny0xM2FfMS5wbmc.png" alt="">
-                        <span class="text-xl text-white mt-6 ml-1 font-semibold">Wine Heaven</span>
-                    </a>
+<body>
+
+    <!-- ═══════════════════════ NAV ═══════════════════════ -->
+    <nav id="main-nav">
+        <div class="nav-inner">
+
+            <!-- Logo -->
+            <a href="/" class="nav-logo">
+                <div class="logo-icon"><i class="fa-solid fa-wine-glass"></i></div>
+                <div class="logo-text">
+                    Wine Heaven
+                    <span>Premium Collection</span>
                 </div>
+            </a>
 
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <div class="flex items-center space-x-8">
-                        <a href="/" class="text-gray-200 hover:text-white">
-                            <i class="fas fa-home mr-1"></i> Home
-                        </a>
-                        <a href="/wines" class="text-gray-200 hover:text-white">
-                            <i class="fas fa-wine-bottle mr-1"></i> Wines
-                        </a>
-                        <a href="/about" class="text-gray-200 hover:text-white">
-                            <i class="fas fa-info-circle mr-1"></i> About
-                        </a>
-                        <a href="/contact" class="text-gray-200 hover:text-white">
-                            <i class="fas fa-envelope mr-1"></i> Contact
-                        </a>
-                    </div>
+            <!-- Desktop Links -->
+            <ul class="nav-links">
+                <li><a href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="/wines"><i class="fa-solid fa-wine-bottle"></i> Wines</a></li>
+                <li><a href="/about"><i class="fa-solid fa-circle-info"></i> About</a></li>
+                <li><a href="/contact"><i class="fa-solid fa-envelope"></i> Contact</a></li>
+            </ul>
 
-                    <!-- Desktop Icons and User Menu -->
-                    <div class="flex items-center space-x-4">
-                        <!-- Wishlist -->
-                        <a href="/wishlist" class="text-white relative">
-                            <i class="fas fa-heart"></i>
-                          
-                        </a>
+            <!-- Right actions -->
+            <div class="nav-right">
+                <a href="/wishlist" class="nav-icon-btn" title="Wishlist">
+                    <i class="fa-regular fa-heart"></i>
+                </a>
+                <a href="/cart" class="nav-icon-btn" title="Cart">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </a>
 
-                        <!-- Cart -->
-                        <a href="/cart" class="text-white relative">
-                            <i class="fas fa-shopping-cart"></i>
-                            
-                        </a>
-
-                        <!-- Authentication Section -->
-                        <div class="relative">
-                            <% if (locals.user) { %>
-                                <!-- User Menu When Logged In -->
-                                <div class="hover-trigger relative">
-                                    <button class="flex items-center text-white space-x-2 focus:outline-none" id="userMenuButton">
-                                        <span class="text-sm ml-5"><%= user.name %></span>
-                                        <i class="fas fa-chevron-down text-xs"></i>
-                                    </button>
-                                    <!-- Dropdown Menu -->
-                                    <div class="hover-target hidden absolute right-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl" id="userMenuDropdown">
-                                        <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            <i class="fas fa-user mr-2"></i> Profile
-                                        </a>
-                                        <a href="/orders" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            <i class="fas fa-shopping-bag mr-2"></i> Orders
-                                        </a>
-                                        <a href="/wallet" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            <i class="fas fa-wallet mr-2"></i>
-                                            Wallet
-                                        </a>
-                                        <a href="/addresses" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            <i class="fas fa-address-book"></i>
-
-                                            Addresses
-                                        </a>
-                                        <div class="border-t border-gray-100 my-1"></div>
-                                        <a href="/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
-                                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                                        </a>
-                                    </div>
-                                </div>
-                            <% } else { %>
-                                <!-- Login/Register Buttons When Logged Out -->
-                                <div class="flex items-center space-x-4">
-                                    <a href="/login" class="text-white hover:text-gray-200">
-                                        <i class="fas fa-sign-in-alt mr-1"></i> Login
-                                    </a>
-                                    <a href="/signup" class="bg-white text-red-900 px-4 py-1 rounded-full hover:bg-gray-100">
-                                        Register
-                                    </a>
-                                </div>
-                            <% } %>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden">
-                    <button id="mobile-menu-button" class="text-white focus:outline-none">
-                        <i class="fas fa-bars text-2xl"></i>
+                <% if (locals.user) { %>
+                    <!-- User menu -->
+                    <div class="user-menu">
+                        <button class="user-trigger" id="userTrigger">
+                            <div class="avatar">
+                                <%= user.name.charAt(0).toUpperCase() %>
+                            </div>
+                            <span>
+                                <%= user.name.split(' ')[0] %></span>
+                        <i class="fa-solid fa-chevron-down"></i>
                     </button>
-                </div>
-            </div>
-
-            <!-- Mobile Menu -->
-            <div id="mobile-menu" class="md:hidden">
-                <div class="p-4">
-                    <!-- Close Button -->
-                    <button id="mobile-menu-close" class="absolute top-4 right-4 text-white text-2xl focus:outline-none">
-                        <i class="fas fa-times"></i>
-                    </button>
-
-                    <!-- Mobile Navigation Links -->
-                    <div class="flex flex-col space-y-4 mt-12">
-                        <a href="/" class="text-white hover:bg-red-900 px-4 py-3 rounded">
-                            <i class="fas fa-home mr-2"></i> Home
-                        </a>
-                        <a href="/wines" class="text-white hover:bg-red-900 px-4 py-3 rounded">
-                            <i class="fas fa-wine-bottle mr-2"></i> Wines
-                        </a>
-                        <a href="/about" class="text-white hover:bg-red-900 px-4 py-3 rounded">
-                            <i class="fas fa-info-circle mr-2"></i> About
-                        </a>
-                        <a href="/contact" class="text-white hover:bg-red-900 px-4 py-3 rounded">
-                            <i class="fas fa-envelope mr-2"></i> Contact
-                        </a>
-
-                        <!-- Mobile Wishlist and Cart -->
-                        <div class="flex justify-between mt-4">
-                            <a href="/wishlist" class="text-white flex items-center">
-                                <i class="fas fa-heart mr-2"></i> Wishlist
-
-                            </a>
-                            <a href="/cart" class="text-white flex items-center">
-                                <i class="fas fa-shopping-cart mr-2"></i> Cart
-                            </a>
-                                
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="drop-header">
+                            <div class="drop-name"><%= user.name %></div>
+                            <div class="drop-sub">Member account</div>
                         </div>
-
-                        <!-- Mobile User Menu -->
-                        <div class="border-t border-red-900 mt-4 pt-4">
-                            <% if (locals.user) { %>
-                                <button class="flex items-center text-white space-x-2 focus:outline-none" id="userMenuButton">
-                                    <span class="text-sm"><%= user.name %></span>
-                                    <!-- <i class="fas fa-chevron-down text-xs"></i> -->
-                                </button>
-                                <!-- Mobile User Menu When Logged In -->
-                                <div class="flex flex-col space-y-3">
-                                    <a href="/profile" class="text-white hover:bg-red-900 px-4 py-3 rounded">
-                                        <i class="fas fa-user mr-2"></i> Profile
-                                    </a>
-                                    <a href="/orders" class="text-white hover:bg-red-900 px-4 py-3 rounded">
-                                        <i class="fas fa-shopping-bag mr-2"></i> Orders
-                                    </a>
-                                    <a href="/wallet" class="text-white hover:bg-red-900 px-4 py-3 rounded">
-                                        <i class="fas fa-wallet mr-2"></i>
-                                        Wallet
-                                    </a>
-                                    <a href="/addresses" class="text-white hover:bg-red-900 px-4 py-3 rounded">
-                                        <i class="fas fa-wallet mr-2"></i>
-                                        Addresses
-                                    </a>
-                                    <a href="/logout" class="text-red-300 hover:text-red-200 px-4 py-3 rounded">
-                                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                                    </a>
-                                </div>
-                            <% } else { %>
-                                <!-- Mobile Login/Register When Logged Out -->
-                                <div class="flex flex-col space-y-3">
-                                    <a href="/login" class="text-white text-center py-3 border border-white rounded-full hover:bg-white hover:text-red-900">
-                                        <i class="fas fa-sign-in-alt mr-2"></i> Login
-                                    </a>
-                                    <a href="/signup" class="bg-white text-red-900 text-center py-3 rounded-full hover:bg-gray-100">
-                                        Register
-                                    </a>
-                                </div>
-                            <% } %>
-                        </div>
+                        <a href="/profile"   class="drop-item"><i class="fa-solid fa-user"></i> My Profile</a>
+                        <a href="/orders"    class="drop-item"><i class="fa-solid fa-bag-shopping"></i> Orders</a>
+                        <a href="/wallet"    class="drop-item"><i class="fa-solid fa-wallet"></i> Wallet</a>
+                        <a href="/addresses" class="drop-item"><i class="fa-solid fa-location-dot"></i> Addresses</a>
+                        <div class="drop-sep"></div>
+                        <a href="/logout"    class="drop-item danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
                     </div>
                 </div>
-            </div>
+            <% } else { %>
+                <a href="/login"  class="btn-login"><i class="fa-solid fa-right-to-bracket" style="font-size:11px;margin-right:5px;"></i>Login</a>
+                <a href="/signup" class="btn-register">Register</a>
+            <% } %>
         </div>
-    </nav>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
-            const mobileMenuCloseButton = document.getElementById('mobile-menu-close');
+        <!-- Hamburger (mobile) -->
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
 
-            // Mobile menu toggle
-            function toggleMobileMenu() {
-                mobileMenu.classList.toggle('menu-open');
-                mobileMenuOverlay.classList.toggle('active');
-                
-                // Toggle menu icon
-                const menuIcon = mobileMenuButton.querySelector('i');
-                menuIcon.classList.toggle('fa-bars');
-                menuIcon.classList.toggle('fa-times');
-            }
+<!-- ═══════════════════════ MOBILE DRAWER ═══════════════════════ -->
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<div class="mobile-drawer" id="mobileDrawer">
+    <div class="drawer-head">
+        <a href="/" class="nav-logo">
+            <div class="logo-icon" style="width:30px;height:30px;font-size:14px;"><i class="fa-solid fa-wine-glass"></i></div>
+            <div class="logo-text" style="font-size:1rem;">Wine Heaven<span>Premium Collection</span></div>
+        </a>
+        <button class="drawer-close" id="drawerClose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
 
-            mobileMenuButton.addEventListener('click', toggleMobileMenu);
-            mobileMenuCloseButton.addEventListener('click', toggleMobileMenu);
-            mobileMenuOverlay.addEventListener('click', toggleMobileMenu);
+    <div class="drawer-links">
+        <a href="/"        class="drawer-link"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="/wines"   class="drawer-link"><i class="fa-solid fa-wine-bottle"></i> Wines</a>
+        <a href="/about"   class="drawer-link"><i class="fa-solid fa-circle-info"></i> About</a>
+        <a href="/contact" class="drawer-link"><i class="fa-solid fa-envelope"></i> Contact</a>
+        <div class="drawer-sep"></div>
+        <a href="/wishlist" class="drawer-link"><i class="fa-regular fa-heart"></i> Wishlist</a>
+        <a href="/cart"     class="drawer-link"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
 
-            // Prevent menu close when clicking inside mobile menu
-            mobileMenu.addEventListener('click', function(event) {
-                event.stopPropagation();
-            });
+        <% if (locals.user) { %>
+            <div class="drawer-sep"></div>
+            <a href="/profile"   class="drawer-link"><i class="fa-solid fa-user"></i> My Profile</a>
+            <a href="/orders"    class="drawer-link"><i class="fa-solid fa-bag-shopping"></i> Orders</a>
+            <a href="/wallet"    class="drawer-link"><i class="fa-solid fa-wallet"></i> Wallet</a>
+            <a href="/addresses" class="drawer-link"><i class="fa-solid fa-location-dot"></i> Addresses</a>
+            <div class="drawer-sep"></div>
+            <a href="/logout" class="drawer-link" style="color:#e87070;">
+                <i class="fa-solid fa-right-from-bracket" style="color:#e87070;"></i> Logout
+            </a>
+        <% } %>
+    </div>
 
-            // Desktop User Menu Dropdown
-            const userMenuButton = document.getElementById('userMenuButton');
-            const userMenuDropdown = document.getElementById('userMenuDropdown');
+    <% if (!locals.user) { %>
+    <div class="drawer-foot">
+        <a href="/login"  class="drawer-btn drawer-btn-outline"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+        <a href="/signup" class="drawer-btn drawer-btn-gold">Register</a>
+    </div>
+    <% } %>
+</div>
 
-            if (userMenuButton && userMenuDropdown) {
-                userMenuButton.addEventListener('click', function() {
-                    userMenuDropdown.classList.toggle('hidden');
-                });
+<script>
+    /* ── scroll shadow ── */
+    const nav = document.getElementById(' main-nav'); window.addEventListener('scroll', () => {
+        nav.classList.toggle('scrolled', window.scrollY > 10);
+    }, { passive: true });
 
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(event) {
-                    if (!userMenuButton.contains(event.target) && !userMenuDropdown.contains(event.target)) {
-                        userMenuDropdown.classList.add('hidden');
-                    }
-                });
-            }
+    /* ── hamburger ── */
+    const hamburger = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    const drawerClose = document.getElementById('drawerClose');
+
+    function openDrawer() {
+        hamburger.classList.add('open');
+        mobileDrawer.classList.add('open');
+        mobileOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeDrawer() {
+        hamburger.classList.remove('open');
+        mobileDrawer.classList.remove('open');
+        mobileOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    hamburger.addEventListener('click', openDrawer);
+    drawerClose.addEventListener('click', closeDrawer);
+    mobileOverlay.addEventListener('click', closeDrawer);
+
+    /* ── user dropdown ── */
+    const userTrigger = document.getElementById('userTrigger');
+    const userDropdown = document.getElementById('userDropdown');
+    if (userTrigger && userDropdown) {
+        userTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const open = userDropdown.classList.toggle('open');
+            userTrigger.classList.toggle('open', open);
         });
-    </script>
+        document.addEventListener('click', () => {
+            userDropdown.classList.remove('open');
+            userTrigger.classList.remove('open');
+        });
+    }
+</script>
 </body>
+
 </html>

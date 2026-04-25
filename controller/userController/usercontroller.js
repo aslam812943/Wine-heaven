@@ -54,7 +54,12 @@ exports.signupGet = (req, res) => {
 
 exports.signuppost = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password,confirmPassword } = req.body;
+
+        if(password !==confirmPassword){
+            req.flash('error', 'ConfirmPassword Not Match');
+            return res.redirect('/signup');
+        }
 
 
         let user = await User.findOne({ email });
@@ -390,6 +395,7 @@ exports.resetPasswordGet = async (req, res) => {
         res.render('user/resetpassword', { token, email });
 
     } catch (error) {
+        console.log(error);
         res.status(500).send(error.message);
 
     }
@@ -399,7 +405,14 @@ exports.resetPasswordGet = async (req, res) => {
 
 exports.resentPasswordPost = async (req, res) => {
     try {
-        const { token, email, password } = req.body;
+        const { token, email, password,confirmPassword } = req.body;
+
+
+if(password !== confirmPassword){
+    req.flash('error', 'ConfirmPassword Not Match ');
+        res.redirect('back') 
+}
+
         const user = await User.findOne({
             email,
             resetPasswordToken: token,
@@ -424,6 +437,8 @@ exports.resentPasswordPost = async (req, res) => {
         req.flash('success', 'password changed ');
         res.redirect('login')
     } catch (error) {
+        
+        
         res.status(500).send(error.message);
 
     }

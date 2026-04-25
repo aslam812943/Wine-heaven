@@ -1,79 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Account</title>
-    <!-- Tailwind CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>My Account | Wine Heaven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'wine-maroon': '#6b0f1a',
+                        'wine-gold': '#c9a84c',
+                        'wine-cream': '#fdf8f2',
+                        'wine-black': '#0a0202',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        .bg-gold {
-            background-color: #7c6e71;
-            color: rgb(17, 10, 10);
+        :root {
+            --wine-maroon: #6b0f1a;
+            --wine-gold: #c9a84c;
+            --wine-cream: #fdf8f2;
+            --wine-black: #0a0202;
         }
-        .bg-gold:hover {
-            background-color: #0c0406;
-            transform: translateY(-2px);
+
+        body {
+            background-color: var(--wine-cream);
+            font-family: 'Inter', sans-serif;
+            color: var(--wine-black);
         }
-        .bg-charcoal {
-            background-color: rgb(235, 228, 228);
-            color: rgb(139, 17, 17);
+
+        .playfair {
+            font-family: 'Playfair Display', serif;
         }
-        .wine-card {
-            backdrop-filter: blur(5px);
-            background-color: #600018
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(107, 15, 26, 0.1);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
-        .featured-section {
-            background: linear-gradient(45deg, #1a0f0f, #2c1810);
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+            background: var(--wine-maroon);
+            border-color: var(--wine-gold);
+            box-shadow: 0 20px 40px rgba(107, 15, 26, 0.2);
         }
-        .testimonial-card {
-            background: rgba(15, 4, 4, 0.05);
-            backdrop-filter: blur(10px);
+
+        .glass-card:hover * {
+            color: white !important;
         }
-        .scroll-indicator {
-            animation: bounce 5s infinite;
+
+        .glass-card:hover .icon-box {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--wine-gold) !important;
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: rgba(107, 15, 26, 0.05);
+            color: var(--wine-maroon);
+            transition: all 0.3s ease;
         }
     </style>
 </head>
-<body class="bg-charcoal text-white">
+
+<body class="min-h-screen">
     <%- include('../partials/userHeader.ejs') %>
-    <div class="container mx-auto p-4 mt-20">
-        <h1 class="text-3xl font-bold mb-6 text-black text-center ">      Your Account</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-            <div class="wine-card p-4 rounded-lg shadow-lg">
-               <a href="/orders"> <h2 class="text-xl font-semibold">Your Orders</h2>
-                <p>Track, return, or buy things again</p></a>
+
+        <main class="container mx-auto px-4 pt-40 pb-20">
+            <!-- Header Section -->
+            <div class="mb-16 text-center" data-aos="fade-down">
+                <span class="text-wine-gold uppercase tracking-[0.3em] text-sm font-bold mb-2 block">Personal
+                    Dashboard</span>
+                <h1 class="playfair text-4xl md:text-5xl font-bold text-wine-black mb-4">Your Account</h1>
+                <div class="w-24 h-1 bg-wine-gold mx-auto"></div>
             </div>
-            <div class="wine-card p-4 rounded-lg shadow-lg">
-               <a href='/userprofile'><h2 class="text-xl font-semibold">Login & Security</h2>
-                <p>Edit login, name, and mobile number</p></a> 
+
+            <!-- Navigation Grid -->
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Your Orders -->
+                <a href="/orders" class="glass-card rounded-3xl p-8 group" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="icon-box">
+                            <i class="fas fa-box-open text-xl"></i>
+                        </div>
+                        <i
+                            class="fas fa-arrow-right text-wine-gold opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300"></i>
+                    </div>
+                    <h3 class="playfair text-xl font-bold text-wine-black mb-2 transition-colors duration-300">Your
+                        Orders</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed transition-colors duration-300">Track your
+                        shipments, return items, or repeat a past order with ease.</p>
+                </a>
+
+                <!-- Login & Security -->
+                <a href="/userprofile" class="glass-card rounded-3xl p-8 group" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="icon-box">
+                            <i class="fas fa-shield-alt text-xl"></i>
+                        </div>
+                        <i
+                            class="fas fa-arrow-right text-wine-gold opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300"></i>
+                    </div>
+                    <h3 class="playfair text-xl font-bold text-wine-black mb-2 transition-colors duration-300">Login &
+                        Security</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed transition-colors duration-300">Manage your
+                        credentials, update your name, or change your contact details.</p>
+                </a>
+
+                <!-- Your Addresses -->
+                <a href="/addresses" class="glass-card rounded-3xl p-8 group" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="icon-box">
+                            <i class="fas fa-map-marked-alt text-xl"></i>
+                        </div>
+                        <i
+                            class="fas fa-arrow-right text-wine-gold opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300"></i>
+                    </div>
+                    <h3 class="playfair text-xl font-bold text-wine-black mb-2 transition-colors duration-300">Your
+                        Addresses</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed transition-colors duration-300">Edit or add primary
+                        and secondary delivery locations for your vintages.</p>
+                </a>
+
+                <!-- My Wallet -->
+                <a href="/wallet" class="glass-card rounded-3xl p-8 group" data-aos="fade-up" data-aos-delay="400">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="icon-box">
+                            <i class="fas fa-wallet text-xl"></i>
+                        </div>
+                        <i
+                            class="fas fa-arrow-right text-wine-gold opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300"></i>
+                    </div>
+                    <h3 class="playfair text-xl font-bold text-wine-black mb-2 transition-colors duration-300">My Wallet
+                    </h3>
+                    <p class="text-gray-500 text-sm leading-relaxed transition-colors duration-300">View your balance,
+                        check transaction history, and manage your private reserve funds.</p>
+                </a>
+
+                <!-- Contact Us -->
+                <a href="/contact" class="glass-card rounded-3xl p-8 group" data-aos="fade-up" data-aos-delay="500">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="icon-box">
+                            <i class="fas fa-headset text-xl"></i>
+                        </div>
+                        <i
+                            class="fas fa-arrow-right text-wine-gold opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300"></i>
+                    </div>
+                    <h3 class="playfair text-xl font-bold text-wine-black mb-2 transition-colors duration-300">Concierge
+                        Service</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed transition-colors duration-300">Need assistance?
+                        Reach our customer service via phone or real-time chat.</p>
+                </a>
             </div>
-            <!-- <div class="wine-card p-4 rounded-lg shadow-lg">
-                <h2 class="text-xl font-semibold">Prime</h2>
-                <p>View benefits and payment settings</p>
-            </div> -->
-            <div class="wine-card p-4 rounded-lg shadow-lg">
-               <a href='/addresses'> <h2 class="text-xl font-semibold">Your Addresses</h2>
-                <p>Edit addresses for orders and gifts</p></a>
-            </div>
-            <!-- <div class="wine-card p-4 rounded-lg shadow-lg">
-                <h2 class="text-xl font-semibold">Your Business Account</h2>
-                <p>Sign up for free to save up to 28% with GST invoice and bulk discounts and purchase on credit.</p>
-            </div> -->
-            <!-- <div class="wine-card p-4 rounded-lg shadow-lg">
-                <a href="#"><h2 class="text-xl font-semibold">Payment Options</h2>
-                <p>Edit or add payment methods</p></a>
-            </div> -->
-            <!-- <div class="wine-card p-4 rounded-lg shadow-lg">
-                <h2 class="text-xl font-semibold">Amazon Pay Balance</h2>
-                <p>Add money to your balance</p>
-            </div> -->
-            <div class="wine-card p-4 rounded-lg shadow-lg">
-              <a href="/contact">  <h2 class="text-xl font-semibold">Contact Us</h2>
-              
-                <p >Contact our customer service via phone or chat</p></a>
-            </div>
-        </div>
-    </div>
+        </main>
+
+        <%- include('../partials/userFooter.ejs') %>
+
+            <script>
+                AOS.init({
+                    duration: 1000,
+                    once: true,
+                    easing: 'ease-out-cubic'
+                });
+            </script>
 </body>
+
 </html>

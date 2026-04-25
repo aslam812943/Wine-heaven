@@ -1,134 +1,381 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Wishlist</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <style>
-        .bg-gold {
-            background-color: #600018;
-            color: white;
-            transition: all 0.3s ease;
+        :root {
+            --wine-maroon: #6b0f1a;
+            --wine-maroon-dark: #4a0a12;
+            --wine-gold: #c9a84c;
+            --wine-cream: #fdf8f2;
+            --wine-black: #0a0202;
         }
-        .bg-gold:hover {
-            background-color: #800020;
-            transform: translateY(-2px);
+
+        body {
+            background-color: var(--wine-cream);
+            font-family: 'Inter', sans-serif;
         }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--wine-maroon);
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        /* Premium Grid */
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
         .product-card {
-            transition: all 0.3s ease;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            border: 1px solid rgba(107, 15, 26, 0.05);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
         }
+
         .product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(107, 15, 26, 0.12);
+            border-color: rgba(201, 168, 76, 0.25);
+        }
+
+        .product-media {
+            height: 320px;
+            position: relative;
+            overflow: hidden;
+            background: #fdfdfd;
+        }
+
+        .product-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 20px;
+            transition: transform 0.6s ease;
+        }
+
+        .product-card:hover .product-media img {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        .card-actions-bar {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 5;
+        }
+
+        .product-card:hover .card-actions-bar {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .bar-action {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--wine-maroon);
+            transition: all 0.2s ease;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .bar-action:hover {
+            background: var(--wine-maroon);
+            color: #fff;
+            transform: scale(1.15);
+        }
+
+        .remove-btn {
+            color: #ff4d4d;
+        }
+
+        .remove-btn:hover {
+            background: #ff4d4d;
+            color: #fff;
+        }
+
+        .product-info {
+            padding: 20px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(to bottom, #fff, #fffafb);
+        }
+
+        .product-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--wine-black);
+            margin-bottom: 5px;
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.3s;
+        }
+
+        .product-name:hover {
+            color: var(--wine-maroon);
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--wine-maroon);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .action-link {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--wine-gold);
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0 auto;
+            position: relative;
+            padding-bottom: 4px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1.5px;
+            background: var(--wine-gold);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s ease;
+        }
+
+        .action-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .action-link i {
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .action-link:hover i {
+            transform: translateX(3px);
+        }
+
+        .go-to-cart {
+            color: var(--wine-maroon-dark);
+        }
+
+        .go-to-cart::after {
+            background: var(--wine-maroon-dark);
         }
     </style>
 </head>
+
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <%-include('../partials/userHeader.ejs')%>
-    
-    <div class="container mx-auto px-4 py-8 flex-grow">
-        <h1 class="text-4xl font-bold mb-8 text-center text-[#600018]">My Wishlist</h1>
 
-        <% if (!hasWishlistItems) { %>
-            <div class="text-center py-16 bg-white rounded-lg shadow">
-                <i class="fas fa-heart-broken text-6xl text-[#600018]/30 mb-4"></i>
-                <p class="text-xl text-gray-600">Your wishlist is empty</p>
-                <a href="/wines" class="mt-4 inline-block bg-gold px-6 py-3 rounded-lg">
-                    Continue Shopping
-                </a>
-            </div>
-        <% } else { %>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <% wishlist.forEach(product => { %>
-                    <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden">
-                        <div class="relative">
-                            <img 
-                                src="/uploads/<%= product.firstImage %>" 
-                                alt="<%= product.name %>" 
-                                class="w-full h-64 object-cover"
-                            >
-                            <button 
-                                onclick="removeFromWishlist('<%= product._id %>')"
-                                class="absolute top-4 right-4 bg-gold w-10 h-10 rounded-full flex items-center justify-center"
-                                title="Remove from Wishlist"
-                            >
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        <div class="p-4">
-                            <h3 class="text-xl font-bold text-[#600018] mb-4 truncate">
-                                <%= product.name %>
-                            </h3>
-                            
-                            <div class="grid grid-cols-2 gap-2">
-                                <a 
-                                    href="/products/<%= product._id %>" 
-                                    class="bg-gold py-2 rounded text-center flex items-center justify-center"
-                                >
-                                    <i class="fas fa-eye mr-2"></i>View Details
-                                </a>
-                                <% if (product.isAvailable) { %>
-                                    <form action="/cart/update" method="POST" class="contents">
-                                        <input type="hidden" name="productId" value="<%= product._id %>">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button 
-                                            type="submit" 
-                                            class="w-full bg-gold py-2 rounded flex items-center justify-center"
-                                        >
-                                            <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
+        <div class="container mx-auto px-4 py-12 flex-grow">
+            <h1 class="section-title">Curator List</h1>
+
+            <% if (!hasWishlistItems) { %>
+                <div class="text-center py-20 bg-white rounded-2xl shadow-premium max-w-2xl mx-auto" data-aos="fade-up">
+                    <i class="fas fa-heart text-6xl text-[#6b0f1a1a] mb-6"></i>
+                    <p class="text-xl text-gray-500 font-medium mb-8">Your list is waiting for a selection.</p>
+                    <a href="/wines"
+                        class="inline-flex items-center gap-3 px-8 py-4 bg-wine text-white rounded-full font-bold tracking-widest text-sm hover:translate-y-[-4px] transition-all duration-300">
+                        EXPLORE COLLECTIONS <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+                <% } else { %>
+                    <div class="wishlist-grid">
+                        <% wishlist.forEach((product, i)=> { %>
+                            <div class="product-card" data-aos="fade-up" data-aos-delay="<%= 100 * (i % 4) %>">
+                                <div class="product-media">
+                                    <img src="/uploads/<%= product.firstImage %>" alt="<%= product.name %>"
+                                        loading="lazy">
+                                    <div class="card-actions-bar">
+                                        <button onclick="removeFromWishlist('<%= product._id %>')"
+                                            class="bar-action remove-btn" title="Remove">
+                                            <i class="fas fa-trash"></i>
                                         </button>
-                                    </form>
-                                <% } else { %>
-                                    <button 
-                                        disabled 
-                                        class="w-full bg-gray-400 text-white py-2 rounded cursor-not-allowed flex items-center justify-center"
-                                    >
-                                        <i class="fas fa-ban mr-2"></i>Out of Stock
-                                    </button>
-                                <% } %>
+                                        <a href="/products/<%= product._id %>" class="bar-action" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div>
+                                        <a href="/products/<%= product._id %>" class="product-name">
+                                            <%= product.name %>
+                                        </a>
+                                        <span class="product-price">₹<%= (product.priceAfterDiscount).toFixed(0) %>
+                                        </span>
+                                    </div>
+
+                                    <% if (product.isAvailable) { %>
+                                        <div id="action-container-<%= product._id %>" class="flex justify-center">
+                                            <% if (product.isInCart) { %>
+                                                <a href="/cart" class="action-link go-to-cart">
+                                                    GO TO CART <i class="fa-solid fa-arrow-right"></i>
+                                                </a>
+                                                <% } else { %>
+                                                    <button onclick="addtocart('<%= product._id %>')"
+                                                        class="action-link">
+                                                        ADD TO CART <i class="fa-solid fa-cart-shopping"></i>
+                                                    </button>
+                                                    <% } %>
+                                        </div>
+                                        <% } else { %>
+                                            <span class="text-xs font-bold text-gray-400 tracking-widest uppercase">SOLD
+                                                OUT</span>
+                                            <% } %>
+                                </div>
                             </div>
-                        </div>
+                            <% }); %>
                     </div>
-                <% }); %>
-            </div>
-        <% } %>
-    </div>
+                    <% } %>
+        </div>
 
-    <script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.js"></script>
+        <script>
+            localStorage.setItem('reloadCartPage', 'true');
 
-localStorage.setItem('reloadCartPage', 'true');
-        async function removeFromWishlist(productId) {
-            try {
-                const response = await fetch('/wishlist/remove', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ productId })
-                });
+            async function addtocart(productId) {
+                try {
+                    const response = await fetch('/cartt', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productId }),
+                    });
 
-                const result = await response.json();
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Selection Added',
+                            text: 'This vintage has been added to your cart.',
+                            confirmButtonColor: '#600018',
+                            background: '#fdf8f2'
+                        });
 
-                if (response.ok) {
-                    const productCard = document.querySelector(`[onclick="removeFromWishlist('${productId}')"]`).closest('.product-card');
-                    productCard.style.transform = 'scale(0.95)';
-                    productCard.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 300);
-                } else {
-                    throw new Error(result.message);
+                        
+                        const container = document.getElementById(`action-container-${productId}`);
+                        if (container) {
+                            container.innerHTML = `
+                                <a href="/cart" class="action-link go-to-cart">
+                                    GO TO CART <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                            `;
+                        }
+                    } else {
+                        const error = await response.json();
+                        Swal.fire({
+                            icon: 'info',
+                            text: error.message || 'Unable to add this selection.',
+                            confirmButtonColor: '#600018'
+                        });
+                    }
+                } catch (error) {
+                    console.error("Fetch error:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'System Error',
+                        text: 'An unexpected error occurred.',
+                        confirmButtonColor: '#600018'
+                    });
                 }
-            } catch (error) {
-                console.error('Wishlist Remove Error:', error);
-                alert(error.message || 'Failed to remove from wishlist');
             }
-        }
-    </script>
-    
-    <%- include('../partials/userFooter.ejs') %>
+
+            async function removeFromWishlist(productId) {
+                try {
+                    const response = await fetch('/wishlist/remove', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productId })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        const productCard = document.querySelector(`[onclick="removeFromWishlist('${productId}')"]`).closest('.product-card');
+                        productCard.style.transform = 'scale(0.95)';
+                        productCard.style.opacity = '0';
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 300);
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    console.error('Wishlist Remove Error:', error);
+                    alert(error.message || 'Failed to remove from wishlist');
+                }
+            }
+
+         
+            AOS.init({
+                duration: 1000,
+                once: true,
+                offset: 50
+            });
+        </script>
+
+        <%- include('../partials/userFooter.ejs') %>
 </body>
+
 </html>

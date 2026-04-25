@@ -4,503 +4,625 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout Page</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.js"></script>
+    <title>Secured Checkout | Wine Heaven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'wine-maroon': '#6b0f1a',
+                        'wine-gold': '#c9a84c',
+                        'wine-cream': '#fdf8f2',
+                        'wine-black': '#0a0202',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        .bg-gold {
-            background-color: #600018;
-            color: white;
+        :root {
+            --wine-maroon: #6b0f1a;
+            --wine-gold: #c9a84c;
+            --wine-cream: #fdf8f2;
+            --wine-black: #0a0202;
         }
 
-        .bg-gold:hover {
-            background-color: #800020;
+        body {
+            background-color: var(--wine-cream);
+            font-family: 'Inter', sans-serif;
+            color: var(--wine-black);
+            overflow-x: hidden;
         }
 
-        .coupon-applied {
-            background-color: #4CAF50;
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(107, 15, 26, 0.05);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(201, 168, 76, 0.3);
+        }
+
+        .checkout-step-line {
+            position: absolute;
+            left: 24px;
+            top: 40px;
+            bottom: -40px;
+            width: 1px;
+            background: linear-gradient(to bottom, var(--wine-gold) 0%, rgba(201, 168, 76, 0) 100%);
+            z-index: 0;
+        }
+
+        .address-card {
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border: 1px solid rgba(107, 15, 26, 0.05);
+        }
+
+        .address-card.selected {
+            background: white;
+            border-color: var(--wine-gold);
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(107, 15, 26, 0.08);
+        }
+
+        .address-card.selected .selection-indicator {
+            background: var(--wine-maroon);
+            border-color: var(--wine-maroon);
+            transform: scale(1.1);
+        }
+
+        .selection-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid rgba(107, 15, 26, 0.1);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, #6b0f1a 0%, #4a0a12 100%);
             color: white;
-            padding: 8px;
-            border-radius: 4px;
-            margin-top: 8px;
-            display: none;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-premium::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-premium:hover::after {
+            left: 100%;
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(107, 15, 26, 0.3);
+        }
+
+        .payment-option-input:checked+.payment-card {
+            background: white;
+            border-color: var(--wine-gold);
+            box-shadow: 0 10px 30px rgba(107, 15, 26, 0.05);
+        }
+
+        .premium-input {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(107, 15, 26, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .premium-input:focus {
+            border-color: var(--wine-gold);
+            background: white;
+            outline: none;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--wine-gold);
+            border-radius: 10px;
+        }
+
+        .step-badge-premium {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(107, 15, 26, 0.05);
+            border: 1px solid rgba(107, 15, 26, 0.05);
+            position: relative;
+            z-index: 10;
         }
     </style>
 </head>
 
-<body class="min-h-screen bg-gray-50">
+<body class="min-h-screen pb-20 selection:bg-wine-maroon/10 selection:text-wine-maroon">
     <%- include('../partials/userHeader.ejs') %>
 
-        <div class="p-4">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 mt-20">
-                <!-- Checkout Steps -->
-                <div class="lg:col-span-2 space-y-6">
-                    <!-- Recipient Section -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-xl font-semibold">1. RECIPIENT</h2>
-                            <a href="/newaddress" class="text-blue-600 hover:text-blue-700">Add a new address</a>
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
+            <div class="flex flex-col lg:flex-row gap-16 relative">
+
+                <!-- Checkout Flow Area -->
+                <div class="flex-grow space-y-16">
+                    <!-- Page Header -->
+                    <div class="space-y-4" data-aos="fade-right">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-[10px] bg-wine-gold rounded-full"></span>
+                            <span class="text-wine-gold uppercase tracking-[0.4em] text-[10px] font-bold">The Checkout
+                                Experience</span>
                         </div>
+                        <h1 class="playfair text-5xl font-bold text-wine-black leading-tight">Securing Your <br><span
+                                class="text-wine-maroon">Masterpiece</span></h1>
+                    </div>
 
-                        <% addresses.forEach((address, index)=> { %>
-                            <div class="border rounded-lg p-4 mb-4 flex justify-between items-center">
-                                <!-- Address Details -->
-                                <label class="flex items-center cursor-pointer">
-                                    <input type="radio" name="shipping_address" value="<%= address._id %>"
-                                        class="w-4 h-4 mr-2">
-                                    <span>
-                                        <%= address.name %>, <%= address.address %>, <%= address.city %>
-                                    </span>
-                                </label>
-
-                                <!-- Edit Address Link -->
-                                <a 
-                                href="/editAddress/<%= address._id %>" 
-                                class="text-blue-600 hover:text-blue-700 text-sm mt-0 font-medium px-4 py-2 rounded-md border border-blue-600 hover:bg-blue-100 transition duration-300 ease-in-out"
-                              >
-                                Edit
-                              </a>
+                    <!-- Step 1: Destination -->
+                    <div class="relative pl-16 group" data-aos="fade-up">
+                        <div class="checkout-step-line group-last:hidden"></div>
+                        <div class="absolute left-0 top-0">
+                            <div class="step-badge-premium">
+                                <i class="fas fa-location-dot text-wine-maroon text-xl"></i>
                             </div>
-                            <% }); %>
-                    </div>
+                        </div>
 
-                    <!-- Payment Options Section -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <h2 class="text-xl font-semibold mb-6">2. PAYMENT METHOD</h2>
-                        <div class="space-y-4">
-                            <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="payment_method" value="Cash on Delivery" class="w-4 h-4 mr-2">
-                                <span>Cash on Delivery</span>
-                            </label>
-                            <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="payment_method" value="Razorpay" class="w-4 h-4 mr-2">
-                                <span>Online Payment (Razorpay)</span>
-                            </label>
-                            <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="payment_method" value="Wallet" class="w-4 h-4 mr-2">
-                                <span>Wallet</span>
-                            </label>
+                        <div class="space-y-8">
+                            <div class="flex items-center justify-between">
+                                <h2 class="playfair text-2xl font-bold text-wine-black tracking-tight">I. Delivery
+                                    Destination</h2>
+                                <a href="/newaddress"
+                                    class="group flex items-center gap-2 text-[10px] font-bold text-wine-maroon uppercase tracking-widest hover:text-wine-gold transition-colors">
+                                    <span
+                                        class="w-6 h-6 rounded-full bg-wine-maroon/5 flex items-center justify-center group-hover:bg-wine-gold group-hover:text-white transition-all">
+                                        <i class="fas fa-plus text-[8px]"></i>
+                                    </span>
+                                    Add New Location
+                                </a>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <% addresses.forEach((address)=> { %>
+                                    <div class="address-card glass-card rounded-2xl p-6 flex gap-4 relative group/card"
+                                        onclick="selectAddress('<%= address._id %>')">
+                                        <input type="radio" name="shipping_address" value="<%= address._id %>"
+                                            class="hidden" id="addr-<%= address._id %>">
+
+                                        <div class="selection-indicator mt-1"></div>
+
+                                        <div class="space-y-2 flex-grow">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <h4
+                                                        class="font-bold text-base text-wine-black group-[.selected]:text-wine-maroon transition-colors">
+                                                        <%= address.name %>
+                                                    </h4>
+                                                    <span
+                                                        class="text-[8px] font-bold text-wine-gold uppercase tracking-widest">
+                                                        <%= address.addressType || 'Residence' %>
+                                                    </span>
+                                                </div>
+                                                <a href="/editAddress/<%= address._id %>"
+                                                    class="text-[9px] uppercase tracking-widest font-bold text-gray-300 hover:text-wine-gold transition-colors">Edit</a>
+                                            </div>
+
+                                            <p class="text-xs text-gray-500 leading-relaxed font-medium">
+                                                <%= address.address %>, <%= address.city %><br>
+                                                        <%= address.state %> - <%= address.pincode %>
+                                            </p>
+
+                                            <div class="pt-2 flex items-center justify-between">
+                                                <p class="text-[10px] text-gray-400 font-bold">
+                                                    <i class="fas fa-phone-alt mr-2 text-wine-maroon/30"></i>
+                                                    <%= address.mobile %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                            </div>
                         </div>
                     </div>
 
-                    <form id="place-order-form">
-                        <button type="submit" class="bg-gold text-white py-3 w-full rounded-lg transition-colors mt-4">
-                            Place Order
+                    <!-- Step 2: Payment -->
+                    <div class="relative pl-16 group" data-aos="fade-up" data-aos-delay="100">
+                        <div class="checkout-step-line group-last:hidden"></div>
+                        <div class="absolute left-0 top-0">
+                            <div class="step-badge-premium">
+                                <i class="fas fa-vault text-wine-maroon text-xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="space-y-8">
+                            <h2 class="playfair text-2xl font-bold text-wine-black tracking-tight">II. Payment Strategy
+                            </h2>
+
+                            <div class="space-y-4">
+                                <div class="relative">
+                                    <input type="radio" name="payment_method" value="Cash on Delivery"
+                                        class="hidden peer payment-option-input" id="pay-cod">
+                                    <label for="pay-cod"
+                                        class="payment-card glass-card block rounded-2xl p-5 cursor-pointer hover:bg-white transition-all group overflow-hidden border border-transparent">
+                                        <div class="flex items-center gap-6">
+                                            <div
+                                                class="w-12 h-12 rounded-xl bg-wine-maroon/5 flex items-center justify-center text-wine-maroon group-hover:bg-wine-maroon group-hover:text-white transition-all duration-500">
+                                                <i class="fas fa-hand-holding-dollar text-xl"></i>
+                                            </div>
+                                            <div class="flex-grow">
+                                                <h4 class="font-bold text-lg text-wine-black">Cash on Delivery</h4>
+                                                <p
+                                                    class="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-0.5">
+                                                    Traditional Handover</p>
+                                            </div>
+                                            <div class="selection-indicator"></div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="relative">
+                                    <input type="radio" name="payment_method" value="Razorpay"
+                                        class="hidden peer payment-option-input" id="pay-razor">
+                                    <label for="pay-razor"
+                                        class="payment-card glass-card block rounded-2xl p-5 cursor-pointer hover:bg-white transition-all group overflow-hidden border border-transparent">
+                                        <div class="flex items-center gap-6">
+                                            <div
+                                                class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
+                                                <i class="fas fa-credit-card text-xl"></i>
+                                            </div>
+                                            <div class="flex-grow">
+                                                <h4 class="font-bold text-lg text-wine-black">Digital Master-key</h4>
+                                                <p
+                                                    class="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-0.5">
+                                                    Cards, UPI, Secure Transfer</p>
+                                            </div>
+                                            <div class="selection-indicator"></div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="relative">
+                                    <input type="radio" name="payment_method" value="Wallet"
+                                        class="hidden peer payment-option-input" id="pay-wallet">
+                                    <label for="pay-wallet"
+                                        class="payment-card glass-card block rounded-2xl p-5 cursor-pointer hover:bg-white transition-all group overflow-hidden border border-transparent">
+                                        <div class="flex items-center gap-6">
+                                            <div
+                                                class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500">
+                                                <i class="fas fa-wallet text-xl"></i>
+                                            </div>
+                                            <div class="flex-grow">
+                                                <h4 class="font-bold text-lg text-wine-black">The Wine Vault</h4>
+                                                <p
+                                                    class="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-0.5">
+                                                    Pre-authorized Credits</p>
+                                            </div>
+                                            <div class="selection-indicator"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button Container -->
+                    <div class="pl-16">
+                        <button id="btn-place-order"
+                            class="btn-premium w-full py-5 rounded-2xl font-bold text-lg uppercase tracking-[0.2em] flex items-center justify-center gap-4 shadow-2xl relative z-10">
+                            Finalize Selection
+                            <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                                <i class="fas fa-chevron-right text-[10px]"></i>
+                            </span>
                         </button>
-                    </form>
+                        <p class="text-center mt-6 text-[11px] text-gray-400 font-bold uppercase tracking-widest">
+                            <i class="fas fa-shield-halved mr-2 text-wine-gold"></i>Encrypted with 256-bit SSL Security
+                        </p>
+                    </div>
                 </div>
 
-                <!-- Order Summary -->
-                <div class="lg:col-span-1">
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <h2 class="text-xl font-semibold mb-6">ORDER SUMMARY</h2>
-                        <div class="space-y-4">
-                            <div class="mb-4">
-                                <span class="font-medium">Total Items: </span>
-                                <%= orderSummary.items.length %>
-                            </div>
-                            <% orderSummary.items.forEach(item=> { %>
-                                <div class="flex items-center mb-4">
-                                    <img src="/uploads/<%= item.productId.images[0] %>" alt="<%= item.productId.name %>"
-                                        class="w-16 h-16 object-cover rounded-md mr-4">
-                                    <div>
-                                        <p class="font-medium">
-                                            <%= item.productId.name %>
-                                        </p>
-                                        <p class="text-sm text-gray-600">Quantity: <%= item.productCount %>
-                                        </p>
-                                        <% if(item.productId.productAllDiscount > 0) { %>
-                                            <span class="px-2 py-1 bg-red-50 text-red-600 font-semibold rounded-md text-sm">
-                                             Product Discount <%= item.productId.productAllDiscount %>% OFF
-                                          </span>
-                                          <% }else if(item.productId.discount>0 ){ %>
-                                            <span class="px-2 py-1 bg-red-50 text-red-600 font-semibold rounded-md text-sm">
-                                                Product Discount <%= item.productId.discount%>% OFF
-                                             </span>
+                <!-- Sticky Order Sidebar -->
+                <div class="lg:w-[400px] flex-shrink-0" data-aos="fade-left">
+                    <div class="glass-card rounded-[3rem] p-10 sticky top-32 shadow-2xl border border-white/40">
+                        <div class="text-center mb-12">
+                            <span class="text-wine-gold text-[10px] font-bold uppercase tracking-[0.4em]">Curated
+                                Bag</span>
+                            <h2 class="playfair text-3xl font-bold text-wine-black mt-2">Selection Recap</h2>
+                            <div class="w-8 h-[2px] bg-wine-maroon mx-auto mt-4 rounded-full"></div>
+                        </div>
 
-                                        <%}%>
-                                        
-                                            <p class="text-gray-500 text-sm">Discounted Price:
-                                                <%if(item.productId.discount>0 ){%>
-                                                 <i
-                                                class="fa-solid fa-indian-rupee-sign"></i>
-                                             
-                                                    <span class="line-through">₹<%= item.productId.price*item.productCount %></span>
-                                                    <%}%>
-                                                 
-                                                <span class="font-semibold rounded-md">₹<%= (item.productId.priceAfterDiscount*item.productCount).toFixed(0) %>.00</span>
-                                            </p>
-                                            
-                                        <!-- Discounted Price -->
-                                        
+                        <!-- Item List -->
+                        <div class="max-h-[400px] overflow-y-auto pr-4 space-y-8 mb-10 custom-scrollbar">
+                            <% orderSummary.items.forEach(item=> { %>
+                                <div class="flex gap-6 items-start group">
+                                    <div
+                                        class="w-20 h-20 rounded-2xl bg-wine-maroon/5 p-3 shrink-0 relative overflow-hidden flex items-center justify-center transition-transform group-hover:scale-105">
+                                        <img src="/uploads/<%= item.productId.images[0] %>"
+                                            alt="<%= item.productId.name %>"
+                                            class="w-full h-full object-contain mix-blend-multiply drop-shadow-lg">
+                                    </div>
+                                    <div class="flex-grow min-w-0 space-y-1">
+                                        <h4 class="font-bold text-wine-black truncate text-base leading-tight">
+                                            <%= item.productId.name %>
+                                        </h4>
+                                        <p class="text-[10px] text-wine-gold font-bold uppercase tracking-widest">
+                                            Premium Vintage</p>
+                                        <div class="flex items-center justify-between pt-2">
+                                            <span class="text-xs font-bold text-gray-400">Qty: <%= item.productCount %>
+                                            </span>
+                                            <span class="text-sm font-bold text-wine-maroon">₹<%=
+                                                    (item.productId.priceAfterDiscount * item.productCount).toFixed(0)
+                                                    %></span>
+                                        </div>
                                     </div>
                                 </div>
                                 <% }); %>
+                        </div>
 
-                                    <!-- Coupon Section -->
-                                    <div class="py-4 border-t border-b">
-                                        <h3 class="text-lg font-medium mb-2">Apply Coupon</h3>
-                                        <div class="flex space-x-2">
-                                            <select id="coupon-code" name="coupon"
-                                                class="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent">
-                                                <option value="">Select a coupon</option>
-                                                <% coupon.forEach(c=> { %>
-                                                    <option value="<%= c.code %>">
-                                                        <%= c.code %> - <%= c.discountType %> -<%= c.discountAmount %>
-                                                                    off
-                                                    </option>
-                                                    <% }) %>
-                                            </select>
+                        <!-- Privileges / Coupons -->
+                        <div class="bg-wine-maroon/[0.03] rounded-[2rem] p-8 mb-10 space-y-6">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-tag text-wine-gold text-xs"></i>
+                                <span class="text-[10px] font-bold text-wine-gold uppercase tracking-[0.2em]">Vintage
+                                    Privileges</span>
+                            </div>
+                            <div class="flex gap-3">
+                                <select id="coupon-code"
+                                    class="premium-input flex-grow rounded-2xl px-6 py-4 text-[13px] font-bold text-wine-black bg-transparent">
+                                    <option value="">Draft a Coupon</option>
+                                    <% coupon.forEach(c=> { %>
+                                        <option value="<%= c.code %>">
+                                            <%= c.code %> - <%= c.discountAmount %>
+                                                    <%= c.discountType==='percentage' ? '%' : ' OFF' %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                                <button id="apply-coupon-btn"
+                                    class="bg-wine-maroon text-white px-6 rounded-2xl transition-all hover:bg-wine-black active:scale-95">
+                                    <i class="fas fa-check text-xs"></i>
+                                </button>
+                            </div>
+                            <button id="remove-coupon-"
+                                class="hidden w-full text-center text-[10px] font-bold text-red-500 uppercase tracking-widest hover:text-red-700">
+                                Revoke Coupon <i class="fas fa-times ml-1"></i>
+                            </button>
+                        </div>
 
-                                            <button id="apply-coupon-btn" type="button"
-                                                class="bg-gold px-4 py-2 rounded-lg text-white hover:bg-red-900 transition-colors">
-                                                Apply
-                                            </button>
+                        <!-- Price Matrix -->
+                        <div class="space-y-5">
+                            <div class="flex justify-between items-center px-4">
+                                <span class="text-sm font-medium text-gray-500 uppercase tracking-widest">Bag
+                                    Value</span>
+                                <span class="font-bold text-wine-black">₹<%= (orderSummary.payableAmount -
+                                        100).toFixed(0) %></span>
+                            </div>
 
-                                            <button id="remove-coupon-" type="button"
-                                                class="hidden bg-red-600 px-4 py-2 rounded-lg text-white hover:bg-red-900 transition-colors">
-                                                Remove
-                                            </button>
-                                        </div>
-                                        <div id="coupon-message" class="mt-2 text-sm hidden"></div>
-                                        <div id="coupon-applied" class="coupon-applied hidden">
-                                            Coupon applied successfully!
-                                        </div>
-                                    </div>
+                            <div class="flex justify-between items-center px-4">
+                                <span
+                                    class="text-sm font-medium text-gray-500 uppercase tracking-widest">Concierge</span>
+                                <span class="font-bold text-wine-black">₹100</span>
+                            </div>
 
+                            <div class="flex justify-between items-center px-4 text-emerald-600 font-bold hidden"
+                                id="discount-container-row">
+                                <span class="text-sm uppercase tracking-widest">Privilege</span>
+                                <span id="discount-amount">-₹0</span>
+                            </div>
 
-                                    <!-- Order Totals -->
-
-                                    <div class="space-y-3 pt-4">
-                                        <div class="flex justify-between">
-                                            <span>Subtotal</span>
-                                            <span><i class="fa-solid fa-indian-rupee-sign"></i>
-                                                <%= orderSummary.payableAmount.toFixed(0) - 100 %>
-                                            </span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span>Shipping & Handling</span>
-                                            <span><i class="fa-solid fa-indian-rupee-sign"></i>100.00</span>
-                                        </div>
-                                        <div class="flex justify-between" id="discount-container">
-                                            <span>Coupon Discount</span>
-                                            <span><span id="discount-amount">0.00</span></span>
-                                        </div>
-                                        <div class="flex justify-between font-bold pt-4 border-t">
-                                            <span>Total</span>
-                                            <span><i class="fa-solid fa-indian-rupee-sign"></i><span id="total-amount">
-                                                    <%= orderSummary.payableAmount.toFixed(0) %>
-                                                </span></span>
-                                        </div>
-                                    </div>
-
-
+                            <div class="pt-8 mt-5 border-t border-wine-maroon/5 px-4 flex justify-between items-end">
+                                <div class="space-y-1">
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Final
+                                        Valuated</p>
+                                    <p class="playfair text-3xl font-bold text-wine-black">Total</p>
+                                </div>
+                                <span class="text-3xl font-bold text-wine-maroon" id="total-amount">₹<%=
+                                        orderSummary.payableAmount.toFixed(0) %></span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <script>
-
-
-let totalAmount = <%= orderSummary.total %>;
-let originalTotal = <%= orderSummary.total %>;
-document.getElementById('total-amount').innerText = totalAmount.toFixed(2);
-
-document.getElementById('place-order-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const selectedAddress = document.querySelector('input[name="shipping_address"]:checked');
-    const selectedPayment = document.querySelector('input[name="payment_method"]:checked');
-
-    if (!selectedAddress) {
-        Swal.fire({
-            icon: 'error',
-            title: 'No Address Selected',
-            text: 'Please select a shipping address.',
-            confirmButtonColor: '#600018'
-        });
-        return;
-    }
-
-    if (!selectedPayment) {
-        Swal.fire({
-            icon: 'error',
-            title: 'No Payment Method Selected',
-            text: 'Please select a payment method.',
-            confirmButtonColor: '#600018'
-        });
-        return;
-    }
-
-    const couponCode = document.getElementById('coupon-code').value || '';
-    // Get the current total amount from the display
-    const currentTotal = parseFloat(document.getElementById('total-amount').textContent);
-    
-    const orderData = {
-        addressId: selectedAddress.value,
-        paymentMethod: selectedPayment.value,
-        couponCode: couponCode,
-        totalAmount: currentTotal // Use the current displayed total
-    };
-
-    if (selectedPayment.value === 'Razorpay') {
-        initiateRazorpayPayment(orderData);
-    } else {
-        placeOrder(orderData);
-    }
-});
-
-function initiateRazorpayPayment(orderData) {
-    fetch('/payment-render/' + orderData.totalAmount, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(paymentData => {
-        const options = {
-            key: "<%= process.env.RAZOR_KEY_ID %>",
-            amount: Math.round(orderData.totalAmount * 100), // Ensure amount is rounded
-            currency: "INR",
-            name: "Wine Heaven",
-            description: "Order Payment",
-            order_id: paymentData.orderID,
-            handler: function (response) {
-                orderData.razorpay_payment_id = response.razorpay_payment_id;
-                orderData.razorpay_order_id = response.razorpay_order_id;
-                orderData.razorpay_signature = response.razorpay_signature;
-                placeOrder(orderData);
-            },
-            theme: {
-                color: "#600018"
-            }
-        };
-        const rzp1 = new Razorpay(options);
-        rzp1.open();
-
-        rzp1.on('payment.failed', function (response) {
-            console.error('Payment failed event data:', response.error);
-
-            const failureDetails = {
-                paymentId: response.error.metadata?.payment_id || '',
-                orderId: response.error.metadata?.order_id || '',
-                code: response.error.code || '',
-                description: response.error.description || '',
-                reason: response.error.reason || 'Unknown failure',
-                addressId: orderData.addressId,
-                paymentMethod: orderData.paymentMethod,
-                couponCode: orderData.couponCode,
-                totalAmount: orderData.totalAmount
-            };
-
-            fetch('/payment-failed', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(failureDetails),
-            })
-            .then(serverResponse => {
-                if (!serverResponse.ok) {
-                    return serverResponse.json().then(errorData => {
-                        console.error('Server error response:', errorData);
-                        throw new Error('Server failed to process payment failure.');
-                    });
-                }
-                return serverResponse.json();
-            })
-            .then(data => {
-                console.log('Server processed payment failure successfully:', data);
-                window.location.href = '/payment-failed';
-            })
-            .catch(error => {
-                console.error('Error in failure handling fetch:', error);
-                alert('Payment failed. Please try again later.');
-            });
-        });
-    })
-    .catch(error => {
-        console.error('Error initiating Razorpay payment:', error);
-        alert('Failed to initiate payment. Please try again.');
-    });
-}
-
-function placeOrder(orderData) {
-    fetch('/api/place-order', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            window.location.href = "/order-confirmation";
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Order Failed',
-                text: data.message || 'Failed to place order',
-                confirmButtonColor: '#600018'
-            });
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'An error occurred while placing the order',
-            confirmButtonColor: '#600018'
-        });
-    });
-}
-
-class CouponManager {
-    constructor() {
-        this.couponCodeInput = document.getElementById('coupon-code');
-        this.applyButton = document.getElementById('apply-coupon-btn');
-        this.removeButton = document.getElementById('remove-coupon-');
-        this.discountAmountElement = document.getElementById('discount-amount');
-        this.totalAmountElement = document.getElementById('total-amount');
-        this.messageElement = document.getElementById('coupon-message');
-        this.couponAppliedElement = document.getElementById('coupon-applied');
-        
-        this.originalTotal = parseFloat(this.totalAmountElement.textContent.replace(/[^\d.-]/g, ''));
-        
-        this.setupEventListeners();
-    }
-
-    setupEventListeners() {
-        this.applyButton.addEventListener('click', () => this.applyCoupon());
-        this.removeButton.addEventListener('click', () => this.removeCoupon());
-        this.couponCodeInput.addEventListener('input', () => this.resetCouponState());
-    }
-
-    resetCouponState() {
-        this.clearMessages();
-        this.enableCouponInput();
-    }
-
-    clearMessages() {
-        if (this.messageElement) {
-            this.messageElement.textContent = '';
-            this.messageElement.classList.add('hidden');
-        }
-        if (this.couponAppliedElement) {
-            this.couponAppliedElement.classList.add('hidden');
-        }
-    }
-
-    enableCouponInput() {
-        this.couponCodeInput.disabled = false;
-        this.applyButton.disabled = false;
-        this.applyButton.classList.remove('hidden');
-        this.removeButton.classList.add('hidden');
-    }
-
-    async applyCoupon() {
-        const couponCode = this.couponCodeInput.value.trim();
-
-        if (!couponCode) {
-            this.showError('Please select a coupon');
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/coupons/validate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    couponCode,
-                    totalAmount: this.originalTotal
-                })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                this.applyCouponSuccess(data);
-            } else {
-                this.showError(data.message);
-            }
-        } catch (error) {
-            console.error('Coupon Application Error:', error);
-            this.showError('Error applying coupon');
-        }
-    }
-
-    applyCouponSuccess(data) {
-        const newTotal = this.originalTotal - data.discount;
-        
-        // Update the display values
-        this.discountAmountElement.textContent = `-₹${data.discount.toFixed(0)}`;
-        this.totalAmountElement.textContent = `${newTotal.toFixed(0)}`;
-        
-        // Store the new total in the window object
-        window.currentTotal = newTotal;
-        
-        // Disable and update UI elements
-        this.couponCodeInput.disabled = true;
-        this.applyButton.classList.add('hidden');
-        this.removeButton.classList.remove('hidden');
-
-        this.showSuccess('Coupon applied successfully');
-    }
-
-    removeCoupon() {
-        // Reset to original total
-        this.totalAmountElement.textContent = `${this.originalTotal.toFixed(0)}`;
-        this.discountAmountElement.textContent = '₹0';
-        
-        // Update the stored total
-        window.currentTotal = this.originalTotal;
-        
-        // Reset UI elements
-        this.couponCodeInput.disabled = false;
-        this.couponCodeInput.value = '';
-        this.applyButton.classList.remove('hidden');
-        this.removeButton.classList.add('hidden');
-
-        this.clearMessages();
-    }
-
-    showError(message) {
-        if (this.messageElement) {
-            this.messageElement.textContent = message;
-            this.messageElement.className = 'mt-2 text-sm text-red-600';
-            this.messageElement.classList.remove('hidden');
-        }
-    }
-
-    showSuccess(message) {
-        if (this.messageElement) {
-            this.messageElement.textContent = message;
-            this.messageElement.className = 'mt-2 text-sm text-green-600';
-            this.messageElement.classList.remove('hidden');
-        }
-        if (this.couponAppliedElement) {
-            this.couponAppliedElement.classList.remove('hidden');
-        }
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    new CouponManager();
-}); 
-        </script>
+        </main>
 
         <%- include('../partials/userFooter.ejs') %>
 
+            <script>
+                AOS.init({ duration: 1200, once: true, easing: 'ease-out-cubic' });
+
+                function selectAddress(id) {
+                    document.querySelectorAll('.address-card').forEach(card => card.classList.remove('selected'));
+                    const input = document.getElementById(`addr-${id}`);
+                    input.checked = true;
+                    input.closest('.address-card').classList.add('selected');
+                }
+
+                document.addEventListener('DOMContentLoaded', () => {
+                    const checkedAddr = document.querySelector('input[name="shipping_address"]:checked');
+                    if (checkedAddr) selectAddress(checkedAddr.value);
+                });
+
+                let originalTotal = Number("<%= orderSummary.payableAmount || 0 %>");
+                window.currentTotal = originalTotal;
+
+                document.getElementById('btn-place-order').addEventListener('click', async function () {
+                    const selectedAddress = document.querySelector('input[name="shipping_address"]:checked');
+                    const selectedPayment = document.querySelector('input[name="payment_method"]:checked');
+
+                    if (!selectedAddress || !selectedPayment) {
+                        return Swal.fire({
+                            title: '<span class="playfair">Incomplete Logistics</span>',
+                            text: 'Destination and Payment Method are required to secure your selection.',
+                            icon: 'warning',
+                            confirmButtonColor: '#6b0f1a',
+                            background: '#fdf8f2'
+                        });
+                    }
+
+                    const orderData = {
+                        addressId: selectedAddress.value,
+                        paymentMethod: selectedPayment.value,
+                        couponCode: document.getElementById('coupon-code').value || '',
+                        totalAmount: window.currentTotal
+                    };
+
+                    if (selectedPayment.value === 'Razorpay') {
+                        initiateRazorpayPayment(orderData);
+                    } else {
+                        placeOrder(orderData);
+                    }
+                });
+
+                function initiateRazorpayPayment(orderData) {
+                    fetch('/payment-render/' + orderData.totalAmount, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                        .then(res => res.json())
+                        .then(paymentData => {
+                            const options = {
+                                key: "<%= process.env.RAZOR_KEY_ID %>",
+                                amount: Math.round(orderData.totalAmount * 100),
+                                currency: "INR",
+                                name: "Wine Heaven",
+                                description: "Acquisition of Premium Reserve",
+                                order_id: paymentData.orderID,
+                                handler: function (response) {
+                                    orderData.razorpay_payment_id = response.razorpay_payment_id;
+                                    orderData.razorpay_order_id = response.razorpay_order_id;
+                                    orderData.razorpay_signature = response.razorpay_signature;
+                                    placeOrder(orderData);
+                                },
+                                modal: {
+                                    ondismiss: function () {
+                                        window.location.href = '/payment-failed';
+                                    }
+                                },
+                                theme: { color: "#6b0f1a" }
+                            };
+                            new Razorpay(options).open();
+                        })
+                        .catch(err => Swal.fire('Error', 'Gateway currently unavailable', 'error'));
+                }
+
+                function placeOrder(orderData) {
+                    Swal.fire({
+                        title: '<span class="playfair">Securing Reserve...</span>',
+                        html: 'Orchestrating your bespoke delivery experience',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading(),
+                        background: '#fdf8f2'
+                    });
+
+                    fetch('/api/place-order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(orderData)
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: '<span class="playfair">Acquisition Success</span>',
+                                    text: 'Your selection has been successfully secured in our vault.',
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }).then(() => window.location.href = "/order-confirmation");
+                            } else {
+                                Swal.fire('Declined', data.message || 'Transaction could not be completed', 'error');
+                            }
+                        })
+                        .catch(() => Swal.fire('Error', 'Nexus connection failure', 'error'));
+                }
+
+                class CouponManager {
+                    constructor() {
+                        this.select = document.getElementById('coupon-code');
+                        this.applyBtn = document.getElementById('apply-coupon-btn');
+                        this.removeBtn = document.getElementById('remove-coupon-');
+                        this.discountRow = document.getElementById('discount-container-row');
+                        this.discountEl = document.getElementById('discount-amount');
+                        this.totalEl = document.getElementById('total-amount');
+
+                        this.applyBtn.onclick = () => this.apply();
+                        this.removeBtn.onclick = () => this.remove();
+                    }
+
+                    async apply() {
+                        const code = this.select.value;
+                        if (!code) return;
+
+                        try {
+                            const res = await fetch('/api/coupons/validate', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ couponCode: code, totalAmount: originalTotal })
+                            });
+                            const data = await res.json();
+
+                            if (data.success) {
+                                const newTotal = originalTotal - data.discount;
+                                this.discountEl.textContent = `-₹${data.discount.toFixed(0)}`;
+                                this.totalEl.textContent = `₹${newTotal.toFixed(0)}`;
+                                window.currentTotal = newTotal;
+                                this.select.disabled = true;
+                                this.discountRow.classList.remove('hidden');
+                                this.applyBtn.classList.add('hidden');
+                                this.removeBtn.classList.remove('hidden');
+                                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Privilege Unlocked', showConfirmButton: false, timer: 1500 });
+                            } else {
+                                Swal.fire('Invalid Privilege', data.message, 'error');
+                            }
+                        } catch (err) {
+                            Swal.fire('Error', 'Privilege verification failed', 'error');
+                        }
+                    }
+
+                    remove() {
+                        this.totalEl.textContent = `₹${originalTotal.toFixed(0)}`;
+                        this.discountRow.classList.add('hidden');
+                        window.currentTotal = originalTotal;
+                        this.select.disabled = false;
+                        this.select.value = '';
+                        this.applyBtn.classList.remove('hidden');
+                        this.removeBtn.classList.add('hidden');
+                    }
+                }
+
+                new CouponManager();
+            </script>
 </body>
 
 </html>

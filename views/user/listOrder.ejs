@@ -1,639 +1,453 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders - Wine Shop</title>
-    
+    <title>Order Detail | Wine Heaven</title>
+
     <!-- Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <style>
         :root {
-            --primary-color: #4A6CF7;
-            --secondary-color: #6B7280;
-            --accent-color: #10B981;
-            --background-color: #F9FAFB;
-            --text-color: #111827;
+            --maroon: #6b0f1a;
+            --maroon-dk: #4a0a12;
+            --gold: #c9a84c;
+            --cream: #fdf8f2;
+            --text-dark: #1a0a0e;
         }
 
-        .order-card {
-            transition: all 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--cream);
+            color: var(--text-dark);
         }
 
-        .order-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1);
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
         }
 
         .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.375rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-        }
-
-        .btn {
+            padding: 4px 12px;
+            border-radius: 20px;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
+            gap: 6px;
+        }
+
+        .status-pending {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fef3c7;
+        }
+
+        .status-confirmed {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #dbeafe;
+        }
+
+        .status-shipped {
+            background: #f5f3ff;
+            color: #5b21b6;
+            border: 1px solid #ede9fe;
+        }
+
+        .status-delivered {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #d1fae5;
+        }
+
+        .status-cancelled {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fee2e2;
+        }
+
+        .status-returned {
+            background: #f9fafb;
+            color: #1f2937;
+            border: 1px solid #f3f4f6;
+        }
+
+        .page-header {
+            background: white;
+            border-bottom: 1px solid rgba(107, 15, 26, 0.07);
+            padding: 28px 0;
+        }
+
+        .order-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(107, 15, 26, 0.05);
+            overflow: hidden;
+            border: 1px solid rgba(107, 15, 26, 0.05);
+        }
+
+        .item-row {
             transition: all 0.3s ease;
         }
 
-        .btn-cancel {
-            background-color: rgb(211, 19, 19);
-            color: white;
-        }
-
-        .btn-return {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
+        .item-row:hover {
+            background: rgba(107, 15, 26, 0.02);
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <%- include('../partials/userHeader.ejs') %>
-    
-    <div class="container mx-auto px-4 py-8">
-        <div class="max-w-7xl mx-auto pb-5">
-            <!-- Orders Container -->
-            <div class="space-y-6 mt-8">
-                <% if (orders) { %>
-                    <% orders.shippingAddress.forEach(order => { %>
-                        <div class="bg-white rounded-lg shadow-md border border-gray-100 order-card">
-                            <!-- Order Header -->
-                            <div class="px-4 py-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
-                                <div>
-                                    <h2 class="text-xl font-semibold text-gray-900 text-center sm:text-left">
-                                        Order #<%= orders._id.toString().slice(-8).toUpperCase() %>
-                                    </h2>
-                                    <p class="text-sm text-gray-500 mt-1 text-center sm:text-left">
-                                        Placed on <%= new Date(orders.createdAt).toLocaleDateString('en-US', { 
-                                            year: 'numeric', 
-                                            month: 'long', 
-                                            day: 'numeric',
-                                          
-                                        }) %>
-                                    </p>
-                                </div>
-                                <div class="text-center sm:text-right">
-                                    <p class="text-sm text-gray-500">Payment Method</p>
-                                    <p class="font-medium text-gray-900"><%= orders.paymentMethod %></p>
-                                </div>
-                            </div>
 
-                            <!-- Order Content -->
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4 sm:p-6">
-                                <!-- Product List -->
-                                <div class="lg:col-span-2 space-y-4">
-                                    <div class="flex flex-wrap gap-4 mb-6 justify-center sm:justify-start">
-                                        <% let hasDownloadableItem = false; %>
-                                        <% orders.items.forEach(item => { %>
-                                          <% if (item.productStatus !== 'Order Not Conform') { %>
-                                            <% hasDownloadableItem = true; %>
-                                          <% } %>
-                                        <% }); %>
-                                        
-                                        <% if (hasDownloadableItem) { %>
-                                          <a href="/sales-report/download/pdf?orderId=<%= orders._id %>" 
-                                             class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition">
-                                            Download PDF
-                                          </a>
-                                        <% } %>
+<body>
+    <%- include('../partials/userHeader.ejs') %>
+
+        <% if (orders) { %>
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="container mx-auto px-4">
+                    <div class="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
+                                <a href="/orders" class="hover:text-maroon transition" style="color: var(--maroon);">My
+                                    Orders</a>
+                                <i class="fa-solid fa-chevron-right text-[8px] opacity-40"></i>
+                                <span>Order Details</span>
+                            </div>
+                            <h1 class="text-2xl md:text-3xl font-bold font-playfair text-gray-900">Order Details</h1>
+                        </div>
+                        <div class="bg-gray-50 border border-gray-100 px-6 py-3 rounded-2xl">
+                            <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Order #
+                            </p>
+                            <p class="text-xl font-bold font-playfair">
+                                <%= orders._id.toString().slice(-12).toUpperCase() %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 py-8 pb-20">
+                <div class="max-w-6xl mx-auto">
+                    <div class="order-container">
+                        <!-- Summary Bar -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 border-b border-gray-100 bg-gray-50/50">
+                            <div class="p-6 md:border-r border-gray-100">
+                                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Placed
+                                    On
+                                </p>
+                                <p class="font-bold text-gray-900">
+                                    <%= new Date(orders.createdAt).toLocaleDateString('en-GB', { day: '2-digit' ,
+                                        month: 'short' , year: 'numeric' }) %>
+                                </p>
+                            </div>
+                            <div class="p-6 md:border-r border-gray-100">
+                                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Total
+                                    Paid
+                                </p>
+                                <p class="font-bold text-maroon" style="color: var(--maroon);">₹<%=
+                                        orders.totalAmount.toLocaleString() %>.00</p>
+                            </div>
+                            <div class="p-6 md:border-r border-gray-100 text-right md:text-left">
+                                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">
+                                    Payment
+                                </p>
+                                <p class="font-bold text-gray-900">
+                                    <%= orders.paymentMethod %>
+                                </p>
+                            </div>
+                            <div class="p-6 text-right md:text-left">
+                                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Status
+                                </p>
+                                <span
+                                    class="status-badge <%= orders.orderStatus === 'Pending' ? 'status-pending' : 'status-delivered' %>">
+                                    <%= orders.orderStatus %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="p-6 md:p-10">
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                                <!-- Items List -->
+                                <div class="lg:col-span-8">
+                                    <div class="flex items-center justify-between mb-8">
+                                        <h3
+                                            class="text-xl font-bold text-gray-900 font-playfair flex items-center gap-3">
+                                            <span
+                                                class="w-8 h-8 rounded-full bg-maroon text-white flex items-center justify-center text-xs"
+                                                style="background: var(--maroon);">
+                                                <%= orders.items.length %>
+                                            </span>
+                                            Order Items
+                                        </h3>
+
+                                        <% if (orders.items.some(i=> i.productStatus !== 'Order Not Conform')) { %>
+                                            <a href="/sales-report/download/pdf?orderId=<%= orders._id %>"
+                                                class="text-xs font-bold text-maroon hover:text-gold flex items-center gap-2"
+                                                style="color: var(--maroon);">
+                                                <i class="fa-solid fa-file-pdf"></i> DOWNLOAD INVOICE
+                                            </a>
+                                            <% } %>
                                     </div>
-                                    <% orders.items.forEach(item => { %>
-                                        <div class="flex flex-col sm:flex-row items-center bg-gray-50 rounded-lg p-4 space-y-4 sm:space-y-0 sm:space-x-4">
-                                            <img 
-                                                src="/uploads/<%= item.productImage %>" 
-                                                alt="<%= item.productName %>" 
-                                                class="w-24 h-24 object-cover rounded-md mb-4 sm:mb-0"
-                                            >
-                                            <div class="flex-grow text-center sm:text-left w-full">
-                                                <h3 class="text-lg font-semibold text-gray-900">
-                                                    <%= item.productName %>
-                                                </h3>
-                                                <div class="text-sm text-gray-600 mt-1">
-                                                    Quantity: <%= item.productCount %>
+
+                                    <div class="space-y-6">
+                                        <% orders.items.forEach(item=> { %>
+                                            <div
+                                                class="item-row flex gap-6 p-4 rounded-3xl border border-gray-50 bg-gray-50/20">
+                                                <div
+                                                    class="w-24 h-28 flex-shrink-0 bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                                                    <img src="/uploads/<%= item.productImage %>"
+                                                        class="w-full h-full object-cover">
                                                 </div>
-                                                
-                                                <div class="mt-2 font-medium text-gray-900 flex flex-col sm:flex-row items-center justify-center sm:justify-start">
-                                                    <span class="line-through text-gray-500 mr-2">₹<%= item.productId.price*item.productCount %></span>
-                                                    <div class="flex items-center">
-                                                        <i class="fas fa-rupee-sign mr-1"></i>
-                                                        
-                                                        <%= (Number(item.productPrice) * Number(item.productCount)).toFixed(0) %>.00 %> 
-                                                        <%if(item.productId.discount>0){%>
-                                                            <p class="text-sm text-green-500 ml-2"><%= item.productId.discount %>% off</p>
-                                                            <%}%>
-                                                       
+
+                                                <div class="flex-grow py-1 flex flex-col justify-between">
+                                                    <div>
+                                                        <div class="flex justify-between items-start">
+                                                            <h4 class="font-bold text-gray-900 text-lg">
+                                                                <%= item.productName %>
+                                                            </h4>
+                                                            <span class="status-badge <%= 
+                                                            item.productStatus === 'Pending' ? 'status-pending' : 
+                                                            item.productStatus === 'Confirmed' ? 'status-confirmed' : 
+                                                            item.productStatus === 'Shipped' ? 'status-shipped' : 
+                                                            item.productStatus === 'Delivered' ? 'status-delivered' : 
+                                                            item.productStatus === 'Cancelled' ? 'status-cancelled' : 'status-returned'
+                                                        %>">
+                                                                <%= item.productStatus %>
+                                                            </span>
+                                                        </div>
+                                                        <p class="text-xs text-gray-400 mt-1">Quantity: <span
+                                                                class="font-bold text-gray-900">
+                                                                <%= item.productCount %>
+                                                            </span></p>
+                                                    </div>
+
+                                                    <div class="flex items-end justify-between">
+                                                        <p class="text-xl font-bold font-playfair">₹<%=
+                                                                (item.productPrice * item.productCount).toLocaleString()
+                                                                %>.00</p>
+
+                                                        <div class="flex gap-4">
+                                                            <% if (['Pending', 'Confirmed' , 'Shipped'
+                                                                ].includes(item.productStatus)) { %>
+                                                                <button
+                                                                    class="cancel-btn text-xs font-bold text-red-600 hover:tracking-widest transition-all"
+                                                                    data-order-id="<%= orders._id %>"
+                                                                    data-payment-id="<%= orders.paymentDetails?.razorpay_payment_id || '' %>"
+                                                                    data-product-id="<%= item.productId?._id || item.productId %>">
+                                                                    CANCEL ITEM
+                                                                </button>
+                                                                <% } else if (item.productStatus==='Delivered' ) { %>
+                                                                    <button
+                                                                        class="return-btn text-xs font-bold text-amber-600 hover:tracking-widest transition-all"
+                                                                        data-order-id="<%= orders._id %>"
+                                                                        data-payment-id="<%= orders.paymentDetails?.razorpay_payment_id || '' %>"
+                                                                        data-product-id="<%= item.productId?._id || item.productId %>">
+                                                                        RETURN ITEM
+                                                                    </button>
+                                                                    <% } else if
+                                                                        (item.productStatus==='Order Not Conform' ) { %>
+                                                                        <button
+                                                                            onclick="paynow('<%= orders._id %>', this)"
+                                                                            class="text-xs font-bold text-maroon hover:tracking-widest transition-all"
+                                                                            style="color: var(--maroon);">
+                                                                            PAY NOW
+                                                                        </button>
+                                                                        <% } %>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <span class="inline-block mt-2 status-badge <%= 
-                                                    item.productStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
-                                                    item.productStatus === 'Confirmed' ? 'bg-blue-100 text-blue-800' : 
-                                                    item.productStatus === 'Shipped' ? 'bg-purple-100 text-purple-800' : 
-                                                    item.productStatus === 'Delivered' ? 'bg-green-100 text-green-800' : 
-                                                    'bg-red-100 text-red-800'
-                                                %>">
-                                                    <%= item.productStatus %>
-                                                </span>
                                             </div>
-                                            <div class="flex-shrink-0 mt-4 sm:mt-0 text-center sm:text-right w-full sm:w-auto">
-                                                <% if (
-                                                    item.productStatus !== 'Returned' &&
-                                                    item.productStatus !== 'Cancelled' &&
-                                                    item.productStatus !== 'Delivered' &&
-                                                    item.productStatus !== 'Send Return Request' &&
-                                                    item.productStatus !== 'Order Not Conform'
-                                                ) { %>
-                                                    <button 
-                                                        class="btn btn-cancel cancel-btn w-full sm:w-auto"
-                                                        data-order-id="<%= orders._id %>"
-                                                        data-payment-id="<%= orders.paymentDetails?.razorpay_payment_id || '' %>"
-                                                        data-product-id="<%= item.productId._id || item.productId %>"
-                                                    >
-                                                        Cancel Order
-                                                    </button>
-                                                <% } else if (item.productStatus === 'Delivered') { %>
-                                                    <button 
-                                                        class="btn btn-return return-btn w-full sm:w-auto"
-                                                        data-order-id="<%= orders._id %>"
-                                                        data-payment-id="<%= orders.paymentDetails?.razorpay_payment_id || '' %>"
-                                                        data-product-id="<%= item.productId._id || item.productId %>"
-                                                    >
-                                                        Return Order
-                                                    </button>
-                                                <% } else if (item.productStatus === 'Order Not Conform') { %>
-                                                    <button onclick="paynow('<%= orders._id %>', this)" class="w-full sm:w-auto"> Buy Now</button>
-                                                <% } %>
-                                            </div>
-                                        </div>
-                                    <% }); %>
+                                            <% }); %>
+                                    </div>
                                 </div>
 
-                                <!-- Order Summary -->
-                                <div class="bg-gray-100 rounded-lg p-6 space-y-4">
-                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
-                                    <div class="space-y-2">
-                                        <div class="flex justify-between text-sm">
-                                            <span class="text-gray-600">Subtotal</span>
-                                            <span class="font-medium text-gray-900">
-                                                <i class="fas fa-rupee-sign"></i> 
-                                                <%= (orders.totalAmount+orders.discount||0-100).toFixed(2) %>
-                                            </span>
-                                        </div>
-                                        <div class="flex justify-between text-sm">
-                                            <span class="text-gray-600">Shipping</span>
-                                            <span class="font-medium text-gray-900">
-                                                <i class="fas fa-rupee-sign"></i> 100.00
-                                            </span>
-                                        </div>
-                                        <% if (orders.discount > 0) { %>
-                                            <div class="flex justify-between text-sm text-green-600">
-                                                <span>Coupon Discount</span>
-                                                <span>
-                                                    -<i class="fas fa-rupee-sign"></i> 
-                                                    <%= orders.discount.toFixed(0) %>.00
-                                                </span>
-                                            </div>
-                                        <% } %>
-                                        <div class="border-t border-gray-200 pt-3 mt-3">
-                                            <div class="flex justify-between font-semibold">
-                                                <span class="text-gray-900">Total</span>
-                                                <span class="text-gray-900">
-                                                    <i class="fas fa-rupee-sign"></i> 
-                                                    <%= (orders.totalAmount).toFixed(0) %>.00
-                                                </span>
-                                            </div>
-                                        </div>
+                                <!-- Right Column -->
+                                <div class="lg:col-span-4 space-y-8">
+                                    <!-- Address Section -->
+                                    <div class="bg-gray-50/50 rounded-3xl p-8 border border-gray-100">
+                                        <h4
+                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                            <i class="fa-solid fa-map-pin opacity-30"></i> Shipping Address
+                                        </h4>
+                                        <% if (orders.shippingAddress && orders.shippingAddress.length> 0) { %>
+                                            <% let addr=orders.shippingAddress[0]; %>
+                                                <div
+                                                    class="text-sm text-gray-700 leading-relaxed uppercase tracking-tight">
+                                                    <p class="font-black text-gray-900 text-base mb-2">
+                                                        <%= addr.name %>
+                                                    </p>
+                                                    <p>
+                                                        <%= addr.address %>
+                                                    </p>
+                                                    <p>
+                                                        <%= addr.city %>, <%= addr.state %> - <%= addr.pincode %>
+                                                    </p>
+                                                    <div class="mt-6 font-bold text-maroon"
+                                                        style="color: var(--maroon);">
+                                                        <i class="fa-solid fa-phone mr-2 opacity-50"></i>
+                                                        <%= addr.mobile %>
+                                                    </div>
+                                                </div>
+                                                <% } %>
                                     </div>
 
-                                    <!-- Shipping Address -->
-                                    <div class="mt-6 bg-white p-4 rounded-lg border border-gray-200">
-                                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Shipping Address</h3>
-                                        <% if (orders.shippingAddress && orders.shippingAddress.length > 0) { %>
-                                            <% orders.shippingAddress.forEach((address) => { %>
-                                                <address class="not-italic text-sm text-gray-700 text-center sm:text-left">
-                                                    <p class="text-gray-600">Name: <%= address.name %></p>
-                                                    <p class="text-gray-600">State: <%= address.state %></p>
-                                                    <p class="text-gray-600">City: <%= address.city %></p>
-                                                    <p class="text-gray-600">Address: <%= address.address %></p>
-                                                    <p class="text-gray-600">Pincode: <%= address.pincode %></p>
-                                                    <p class="text-gray-600">Mobile: <%= address.mobile %></p>
-                                                </address>
-                                            <% }) %>
-                                        <% } else { %>
-                                            <p class="text-gray-600 text-center sm:text-left">No shipping addresses found.</p>
-                                        <% } %>
-                                        
+                                    <!-- Billing Section -->
+                                    <div class="bg-maroon/[0.02] rounded-3xl p-8 border border-maroon/5">
+                                        <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-6">
+                                            Order Summary</h4>
+                                        <div class="space-y-4 text-sm font-medium">
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-400">Items Total</span>
+                                                <span>₹<%= (orders.totalAmount + (orders.discount || 0) -
+                                                        100).toLocaleString() %>.00</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-400">Shipping Fee</span>
+                                                <span>₹100.00</span>
+                                            </div>
+                                            <% if (orders.discount> 0) { %>
+                                                <div class="flex justify-between text-green-600 italic">
+                                                    <span>Coupon Discount</span>
+                                                    <span>-₹<%= orders.discount.toLocaleString() %>.00</span>
+                                                </div>
+                                                <% } %>
+                                                    <div
+                                                        class="pt-4 border-t border-gray-100 flex justify-between items-center text-lg">
+                                                        <span class="font-bold text-gray-900">Total</span>
+                                                        <span class="font-bold text-maroon font-playfair text-2xl"
+                                                            style="color: var(--maroon);">₹<%=
+                                                                orders.totalAmount.toLocaleString() %>.00</span>
+                                                    </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    <% }); %>
-                <% } else { %>
-                    <!-- Empty State -->
-                    <div class="text-center py-16 bg-white rounded-lg shadow-md">
-                        <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.678 48.678 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
-                        </svg>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2 mt-4">No Orders Yet</h3>
-                        <p class="text-gray-500 mb-6">Start exploring our products and place your first order!</p>
-                        <a href="/wines" class="btn bg-blue-600 text-white hover:bg-blue-700">
-                            Browse Products
-                        </a>
                     </div>
-                <% } %>
-                
+                </div>
             </div>
-            
+            <% } %>
 
-          
-     <!-- Cancel Order Modal -->
-  <!-- Modal for Cancel Order -->
-<div id="cancel-modal" class="fixed inset-0 z-50 hidden">
-    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
-    <div class="fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form id="cancel-form" class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Cancel Order</h3>
-                    
-                    <input type="hidden" name="orderId" id="cancel-order-id">
-                    <input type="hidden" name="productId" id="cancel-product-id">
-                    <input type="hidden" name="razorpay_payment_id" id="cancel-payment-id">
-                    
-                    <div class="mb-4">
-                        <label for="cancel-reason" class="block text-sm font-medium text-gray-700 mb-2">
-                            Please provide a reason for cancellation
-                        </label>
-                        <textarea id="cancel-reason" 
-                                  name="reason" 
-                                  rows="3" 
-                                  class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                  required></textarea>
+                <!-- Modals (Cancel/Return) -->
+                <!-- [Rest of modal HTML and Scripts same as before, but adapted if needed] -->
+                <div id="cancel-modal" class="fixed inset-0 z-[2000] hidden">
+                    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeCancelModal()"></div>
+                    <div
+                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-3xl shadow-2xl p-8">
+                        <h3 class="text-2xl font-playfair font-bold mb-4 text-gray-900">Cancel Item?</h3>
+                        <textarea id="cancel-reason" rows="3"
+                            class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 text-sm mb-6 focus:ring-1 focus:ring-maroon outline-none"
+                            placeholder="Reason for cancellation..." required></textarea>
+                        <div class="flex gap-4">
+                            <button type="button" onclick="closeCancelModal()"
+                                class="flex-1 py-3 font-bold text-gray-400">CLOSE</button>
+                            <button id="confirm-cancel-btn"
+                                class="flex-2 px-8 py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-100">CONFIRM</button>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="mt-6 flex justify-end gap-3">
-                        <button type="button" 
-                                onclick="closeCancelModal()" 
-                                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors">
-                            Close
-                        </button>
-                        <button type="submit" 
-                                class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors">
-                            Confirm Cancel
-                        </button>
+                <div id="return-modal" class="fixed inset-0 z-[2000] hidden">
+                    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeReturnModal()"></div>
+                    <div
+                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-3xl shadow-2xl p-8">
+                        <h3 class="text-2xl font-playfair font-bold mb-4 text-gray-900">Return Item</h3>
+                        <textarea id="return-reason" rows="3"
+                            class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 text-sm mb-6 focus:ring-1 focus:ring-amber-500 outline-none"
+                            placeholder="Reason for return..." required></textarea>
+                        <div class="flex gap-4">
+                            <button type="button" onclick="closeReturnModal()"
+                                class="flex-1 py-3 font-bold text-gray-400">CLOSE</button>
+                            <button id="confirm-return-btn"
+                                class="flex-2 px-8 py-3 bg-amber-600 text-white font-bold rounded-xl shadow-lg shadow-amber-100">SUBMIT</button>
+                        </div>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                </div>
 
-   <!-- Modal for Return Order -->
-<div id="return-modal" class="fixed inset-0 z-50 hidden">
-    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
-    <div class="fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <form id="return-form" class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Return Order</h3>
-                    
-                    <input type="hidden" name="orderId" id="return-order-id">
-                    <input type="hidden" name="productId" id="return-product-id">
-                    <input type="hidden" name="razorpay_payment_id" id="return-payment-id">
-                    
-                    <div class="mb-4">
-                        <label for="return-reason" class="block text-sm font-medium text-gray-700 mb-2">
-                            Please provide a reason for return
-                        </label>
-                        <textarea id="return-reason" 
-                                  name="reason" 
-                                  rows="3" 
-                                  class="w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                  required></textarea>
-                    </div>
+                <%- include('../partials/userFooter.ejs') %>
 
-                    <div class="mt-6 flex justify-end gap-3">
-                        <button type="button" 
-                                onclick="closeReturnModal()" 
-                                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors">
-                            Close
-                        </button>
-                        <button type="submit" 
-                                class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-                            Confirm Return
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                    <script>
+                        // Modal helpers
+                        const showModal = (id) => { document.getElementById(id).classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+                        const hideModal = (id) => { document.getElementById(id).classList.add('hidden'); document.body.style.overflow = ''; }
 
+                        let currentOrderId, currentProductId, currentPaymentId;
 
-    <script>
-       // Handle "Cancel Order" button click
-document.addEventListener('click', async function (e) {
-    if (e.target.classList.contains('cancel-btn')) {
-        const orderId = e.target.getAttribute('data-order-id');
-        const paymentId = e.target.getAttribute('data-payment-id');
-        const productId = e.target.getAttribute('data-product-id');
+                        document.querySelectorAll('.cancel-btn').forEach(btn => {
+                            btn.onclick = () => {
+                                currentOrderId = btn.dataset.orderId;
+                                currentProductId = btn.dataset.productId;
+                                currentPaymentId = btn.dataset.paymentId;
+                                showModal('cancel-modal');
+                            }
+                        });
+                        const closeCancelModal = () => hideModal('cancel-modal');
 
-        console.log('Order ID:', orderId);
-        console.log('Product ID:', productId);
-        console.log('Payment ID:', paymentId);
+                        document.getElementById('confirm-cancel-btn').onclick = async () => {
+                            const reason = document.getElementById('cancel-reason').value;
+                            if (!reason) return;
+                            const res = await fetch('/orders/cancel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: currentOrderId, productId: currentProductId, paymentId: currentPaymentId, reason }) });
+                            if (res.ok) location.reload();
+                            else Swal.fire('Error', 'Failed to cancel item', 'error');
+                        };
 
-        // Open the modal and populate inputs
-        const modal = document.getElementById('cancel-modal');
-        modal.style.display = 'block';
+                        document.querySelectorAll('.return-btn').forEach(btn => {
+                            btn.onclick = () => {
+                                currentOrderId = btn.dataset.orderId;
+                                currentProductId = btn.dataset.productId;
+                                currentPaymentId = btn.dataset.paymentId;
+                                showModal('return-modal');
+                            }
+                        });
+                        const closeReturnModal = () => hideModal('return-modal');
 
-        document.getElementById('cancel-order-id').value = orderId;
-        document.getElementById('cancel-product-id').value = productId;
-        document.getElementById('cancel-payment-id').value = paymentId;
-    }
-});
+                        document.getElementById('confirm-return-btn').onclick = async () => {
+                            const reason = document.getElementById('return-reason').value;
+                            if (!reason) return;
+                            const res = await fetch('/orders/return', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: currentOrderId, productId: currentProductId, paymentId: currentPaymentId, reason }) });
+                            if (res.ok) location.reload();
+                            else Swal.fire('Error', 'Failed to submit return', 'error');
+                        };
 
-// Close the modal
-function closeCancelModal() {
-    document.getElementById('cancel-modal').style.display = 'none';
-}
-
-// Handle form submission to cancel the order
-document.getElementById('cancel-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const orderId = document.getElementById('cancel-order-id').value;
-    const productId = document.getElementById('cancel-product-id').value;
-    const paymentId = document.getElementById('cancel-payment-id').value;
-    const reason = document.getElementById('cancel-reason').value;
-
-    try {
-        const response = await fetch('/orders/cancel', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                orderId,
-                productId,
-                paymentId,
-                reason,
-            }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            Swal.fire({
-                title: 'Order Cancelled',
-                text: `Your order has been cancelled successfully.`,
-                icon: 'success',
-                confirmButtonText: 'OK',
-            }).then(() => {
-                location.reload();
-            });
-        } else {
-            Swal.fire({
-                title: 'Error',
-                text: data.message || 'Something went wrong!',
-                icon: 'error',
-                confirmButtonText: 'OK',
-            });
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'Unable to cancel the order. Please try again later.',
-            icon: 'error',
-            confirmButtonText: 'OK',
-        });
-    }
-});
-
-
-
-        // Handle "Return Order" button click
-document.addEventListener('click', async function (e) {
-    if (e.target.classList.contains('return-btn')) {
-        const orderId = e.target.getAttribute('data-order-id');
-        const paymentId = e.target.getAttribute('data-payment-id');
-        const productId = e.target.getAttribute('data-product-id');
-
-        console.log('Order ID:', orderId);
-        console.log('Product ID:', productId);
-        console.log('Payment ID:', paymentId);
-
-        // Open the modal and populate inputs
-        const modal = document.getElementById('return-modal');
-        modal.style.display = 'block';
-
-        document.getElementById('return-order-id').value = orderId;
-        document.getElementById('return-product-id').value = productId;
-        document.getElementById('return-payment-id').value = paymentId;
-    }
-});
-
-// Close the modal
-function closeReturnModal() {
-    document.getElementById('return-modal').style.display = 'none';
-}
-
-// Handle form submission for returning the order
-document.getElementById('return-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const orderId = document.getElementById('return-order-id').value;
-    const productId = document.getElementById('return-product-id').value;
-    const paymentId = document.getElementById('return-payment-id').value;
-    const reason = document.getElementById('return-reason').value;
-
-    try {
-        const response = await fetch('/orders/return', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                orderId,
-                productId,
-                paymentId,
-                reason,
-            }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            Swal.fire({
-                title: 'Return Request Sent',
-                text: `Your return request has been sent successfully.`,
-                icon: 'success',
-                confirmButtonText: 'OK',
-            }).then(() => {
-                location.reload();
-            });
-        } else {
-            Swal.fire({
-                title: 'Error',
-                text: data.message || 'Something went wrong!',
-                icon: 'error',
-                confirmButtonText: 'OK',
-            });
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'Unable to process the return request. Please try again later.',
-            icon: 'error',
-            confirmButtonText: 'OK',
-        });
-    }
-});
-
-
-
-async function placeOrder(orderData) {
-    console.log('Attempting to place order...');
-
-    try {
-        const response = await fetch('/api/place-pending-order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(orderData),
-        });
-
-        if (!response.ok) {
-            const errorResponse = await response.json();
-            throw new Error(errorResponse.message || 'Order placement failed');
-        }
-
-        const result = await response.json();
-        console.log('Order placement response:', result);
-        return result;
-    } catch (error) {
-        console.error('Error during order placement:', error.message);
-        throw error;
-    }
-}
-
-
-async function paynow(orderId, element) {
-    try {
-        if (element) {
-            element.disabled = true;
-            element.textContent = 'Processing...';
-        }
-
-        const orderResponse = await fetch(`/api/order/${orderId}`);
-        const orderData = await orderResponse.json();
-
-        if (!orderData || !orderData.totalAmount) {
-            throw new Error('Invalid order data');
-        }
-
-        async function initiateRazorpayPayment(orderData) {
-            const response = await fetch(`/payment-render/${orderData.totalAmount}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Payment initialization failed');
-            }
-
-            const paymentData = await response.json();
-
-            return new Promise((resolve, reject) => {
-                const options = {
-                    key: "<%= process.env.RAZOR_KEY_ID %>",
-                    amount: orderData.totalAmount * 100,
-                    currency: "INR",
-                    name: "Wine Heaven",
-                    description: "Order Repayment",
-                    order_id: paymentData.orderID,
-                    handler: function (response) {
-                        orderData.razorpay_payment_id = response.razorpay_payment_id;
-                        orderData.razorpay_order_id = response.razorpay_order_id;
-                        orderData.razorpay_signature = response.razorpay_signature;
-                        resolve(orderData); // Resolve the promise with the updated orderData
-                    },
-                    modal: {
-                        ondismiss: function () {
-                            reject(new Error('Payment cancelled'));
-                        },
-                    },
-                    theme: {
-                        color: "#600018",
-                    },
-                };
-
-                const rzp1 = new Razorpay(options);
-                rzp1.open();
-            });
-        }
-
-        const paidOrderData = await initiateRazorpayPayment(orderData);
-        const orderResult = await placeOrder(paidOrderData);
-
-        if (orderResult.success) {
-            console.log('Order successfully placed. Redirecting to confirmation page...');
-            window.location.href = "/order-confirmation";
-        } else {
-            throw new Error(orderResult.message || 'Order placement unsuccessful');
-        }
-    } catch (error) {
-        console.error('Payment Error:', error);
-
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'error',
-                title: 'Payment Failed',
-                text: error.message || 'Something went wrong!',
-                confirmButtonColor: '#600018',
-            });
-        } else {
-            alert('Payment failed: ' + (error.message || 'Unknown error'));
-        }
-    } finally {
-        if (element) {
-            element.disabled = false;
-            element.textContent = 'Buy Now';
-        }
-    }
-}
-
-    </script>
-   
+                        async function paynow(orderId, btn) {
+                            btn.disabled = true; btn.innerText = '...';
+                            try {
+                                const orderData = await (await fetch(`/api/order/${orderId}`)).json();
+                                const paymentData = await (await fetch(`/payment-render/${orderData.totalAmount}`, { method: 'POST' })).json();
+                                const options = {
+                                    key: "<%= process.env.RAZOR_KEY_ID %>",
+                                    amount: orderData.totalAmount * 100,
+                                    currency: "INR",
+                                    name: "Wine Heaven",
+                                    order_id: paymentData.orderID,
+                                    handler: async (resp) => {
+                                        await fetch('/api/place-pending-order', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ ...orderData, razorpay_payment_id: resp.razorpay_payment_id, razorpay_order_id: resp.razorpay_order_id, razorpay_signature: resp.razorpay_signature })
+                                        });
+                                        window.location.href = "/order-confirmation";
+                                    },
+                                    theme: { color: "#6b0f1a" }
+                                };
+                                new Razorpay(options).open();
+                            } catch (e) { btn.disabled = false; btn.innerText = 'PAY NOW'; }
+                        }
+                    </script>
 </body>
+
 </html>

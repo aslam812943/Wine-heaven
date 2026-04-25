@@ -1,194 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Address</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        .error-message {
-            color: red;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-        .hidden {
-            display: none;
-        }
-        .bg-charcoal {
-            background-color:#600018;
-            color: white;
-        }
-    </style>
+    <title>Edit Address | Wine Heaven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
-    <%- include('../partials/userHeader.ejs') %>
-    <div class="flex flex-1 mt-20">
-       
-        <div class="flex-grow bg-gray-100 flex  p-4 ">
-            <div class="bg-white shadow-md rounded-lg p-8  w-full mt-10">
-                <h1 class="text-2xl font-semibold mb-6 text-gray-800">Edit Address</h1>
-                <form id="editAddressForm" action="/addres/edit/<%= address._id %>" method="POST" class="space-y-4" onsubmit="return validateForm()">
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                        <input type="text" id="name" name="name" maxlength="15" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value="<%= address.name %>" required>
-                        <p id="name-error" class="error-message hidden">Name must be at least 3 characters long, cannot start with a space, and must start with an uppercase letter.</p>
-                    </div>
-                    <div>
-                        <label for="mobile" class="block text-sm font-medium text-gray-700">10-digit mobile number</label>
-                        <input type="text" id="mobile" name="mobile" maxlength="10" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value="<%= address.mobile %>" required>
-                        <p id="mobile-error" class="error-message hidden">Mobile number must be exactly 10 digits and cannot start with 0.</p>
-                    </div>
-                    <div>
-                        <label for="pincode" class="block text-sm font-medium text-gray-700">Pincode</label>
-                        <input type="text" id="pincode" name="pincode" maxlength="6" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value="<%= address.pincode %>" required>
-                        <p id="pincode-error" class="error-message hidden">Pincode must be exactly 6 digits and cannot start with 0.</p>
-                    </div>
-                    <div>
-                        <label for="address" class="block text-sm font-medium text-gray-700">Address (Area and Street)</label>
-                        <input type="text" id="address" name="address" maxlength="25" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value="<%= address.address %>" required>
-                        <p id="address-error" class="error-message hidden">Address must be at least 5 characters long.</p>
-                    </div>
-                    <div>
-                        <label for="city" class="block text-sm font-medium text-gray-700">City/District/Town</label>
-                        <input type="text" id="city" name="city" maxlength="25" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value="<%= address.city %>" required>
-                        <p id="city-error" class="error-message hidden">City/District/Town must be at least 3 characters long.</p>
-                    </div>
-                    <div>
-                        <label for="state" class="block text-sm font-medium text-gray-700">State</label>
-                        <select id="state" name="state" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
-                            <option value="">--Select State--</option>
-                            <option value="New York">New York</option>
-                            <option value="Florida">Florida</option>
-                            <option value="California">California</option>
-                        </select>
-                        <p id="state-error" class="error-message hidden">Please select a state.</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Address Type</label>
-                        <div class="mt-2 space-x-4">
-                            <label class="inline-flex items-center">
-                                <input type="radio" id="home" name="addressType" value="Home" class="form-radio text-indigo-600" <%= address.addressType === 'Home' ? 'checked' : '' %> required>
-                                <span class="ml-2">Home</span>
-                            </label>
-                            <label class="inline-flex items-center">
-                                <input type="radio" id="work" name="addressType" value="Work" class="form-radio text-indigo-600" <%= address.addressType === 'Work' ? 'checked' : '' %> required>
-                                <span class="ml-2">Work</span>
-                            </label>
-                        </div>
-                        <p id="addressType-error" class="error-message hidden">Please select an address type.</p>
-                    </div>
-                    <div class="mt-6 flex gap-3">
-                                  
-                                   
-                        <button type="submit"  class=" bg-charcoal w-full border  py-2 rounded-lg text-sm font-medium">Update</button>
-                        <a href="/addresses" class=" bg-charcoal w-full  py-2 text-center rounded-lg text-sm font-medium">Cancel</a>
-                    
-                </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <%- include('../partials/userFooter.ejs') %>
 
     <script>
-        function validateForm() {
-            let isValid = true;
-
-            const name = document.getElementById('name').value.trim();
-            const mobile = document.getElementById('mobile').value.trim();
-            const pincode = document.getElementById('pincode').value.trim();
-            const address = document.getElementById('address').value.trim();
-            const city = document.getElementById('city').value.trim();
-            const state = document.getElementById('state').value;
-            const addressTypeInputs = document.getElementsByName('addressType');
-
-            const nameError = document.getElementById('name-error');
-            const mobileError = document.getElementById('mobile-error');
-            const pincodeError = document.getElementById('pincode-error');
-            const addressError = document.getElementById('address-error');
-            const cityError = document.getElementById('city-error');
-            const stateError = document.getElementById('state-error');
-            const addressTypeError = document.getElementById('addressType-error');
-
-            // Validate the name field
-            if (name.length < 3 || name.charAt(0) === ' ' || name.charAt(0) !== name.charAt(0).toUpperCase()) {
-                nameError.classList.remove('hidden');
-                isValid = false;
-            } else {
-                nameError.classList.add('hidden');
-            }
-
-            // Validate the mobile number field
-            const mobilePattern = /^[1-9][0-9]{9}$/;
-            if (!mobilePattern.test(mobile)) {
-                mobileError.classList.remove('hidden');
-                isValid = false;
-            } else {
-                mobileError.classList.add('hidden');
-            }
-
-            // Validate the pincode field
-            const pincodePattern = /^[1-9][0-9]{5}$/;
-            if (!pincodePattern.test(pincode)) {
-                pincodeError.classList.remove('hidden');
-                isValid = false;
-            } else {
-                pincodeError.classList.add('hidden');
-            }
-
-            // Validate the address field
-            if (address.length < 5) {
-                addressError.classList.remove('hidden');
-                isValid = false;
-            } else {
-                addressError.classList.add('hidden');
-            }
-
-            // Validate the city field
-            if (city.length < 3) {
-                cityError.classList.remove('hidden');
-                isValid = false;
-            } else {
-                cityError.classList.add('hidden');
-            }
-
-            // Validate the state field
-            if (state === "") {
-                stateError.classList.remove('hidden');
-                isValid = false;
-            } else {
-                stateError.classList.add('hidden');
-            }
-
-            // Validate the address type field
-            let addressTypeSelected = false;
-            for (let i = 0; i < addressTypeInputs.length; i++) {
-                if (addressTypeInputs[i].checked) {
-                    addressTypeSelected = true;
-                    break;
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'wine-maroon': '#6b0f1a',
+                        'wine-gold': '#c9a84c',
+                        'wine-cream': '#fdf8f2',
+                        'wine-black': '#0a0202',
+                    }
                 }
             }
-
-            if (!addressTypeSelected) {
-                addressTypeError.classList.remove('hidden');
-                isValid = false;
-            } else {
-                addressTypeError.classList.add('hidden');
-            }
-
-            if (!isValid) {
-                return false;
-            }
-
-            Swal.fire({
-                title: 'Success!',
-                text: 'Address updated successfully.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-            return true;
         }
     </script>
+
+    <style>
+        :root {
+            --wine-maroon: #6b0f1a;
+            --wine-gold: #c9a84c;
+            --wine-cream: #fdf8f2;
+            --wine-black: #0a0202;
+        }
+
+        body {
+            background-color: var(--wine-cream);
+            font-family: 'Inter', sans-serif;
+            color: var(--wine-black);
+        }
+
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(107, 15, 26, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(107, 15, 26, 0.05);
+        }
+
+        .input-premium {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(107, 15, 26, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .input-premium:focus {
+            border-color: var(--wine-gold);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.1);
+            outline: none;
+        }
+
+        .btn-wine {
+            background: var(--wine-maroon);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-wine:hover {
+            background: #4a0a12;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 15, 26, 0.2);
+        }
+
+        .error-message {
+            color: #d11124;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        /* Custom radio styling */
+        .radio-premium {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(107, 15, 26, 0.2);
+            border-radius: 50%;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .radio-premium:checked {
+            border-color: var(--wine-gold);
+        }
+
+        .radio-premium:checked::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--wine-gold);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <%- include('../partials/userHeader.ejs') %>
+
+        <main class="container mx-auto px-4 pt-32 pb-12 flex justify-center">
+            <div class="w-full max-w-2xl" data-aos="fade-up">
+                <!-- Header Section -->
+                <div class="mb-10 text-center">
+                    <span class="text-wine-gold uppercase tracking-[0.3em] text-xs font-bold mb-2 block">Modify Reserve
+                        Location</span>
+                    <h1 class="playfair text-3xl md:text-4xl font-bold text-wine-black mb-4">Edit Address</h1>
+                    <div class="w-16 h-1 bg-wine-gold mx-auto"></div>
+                </div>
+
+                <div class="glass-card rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                    <form id="editAddressForm" action="/addres/edit/<%= address._id %>" method="POST" class="space-y-6"
+                        onsubmit="return validateForm()">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Name -->
+                            <div>
+                                <label for="name"
+                                    class="block text-[10px] uppercase tracking-widest text-wine-gold font-bold mb-2">Full
+                                    Name</label>
+                                <input type="text" id="name" name="name" maxlength="15"
+                                    class="input-premium px-4 py-3 rounded-xl w-full font-medium"
+                                    value="<%= address.name %>" required>
+                                <p id="name-error" class="error-message">Name must be 3-15 chars, start with Uppercase,
+                                    and no leading spaces.</p>
+                            </div>
+
+                            <!-- Mobile -->
+                            <div>
+                                <label for="mobile"
+                                    class="block text-[10px] uppercase tracking-widest text-wine-gold font-bold mb-2">Mobile
+                                    Number</label>
+                                <input type="text" id="mobile" name="mobile" maxlength="10"
+                                    class="input-premium px-4 py-3 rounded-xl w-full font-medium"
+                                    value="<%= address.mobile %>" required>
+                                <p id="mobile-error" class="error-message">Exactly 10 digits required (cannot start with
+                                    0).</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Pincode -->
+                            <div>
+                                <label for="pincode"
+                                    class="block text-[10px] uppercase tracking-widest text-wine-gold font-bold mb-2">Pincode</label>
+                                <input type="text" id="pincode" name="pincode" maxlength="6"
+                                    class="input-premium px-4 py-3 rounded-xl w-full font-medium"
+                                    value="<%= address.pincode %>" required>
+                                <p id="pincode-error" class="error-message">Enter a valid 6-digit pincode.</p>
+                            </div>
+
+                            <!-- City -->
+                            <div>
+                                <label for="city"
+                                    class="block text-[10px] uppercase tracking-widest text-wine-gold font-bold mb-2">City/District</label>
+                                <input type="text" id="city" name="city" maxlength="25"
+                                    class="input-premium px-4 py-3 rounded-xl w-full font-medium"
+                                    value="<%= address.city %>" required>
+                                <p id="city-error" class="error-message">Minimum 3 characters required.</p>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div>
+                            <label for="address"
+                                class="block text-[10px] uppercase tracking-widest text-wine-gold font-bold mb-2">Address
+                                (Area & Street)</label>
+                            <input type="text" id="address" name="address" maxlength="25"
+                                class="input-premium px-4 py-3 rounded-xl w-full font-medium"
+                                value="<%= address.address %>" required>
+                            <p id="address-error" class="error-message">Minimum 5 characters required.</p>
+                        </div>
+
+                        <!-- State -->
+                        <div>
+                            <label for="state"
+                                class="block text-[10px] uppercase tracking-widest text-wine-gold font-bold mb-2">State</label>
+                            <select id="state" name="state"
+                                class="input-premium px-4 py-3 rounded-xl w-full font-medium appearance-none cursor-pointer"
+                                required>
+                                <option value="">-- Select Region --</option>
+                                <option value="New York" <%=address.state==='New York' ? 'selected' : '' %>>New York
+                                </option>
+                                <option value="Florida" <%=address.state==='Florida' ? 'selected' : '' %>>Florida
+                                </option>
+                                <option value="California" <%=address.state==='California' ? 'selected' : '' %>
+                                    >California</option>
+                            </select>
+                            <p id="state-error" class="error-message">Please select a state from the list.</p>
+                        </div>
+
+                        <!-- Address Type -->
+                        <div>
+                            <label
+                                class="block text-[10px] uppercase tracking-widest text-wine-gold font-bold mb-4">Location
+                                Category</label>
+                            <div class="flex space-x-8">
+                                <label class="flex items-center group cursor-pointer">
+                                    <input type="radio" id="home" name="addressType" value="Home" class="radio-premium"
+                                        <%=address.addressType==='Home' ? 'checked' : '' %> required>
+                                    <span
+                                        class="ml-3 text-sm font-medium text-wine-black group-hover:text-wine-gold transition-colors">Home
+                                        Reserve</span>
+                                </label>
+                                <label class="flex items-center group cursor-pointer">
+                                    <input type="radio" id="work" name="addressType" value="Work" class="radio-premium"
+                                        <%=address.addressType==='Work' ? 'checked' : '' %> required>
+                                    <span
+                                        class="ml-3 text-sm font-medium text-wine-black group-hover:text-wine-gold transition-colors">Work
+                                        Reserve</span>
+                                </label>
+                            </div>
+                            <p id="addressType-error" class="error-message">Please categorize this location.</p>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="pt-6 flex flex-col md:flex-row gap-4">
+                            <button type="submit"
+                                class="btn-wine flex-1 py-4 rounded-2xl font-bold shadow-lg shadow-wine-maroon/20">Update
+                                Reserve Location</button>
+                            <a href="/addresses"
+                                class="bg-gray-100 text-gray-500 py-4 px-10 rounded-2xl font-bold text-center hover:bg-gray-200 transition-colors">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <%- include('../partials/userFooter.ejs') %>
+
+            <script>
+                AOS.init({ duration: 1000, once: true, easing: 'ease-out-cubic' });
+
+                function validateForm() {
+                    let isValid = true;
+
+                 
+                    document.querySelectorAll('.error-message').forEach(e => e.style.display = 'none');
+
+                    const val = (id) => document.getElementById(id).value.trim();
+                    const err = (id) => document.getElementById(id + '-error');
+
+                    // Name
+                    if (val('name').length < 3 || val('name').charAt(0) !== val('name').charAt(0).toUpperCase()) {
+                        err('name').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    // Mobile
+                    if (!/^[1-9][0-9]{9}$/.test(val('mobile'))) {
+                        err('mobile').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    // Pincode
+                    if (!/^[1-9][0-9]{5}$/.test(val('pincode'))) {
+                        err('pincode').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    // Address
+                    if (val('address').length < 5) {
+                        err('address').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    // City
+                    if (val('city').length < 3) {
+                        err('city').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    // State
+                    if (document.getElementById('state').value === "") {
+                        err('state').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    // Address Type
+                    if (!document.querySelector('input[name="addressType"]:checked')) {
+                        err('addressType').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    if (isValid) {
+                        Swal.fire({
+                            title: '<span class="playfair">Success!</span>',
+                            text: 'Address updated in your vault.',
+                            icon: 'success',
+                            confirmButtonColor: '#6b0f1a',
+                            background: '#fdf8f2'
+                        });
+                    }
+
+                    return isValid;
+                }
+            </script>
 </body>
+
 </html>
