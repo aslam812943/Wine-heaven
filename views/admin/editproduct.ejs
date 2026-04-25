@@ -105,8 +105,8 @@
                                         <label for="category" class="block">Category</label>
                                         <select name="category" id="category" class="w-full border p-2" required>
                                             <% categories.forEach(category=> { %>
-                                                <option value="<%= category._id %>"
-                                                    <%=product.category.toString()===category._id.toString()
+                                                <option value="<%= category._id %>" <%=product.category &&
+                                                    product.category._id.toString()===category._id.toString()
                                                     ? 'selected' : '' %>><%= category.name %>
                                                 </option>
                                                 <% }) %>
@@ -131,8 +131,8 @@
                                     </div>
                                     <div class="mb-4">
                                         <label for="images" class="block">Upload New Images (if any are deleted)</label>
-                                        <input type="file" id="imageInput" accept="image/*" class="w-full border p-2"
-                                            multiple>
+                                        <input type="file" id="imageInput" name="images" accept="image/*"
+                                            class="w-full border p-2" multiple>
                                         <input type="hidden" name="croppedImages" id="croppedImages">
                                         <input type="hidden" name="deletedImages" id="deletedImages">
                                         <p id="image-error" class="text-red-500 text-sm mt-1 hidden">Please ensure there
@@ -238,7 +238,7 @@
 
                 const imgWrapper = document.createElement('div');
                 imgWrapper.className = 'img-wrapper';
-                imgWrapper.dataset.imageId = imageId; 
+                imgWrapper.dataset.imageId = imageId;
                 imgWrapper.innerHTML = `
             <img src="${url}" alt="Cropped Image" class="cropped-image">
             <button type="button" class="delete-button" onclick="removeCroppedImage(this, '${imageId}')">X</button>

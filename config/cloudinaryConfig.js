@@ -3,7 +3,7 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, // Fixed typo here
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
@@ -11,19 +11,19 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-      folder: 'product_images',
-      allowed_formats: ['jpeg', 'png', 'jpg'],
-      transformation: [{ width: 500, height: 500, crop: 'limit' }],
+    folder: 'product_images',
+    allowed_formats: ['jpeg', 'png', 'jpg'],
+    transformation: [{ width: 500, height: 500, crop: 'limit' }],
   },
 });
 
 const upload = multer({
   storage,
   limits: {
-      fileSize: 5 * 1024 * 1024, // 5 MB per file
-      fields: 10, // Maximum number of fields
-      fieldSize: 10 * 1024 * 1024, // Limit for field value size
+    fileSize: 5 * 1024 * 1024, 
+    fields: 10,
+    fieldSize: 10 * 1024 * 1024, 
   }
-}).single('image'); // Changed to .single() to match form field
+}).array('images', 10);
 
 module.exports = { cloudinary, upload };

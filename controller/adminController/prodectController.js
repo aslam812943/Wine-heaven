@@ -150,7 +150,20 @@ exports.updateProductPost = async (req, res) => {
         product.productAllDiscount = product.discount + product.offerDiscout || 0
         product.priceAfterDiscount = product.price - (product.productAllDiscount / 100) * product.price
 
+        // Handle image updates
+        let finalImages = [...product.images];
 
+     
+        if (removedImages.length > 0) {
+            finalImages = finalImages.filter(img => !removedImages.includes(img));
+        }
+
+        if (req.files && req.files.length > 0) {
+            const newImagePaths = req.files.map(file => file.path || file.filename);
+            finalImages = [...finalImages, ...newImagePaths];
+        }
+
+        product.images = finalImages;
 
         await product.save();
 
