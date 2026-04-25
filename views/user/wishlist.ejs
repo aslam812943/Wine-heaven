@@ -249,14 +249,14 @@
                                             class="bar-action remove-btn" title="Remove">
                                             <i class="fas fa-trash"></i>
                                         </button>
-                                        <a href="/products/<%= product._id %>" class="bar-action" title="View Details">
+                                        <a href="/wine/<%= product._id %>" class="bar-action" title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     </div>
                                 </div>
                                 <div class="product-info">
                                     <div>
-                                        <a href="/products/<%= product._id %>" class="product-name">
+                                        <a href="/wine/<%= product._id %>" class="product-name">
                                             <%= product.name %>
                                         </a>
                                         <span class="product-price">₹<%= (product.priceAfterDiscount).toFixed(0) %>
