@@ -47,10 +47,10 @@ exports.addCoupon = async (req, res) => {
         const { code, discountType, discountAmount, minimumPurchase, maximumDiscount, validFrom, validUntil, usageLimit } = req.body;
 
 
-        if(discountType === 'fixed'){
-        
-            
-            if(minimumPurchase/2<discountAmount){
+        if (discountType === 'fixed') {
+
+
+            if (minimumPurchase / 2 < discountAmount) {
                 req.flash('error', 'The discount amount for fixed type must not exceed 50% of the minimum purchase. ');
                 return res.redirect('/admin/coupons/add');
             }
@@ -58,11 +58,11 @@ exports.addCoupon = async (req, res) => {
         }
 
 
-    const existingCoupon = await Coupon.findOne({ code: code.toUpperCase() });
-    if (existingCoupon) {
-        req.flash('error', 'Coupon code already exists');
-        return res.redirect('/admin/coupons/add');
-    }
+        const existingCoupon = await Coupon.findOne({ code: code.toUpperCase() });
+        if (existingCoupon) {
+            req.flash('error', 'Coupon code already exists');
+            return res.redirect('/admin/coupons/add');
+        }
 
 
 
@@ -275,7 +275,7 @@ exports.offerActivate = async (req, res) => {
             if (product) {
                 product.offerDiscout = 0;
                 product.productAllDiscount = product.discount
-            
+
                 let price = product.price * (product.productAllDiscount / 100)
                 product.priceAfterDiscount = product.price - price
                 await product.save();
@@ -286,7 +286,7 @@ exports.offerActivate = async (req, res) => {
             products.forEach(async (product) => {
                 product.offerDiscout = 0;
                 product.productAllDiscount = product.discount
-     
+
                 let price = product.price * (product.productAllDiscount / 100)
                 product.priceAfterDiscount = product.price - price
 
@@ -297,7 +297,7 @@ exports.offerActivate = async (req, res) => {
 
         res.redirect('/admin/offers');
     } catch (error) {
-      
+
         res.status(500).send('An error occurred while deactivating the offer');
     }
 };
@@ -306,21 +306,21 @@ exports.offerActivate = async (req, res) => {
 
 
 
-exports.getEditCoupon = async (req,res)=>{
-   
-    
-    try{
+exports.getEditCoupon = async (req, res) => {
+
+
+    try {
 
 
         const id = req.params.id
 
         const coupon = await Coupon.findById(id)
-      
-
-        res.render('admin/editCoupon',{coupon})
 
 
-    }catch(error){
+        res.render('admin/editCoupon', { coupon })
+
+
+    } catch (error) {
 
     }
 }
@@ -333,60 +333,60 @@ exports.postEditCoupon = async (req, res) => {
 
         const couponid = req.params.id;
 
-        if(req.body.discountType === 'fixed'){
-        
-            
-            if(req.body.minimumPurchase/2<req.body.discountAmount){
+        if (req.body.discountType === 'fixed') {
+
+
+            if (req.body.minimumPurchase / 2 < req.body.discountAmount) {
                 req.flash('error', 'The discount amount for fixed type must not exceed 50% of the minimum purchase. ');
                 return res.redirect('back');
             }
 
         }
 
-        await Coupon.findByIdAndUpdate(couponid,req.body)
+        await Coupon.findByIdAndUpdate(couponid, req.body)
         res.redirect('/admin/coupons')
-    }catch(error){
-      
-        res.status(500).send('An error occurred while deactivating the offer'); 
+    } catch (error) {
+
+        res.status(500).send('An error occurred while deactivating the offer');
     }
-      
+
 };
 
 
 
-exports.getEditOffer = async(req,res)=>{
-    try{
+exports.getEditOffer = async (req, res) => {
+    try {
         const id = req.params.id
         const offer = await Offer.findById(id)
 
-        if(offer.isActive){
-            req.flash('error', 'this offer active canot edit. ');
-           res.redirect('/admin/offers')
+        if (offer.isActive) {
+            req.flash('error', 'This offer is active and cannot be edited.');
+            return res.redirect('/admin/offers');
         }
 
-        res.render('admin/editOffer',{offer})
+        res.render('admin/editOffer', { offer })
 
-    }catch(error){
+    } catch (error) {
 
         res.status(500).send('An error occurred while deactivating the offer');
     }
 }
 
 
-exports.postEditOffer = async (req,res)=>{
-    try{
+exports.postEditOffer = async (req, res) => {
+    try {
 
         const id = req.params.id
 
 
-        await Offer.findByIdAndUpdate(id,req.body)
+        await Offer.findByIdAndUpdate(id, req.body)
 
         res.redirect("/admin/offers")
 
-      
-        
 
-    }catch(error){
+
+
+    } catch (error) {
 
         res.status(500).send('An error occurred while deactivating the offer');
     }

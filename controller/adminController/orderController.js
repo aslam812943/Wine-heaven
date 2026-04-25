@@ -9,7 +9,8 @@ const availableStatusUpdates = {
     'Out for Delivery': ['Delivered'],
     'Delivered': [],
     'Cancelled': [],
-    'Send Return Request': ['Returned']
+    'Send Return Request': ['Returned'],
+    'Returned': []
 };
 
 
@@ -153,7 +154,10 @@ exports.getorderDetails = async (req, res) => {
             return res.status(404).send('Order not found');
         }
 
-        res.render('admin/orderDetails', { order: order });
+        res.render('admin/orderDetails', {
+            order: order,
+            availableStatusUpdates: availableStatusUpdates
+        });
     } catch (error) {
         res.status(500).send('An error occurred');
     }

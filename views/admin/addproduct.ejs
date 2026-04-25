@@ -4,15 +4,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Product</title>
+    <title>Add Product | Wine Heaven</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
     <style>
-        .preview-container {
+        :root {
+            --maroon: #6b0f1a;
+            --maroon-dk: #4a0a12;
+            --gold: #c9a84c;
+            --bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+        }
+
+        .heading-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-dk) 100%);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(107, 15, 26, 0.3);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            color: #374151;
+            transition: all 0.2s;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-input:focus {
+            border-color: var(--maroon);
+            box-shadow: 0 0 0 3px rgba(107, 15, 26, 0.1);
+            background: white;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-hint {
+            color: #ef4444;
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            font-weight: 500;
+        }
+
+        .hidden {
             display: none;
+        }
+
+        .upload-zone {
+            border: 2px dashed #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f9fafb;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--maroon);
+            background: rgba(107, 15, 26, 0.02);
+        }
+
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+
+        .cropped-image {
+            width: 96px;
+            height: 96px;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            border: 2px solid #e5e7eb;
+        }
+
+        .img-wrapper {
             position: relative;
-            max-width: 100%;
-            max-height: 400px;
+            display: inline-block;
+            margin: 6px;
+        }
+
+        .delete-button {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
 
         #crop-modal {
@@ -22,128 +147,144 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.7);
             justify-content: center;
             align-items: center;
+            z-index: 9999;
         }
 
         #crop-modal .modal-content {
             background: #fff;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 24px;
+            border-radius: 20px;
+            max-width: 90vw;
+            width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        .cropped-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            margin: 5px;
-            position: relative;
-        }
-
-        .delete-button {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: red;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            width: 20px;
-            height: 20px;
-            text-align: center;
-            line-height: 18px;
-            font-size: 14px;
-        }
-
-        .img-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .error-message {
-            color: red;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
+        .preview-container {
+            max-width: 100%;
+            max-height: 380px;
         }
     </style>
 </head>
 
-<body>
+<body class="bg-[#f8f9fa]">
     <%- include('../partials/adminSidebar.ejs') %>
-        <div class=" ml-0 md:ml-64">
-            <div class="container mx-auto p-6">
-                <h2 class="text-2xl font-semibold mb-4">Add New Product</h2>
-                <form id="productForm" enctype="multipart/form-data">
-                    <div class="mb-4">
-                        <label for="name" class="block">Product Name</label>
-                        <input id="name" type="text" name="name" maxlength="50" required class="w-full border p-2">
-                        <p id="name-error" class="error-message hidden">Product name must start with an uppercase letter
-                            and be at least 4 characters long .</p>
+        <div class="lg:ml-64 p-6 pt-24 md:pt-6">
+            <div class="max-w-2xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 heading-font">Add New Product</h1>
+                        <p class="text-sm text-gray-500 mt-1">Add a new wine to your catalog.</p>
                     </div>
-                    <div class="mb-4">
-                        <label for="price" class="block">Price</label>
-                        <input id="price" type="number" name="price" max="50000" required class="w-full border p-2">
-                        <p id="price-error" class="error-message hidden">Price must be greater than 0.</p>
-                    </div>
-                    <div class="mb-4">
-                        <label for="category" class="block">Category</label>
-                        <select id="category" name="category" required class="w-full border p-2">
-                            <option value="">Select a category</option>
-                            <% categories.forEach(function(category) { %>
-                                <option value="<%= category._id %>">
-                                    <%= category.name %>
-                                </option>
-                                <% }) %>
-                        </select>
-                        <p id="category-error" class="error-message hidden">Category is required.</p>
-                    </div>
-                    <div class="mb-4">
-                        <label for="stock" class="block">Stock</label>
-                        <input id="stock" type="number" max="1000" name="stock" required class="w-full border p-2">
-                        <p id="stock-error" class="error-message hidden">Stock must be 0 or greater.</p>
-                    </div>
-                    <div class="mb-4">
-                        <label for="discount" class="block">Discount</label>
-                        <input id="discount" type="number" name="discount" class="w-full border p-2">
-                        <p id="discount-error" class="error-message hidden">Discount must be 0 or greater and less than
-                            or equal to 90.</p>
-                    </div>
-                    <div class="mb-4">
-                        <label for="description" class="block">Description</label>
-                        <textarea id="description" maxlength="250" name="description" rows="4" required
-                            class="w-full border p-2"></textarea>
-                        <p id="description-error" class="error-message hidden">Description must be at least 10
-                            characters long.</p>
-                    </div>
-                    <div class="mb-4">
-                        <label for="images" class="block">Upload Images (minimum 3)</label>
-                        <input type="file" id="imageInput" multiple accept="image/png, image/jpeg"
-                            class="w-full border p-2" required>
-                        <div id="croppedImageContainer" class="flex flex-wrap mt-4"></div>
-                        <p id="image-error" class="text-red-500 text-sm mt-1 hidden">Please upload at least 3 images.
-                        </p>
-                    </div>
-                    <div id="crop-modal" class="flex">
-                        <div class="modal-content">
-                            <img id="imagePreview" src="" alt="Image Preview" class="preview-container">
-                            <div class="mt-4 text-right">
-                                <button type="button" onclick="cropImage()"
-                                    class="bg-blue-500 text-white px-4 py-2 rounded">Crop</button>
-                                <button type="button" onclick="closeCropModal()"
-                                    class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
+                    <a href="/admin/products"
+                        class="bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left text-xs"></i> Back
+                    </a>
+                </div>
+
+                <div class="glass-card p-8">
+                    <form id="productForm" enctype="multipart/form-data">
+                        <div class="space-y-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="form-label">Product Name <span class="text-rose-400">*</span></label>
+                                    <input id="name" type="text" name="name" maxlength="50" required class="form-input"
+                                        placeholder="e.g. Cabernet Sauvignon">
+                                    <p id="name-error" class="error-hint hidden">Must start with uppercase and be at
+                                        least 4 chars.</p>
+                                </div>
+                                <div>
+                                    <label class="form-label">Price (₹) <span class="text-rose-400">*</span></label>
+                                    <div class="relative">
+                                        <input id="price" type="number" name="price" max="50000" required
+                                            class="form-input pl-8" placeholder="0">
+                                        <span
+                                            class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 font-bold text-sm">₹</span>
+                                    </div>
+                                    <p id="price-error" class="error-hint hidden">Price must be greater than 0.</p>
+                                </div>
+                                <div>
+                                    <label class="form-label">Category <span class="text-rose-400">*</span></label>
+                                    <select id="category" name="category" required class="form-input">
+                                        <option value="">Select a category</option>
+                                        <% categories.forEach(function(category) { %>
+                                            <option value="<%= category._id %>">
+                                                <%= category.name %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                    <p id="category-error" class="error-hint hidden">Category is required.</p>
+                                </div>
+                                <div>
+                                    <label class="form-label">Stock <span class="text-rose-400">*</span></label>
+                                    <input id="stock" type="number" max="1000" name="stock" required class="form-input"
+                                        placeholder="0">
+                                    <p id="stock-error" class="error-hint hidden">Stock must be 0 or greater.</p>
+                                </div>
+                                <div>
+                                    <label class="form-label">Discount (%)</label>
+                                    <div class="relative">
+                                        <input id="discount" type="number" name="discount" class="form-input pr-8"
+                                            placeholder="0" min="0" max="90">
+                                        <span
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 font-bold text-sm">%</span>
+                                    </div>
+                                    <p id="discount-error" class="error-hint hidden">Discount must be between 0 and 90.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="form-label">Description <span class="text-rose-400">*</span></label>
+                                <textarea id="description" maxlength="250" name="description" rows="3" required
+                                    class="form-input resize-none" placeholder="Describe this wine..."></textarea>
+                                <p id="description-error" class="error-hint hidden">Description must be at least 10
+                                    characters.</p>
+                            </div>
+
+                            <div>
+                                <label class="form-label">Product Images <span class="text-rose-400">*</span> <span
+                                        class="text-gray-400 normal-case font-normal">(minimum 3)</span></label>
+                                <label class="upload-zone block" for="imageInput">
+                                    <i class="fa-solid fa-images text-3xl text-gray-300 mb-3"></i>
+                                    <p class="text-sm font-semibold text-gray-500">Click to upload images</p>
+                                    <p class="text-[10px] text-gray-400 mt-1">PNG, JPG accepted • Min 3 images required
+                                    </p>
+                                    <input type="file" id="imageInput" multiple accept="image/png, image/jpeg" required>
+                                </label>
+                                <div id="croppedImageContainer" class="flex flex-wrap mt-4"></div>
+                                <p id="image-error" class="error-hint hidden">Please upload at least 3 images.</p>
+                            </div>
+
+                            <!-- Crop Modal -->
+                            <div id="crop-modal" class="flex">
+                                <div class="modal-content">
+                                    <h3 class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-widest">Crop
+                                        Image</h3>
+                                    <img id="imagePreview" src="" alt="Image Preview" class="preview-container">
+                                    <div class="mt-4 flex gap-3 justify-end">
+                                        <button type="button" onclick="closeCropModal()"
+                                            class="px-4 py-2 text-xs font-bold border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">Cancel</button>
+                                        <button type="button" onclick="cropImage()"
+                                            class="btn-premium px-4 py-2 text-xs font-bold rounded-xl">
+                                            <i class="fa-solid fa-crop-simple mr-1"></i> Crop
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-2 border-t border-gray-100">
+                                <button type="submit"
+                                    class="btn-premium w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg">
+                                    <i class="fa-solid fa-wine-glass mr-2"></i> Add Product
+                                </button>
                             </div>
                         </div>
-                    </div>
-                    <div class="flex">
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add Product</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -153,15 +294,12 @@
             let cropper;
             let croppedImagesArray = [];
 
-            // Handle image upload and cropping
             document.getElementById('imageInput').addEventListener('change', function (event) {
                 const files = Array.from(event.target.files);
                 if (files.length > 0) {
                     files.forEach(file => {
                         const reader = new FileReader();
-                        reader.onload = function (e) {
-                            openCropModal(e.target.result, file.name);
-                        };
+                        reader.onload = function (e) { openCropModal(e.target.result, file.name); };
                         reader.readAsDataURL(file);
                     });
                 }
@@ -169,44 +307,20 @@
 
             form.addEventListener('submit', function (event) {
                 event.preventDefault();
-
-                // Validate form fields
-                let isValid = validateForm();
-                if (!isValid) {
-                    return;
-                }
-
+                if (!validateForm()) return;
                 const formData = new FormData(form);
-                croppedImagesArray.forEach((blob, index) => {
-                    formData.append('images', blob, `image${index}.png`);
-                });
-
-                fetch('/admin/products/add', {
-                    method: 'POST',
-                    body: formData,
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log(data);
-                        window.location.href = '/admin/products';
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
+                croppedImagesArray.forEach((blob, index) => { formData.append('images', blob, `image${index}.png`); });
+                fetch('/admin/products/add', { method: 'POST', body: formData })
+                    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                    .then(() => { window.location.href = '/admin/products'; })
+                    .catch(e => console.error(e));
             });
 
             function openCropModal(imageSrc) {
                 const imagePreview = document.getElementById('imagePreview');
                 imagePreview.src = imageSrc;
-                cropper = new Cropper(imagePreview, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                });
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(imagePreview, { aspectRatio: 1, viewMode: 1 });
                 document.getElementById('crop-modal').style.display = 'flex';
             }
 
@@ -214,8 +328,7 @@
                 const canvas = cropper.getCroppedCanvas();
                 canvas.toBlob(function (blob) {
                     croppedImagesArray.push(blob);
-                    const url = URL.createObjectURL(blob);
-                    displayCroppedImage(url);
+                    displayCroppedImage(URL.createObjectURL(blob));
                 });
                 closeCropModal();
             }
@@ -224,100 +337,45 @@
                 const container = document.getElementById('croppedImageContainer');
                 const imgWrapper = document.createElement('div');
                 imgWrapper.classList.add('img-wrapper');
-                imgWrapper.innerHTML = `
-                <img src="${src}" class="cropped-image" alt="Cropped Image">
-                <button class="delete-button" onclick="removeImage(this)">×</button>
-            `;
+                imgWrapper.innerHTML = `<img src="${src}" class="cropped-image" alt="Cropped"><button class="delete-button" onclick="removeImage(this)">×</button>`;
                 container.appendChild(imgWrapper);
                 validateImageCount();
             }
 
             function closeCropModal() {
                 document.getElementById('crop-modal').style.display = 'none';
-                cropper.destroy();
+                if (cropper) cropper.destroy();
             }
 
             function removeImage(button) {
-                const imgWrapper = button.parentNode;
-                imgWrapper.parentNode.removeChild(imgWrapper);
+                button.parentNode.parentNode.removeChild(button.parentNode);
                 validateImageCount();
             }
 
             function validateImageCount() {
-                const container = document.getElementById('croppedImageContainer');
-                const errorMessage = document.getElementById('image-error');
-                if (container.children.length < 3) {
-                    errorMessage.classList.remove('hidden');
-                } else {
-                    errorMessage.classList.add('hidden');
-                }
+                const count = document.getElementById('croppedImageContainer').children.length;
+                document.getElementById('image-error').classList.toggle('hidden', count >= 3);
             }
 
             function validateForm() {
                 let isValid = true;
-
-                const name = document.getElementById('name').value;
-                const price = document.getElementById('price').value;
-                const discount = document.getElementById('discount').value;
-                const description = document.getElementById('description').value;
-                const stock = document.getElementById('stock').value;
-                const category = document.getElementById('category').value;
-
-                const nameError = document.getElementById('name-error');
-                const priceError = document.getElementById('price-error');
-                const discountError = document.getElementById('discount-error');
-                const descriptionError = document.getElementById('description-error');
-                const stockError = document.getElementById('stock-error');
-                const categoryError = document.getElementById('category-error');
-
-                // Product name validation
-                if (!/^[A-Z]/.test(name) || name.length < 4) {
-                    nameError.classList.remove('hidden');
-                    isValid = false;
-                } else {
-                    nameError.classList.add('hidden');
+                const fields = [
+                    { id: 'name', errId: 'name-error', check: v => /^[A-Z]/.test(v) && v.length >= 4 },
+                    { id: 'price', errId: 'price-error', check: v => parseFloat(v) > 0 },
+                    { id: 'discount', errId: 'discount-error', check: v => v === '' || (parseFloat(v) >= 0 && parseFloat(v) <= 90) },
+                    { id: 'description', errId: 'description-error', check: v => v.length >= 10 },
+                    { id: 'stock', errId: 'stock-error', check: v => parseInt(v) >= 0 },
+                    { id: 'category', errId: 'category-error', check: v => v !== '' }
+                ];
+                fields.forEach(f => {
+                    const val = document.getElementById(f.id).value.trim();
+                    const err = document.getElementById(f.errId);
+                    if (!f.check(val)) { err.classList.remove('hidden'); isValid = false; }
+                    else err.classList.add('hidden');
+                });
+                if (croppedImagesArray.length < 3) {
+                    document.getElementById('image-error').classList.remove('hidden'); isValid = false;
                 }
-
-                // Price validation
-                if (price <= 0) {
-                    priceError.classList.remove('hidden');
-                    isValid = false;
-                } else {
-                    priceError.classList.add('hidden');
-                }
-
-                // Discount validation
-                if (discount < 0 || discount > 90) {
-                    discountError.classList.remove('hidden');
-                    isValid = false;
-                } else {
-                    discountError.classList.add('hidden');
-                }
-
-                // Description validation
-                if (description.length < 10) {
-                    descriptionError.classList.remove('hidden');
-                    isValid = false;
-                } else {
-                    descriptionError.classList.add('hidden');
-                }
-
-                // Stock validation
-                if (stock < 0) {
-                    stockError.classList.remove('hidden');
-                    isValid = false;
-                } else {
-                    stockError.classList.add('hidden');
-                }
-
-                // Category validation
-                if (!category) {
-                    categoryError.classList.remove('hidden');
-                    isValid = false;
-                } else {
-                    categoryError.classList.add('hidden');
-                }
-
                 return isValid;
             }
         </script>

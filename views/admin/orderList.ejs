@@ -1,117 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Management</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Order Management | Wine Heaven</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --maroon: #6b0f1a;
+            --maroon-dk: #4a0a12;
+            --gold: #c9a84c;
+            --bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+        }
+
+        .heading-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-dk) 100%);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b30;
+        }
+
+        .status-confirmed {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f630;
+        }
+
+        .status-shipped {
+            background: #f3e8ff;
+            color: #6b21a8;
+            border: 1px solid #a855f730;
+        }
+
+        .status-delivered {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #10b98130;
+        }
+
+        .status-cancelled {
+            background: #fff1f2;
+            color: #9f1239;
+            border: 1px solid #f43f5e30;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+
+<body class="bg-[#f8f9fa]">
     <div class="flex">
-        <!-- Sidebar -->
-        <%- include('../partials/adminSidebar') %>
+        <%- include('../partials/adminSidebar.ejs') %>
 
-        <!-- Main Content -->
-        <div class="flex-1 ml-0 md:ml-64 p-6">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h1 class="text-2xl font-bold mb-6">Order Management</h1>
+            <div class="lg:ml-64 p-6 pt-24 md:pt-6 w-full">
+                <div class="glass-card p-8">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-800 heading-font">Order Management</h1>
+                            <p class="text-gray-500 text-sm mt-1">Track and update customer orders efficiently.</p>
+                        </div>
+                    </div>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200">
-                        <thead>
-                            <tr class="bg-gray-50">
-                                <th class="border px-4 py-2">Order ID</th>
-                                <th class="border px-4 py-2">User Name</th>
-                                <th class="border px-4 py-2">Product Name</th>
-                                <th class="border px-4 py-2">Quantity</th>
-                                <th class="border px-4 py-2">Price</th>
-                                <th class="border px-4 py-2">Current Status</th>
-                                <th class="border px-4 py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% orders.forEach(order => { %>
-                                <% order.items.forEach(item => { %>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="border px-4 py-2">
-                                            <a href="order/<%= order._id %>">
-                                                <%= order._id %>
-                                            </a>
-                                        </td>
-                                        <td class="border px-4 py-2">
-                                            <%= order.userId ? order.userId.name : 'Unknown User' %>
-                                        </td>
-                                        <td class="border px-4 py-2">
-                                            <%= item.productId ? item.productId.name : 'Unknown Product' %>
-                                        </td>
-                                        <td class="border px-4 py-2">
-                                            <%= item.productCount %>
-                                        </td>
-                                        <td class="border px-4 py-2">
-                                            ₹<%= item.productId ? (item.productId.priceAfterDiscount * item.productCount).toFixed(0) : '0' %>
-                                        </td>
-                                        <td class="border px-4 py-2">
-                                            <span class="px-2 py-1 rounded-full text-sm
-                                                <% if (item.productStatus === 'Pending') { %>
-                                                    bg-yellow-100 text-yellow-800
-                                                <% } else if (item.productStatus === 'Confirmed') { %>
-                                                    bg-blue-100 text-blue-800
-                                                <% } else if (item.productStatus === 'Shipped') { %>
-                                                    bg-purple-100 text-purple-800
-                                                <% } else if (item.productStatus === 'Delivered') { %>
-                                                    bg-green-100 text-green-800
-                                                <% } else if (item.productStatus === 'Cancelled') { %>
-                                                    bg-red-100 text-red-800
+                    <% if (typeof success_msg !=='undefined' && success_msg) { %>
+                        <div class="mb-6 p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg">
+                            <p class="text-sm text-emerald-600 font-medium">
+                                <%= success_msg %>
+                            </p>
+                        </div>
+                        <% } %>
+                            <% if (typeof error_msg !=='undefined' && error_msg) { %>
+                                <div class="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-lg">
+                                    <p class="text-sm text-rose-600 font-medium">
+                                        <%= error_msg %>
+                                    </p>
+                                </div>
+                                <% } %>
+
+                                    <div class="overflow-x-auto rounded-xl border border-gray-100">
+                                        <table class="min-w-full bg-white whitespace-nowrap">
+                                            <thead>
+                                                <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                                                    <th class="py-4 px-6 text-left font-bold">Order Details</th>
+                                                    <th class="py-4 px-6 text-left font-bold">Customer</th>
+                                                    <th class="py-4 px-6 text-left font-bold">Product</th>
+                                                    <th class="py-4 px-6 text-left font-bold">Qty</th>
+                                                    <th class="py-4 px-6 text-left font-bold">Total</th>
+                                                    <th class="py-4 px-6 text-left font-bold">Status</th>
+                                                    <th class="py-4 px-6 text-left font-bold">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-100">
+                                                <% orders.forEach(order=> { %>
+                                                    <% order.items.forEach(item=> { %>
+                                                        <tr class="hover:bg-gray-50/50 transition-colors">
+                                                            <td class="py-4 px-6">
+                                                                <div class="flex flex-col">
+                                                                    <span
+                                                                        class="text-xs font-bold text-maroon uppercase tracking-tighter">#ORD-
+                                                                        <%= order._id.toString().slice(-6).toUpperCase()
+                                                                            %>
+                                                                    </span>
+                                                                    <a href="order/<%= order._id %>"
+                                                                        class="text-[10px] text-gray-400 hover:text-maroon transition-colors truncate w-24">
+                                                                        <%= order._id %>
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                            <td class="py-4 px-6">
+                                                                <div class="flex items-center gap-2">
+                                                                    <div
+                                                                        class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500">
+                                                                        <%= (order.userId ? order.userId.name : 'U'
+                                                                            ).charAt(0).toUpperCase() %>
+                                                                    </div>
+                                                                    <span class="text-sm font-semibold text-gray-700">
+                                                                        <%= order.userId ? order.userId.name
+                                                                            : 'Unknown User' %>
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="py-4 px-6">
+                                                                <span
+                                                                    class="text-sm text-gray-600 truncate max-w-[150px] inline-block">
+                                                                    <%= item.productId ? item.productId.name
+                                                                        : 'Unknown Product' %>
+                                                                </span>
+                                                            </td>
+                                                            <td class="py-4 px-6 text-sm text-gray-600">
+                                                                <%= item.productCount %>
+                                                            </td>
+                                                            <td class="py-4 px-6 font-bold text-gray-800">
+                                                                ₹<%= item.productId ? (item.productId.priceAfterDiscount
+                                                                    * item.productCount).toFixed(0) : '0' %>
+                                                            </td>
+                                                            <td class="py-4 px-6">
+                                                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight 
+                                                <% if (item.productStatus === 'Pending') { %> status-pending
+                                                <% } else if (item.productStatus === 'Confirmed') { %> status-confirmed
+                                                <% } else if (item.productStatus === 'Shipped') { %> status-shipped
+                                                <% } else if (item.productStatus === 'Delivered') { %> status-delivered
+                                                <% } else if (item.productStatus === 'Cancelled') { %> status-cancelled
                                                 <% } %>">
-                                                <%= item.productStatus %>
-                                            </span>
-                                        </td>
-                                        <td class="border px-4 py-2">
-                                            <% if (availableStatusUpdates[item.productStatus] && availableStatusUpdates[item.productStatus].length > 0) { %>
-                                                <form action="/admin/update-order-status" method="POST" class="flex gap-2">
-                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                    <input type="hidden" name="productId" value="<%= item.productId ? item.productId._id : '' %>">
-                                                    <select name="newStatus" class="border rounded px-2 py-1 text-sm">
-                                                        <% availableStatusUpdates[item.productStatus].forEach(status => { %>
-                                                            <option value="<%= status %>"><%= status %></option>
+                                                                    <%= item.productStatus %>
+                                                                </span>
+                                                            </td>
+                                                            <td class="py-4 px-6">
+                                                                <% if (availableStatusUpdates[item.productStatus] &&
+                                                                    availableStatusUpdates[item.productStatus].length>
+                                                                    0) { %>
+                                                                    <form action="/admin/update-order-status"
+                                                                        method="POST"
+                                                                        class="flex items-center gap-2 group">
+                                                                        <input type="hidden" name="orderId"
+                                                                            value="<%= order._id %>">
+                                                                        <input type="hidden" name="productId"
+                                                                            value="<%= item.productId ? item.productId._id : '' %>">
+                                                                        <select name="newStatus"
+                                                                            onchange="this.form.submit()"
+                                                                            class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-maroon outline-none bg-white hover:border-maroon transition-all cursor-pointer">
+                                                                            <option value="" disabled selected>Update
+                                                                                Status</option>
+                                                                            <%
+                                                                                availableStatusUpdates[item.productStatus].forEach(status=>
+                                                                                { %>
+                                                                                <option value="<%= status %>">
+                                                                                    <%= status %>
+                                                                                </option>
+                                                                                <% }) %>
+                                                                        </select>
+                                                                        <button type="submit"
+                                                                            class="hidden group-focus-within:block p-1.5 bg-maroon text-white rounded-lg hover:bg-maroon-dk transition-colors text-[10px] font-bold px-3">
+                                                                            Save
+                                                                        </button>
+                                                                    </form>
+                                                                    <% } else { %>
+                                                                        <span
+                                                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Completed</span>
+                                                                        <% } %>
+                                                            </td>
+                                                        </tr>
                                                         <% }) %>
-                                                    </select>
-                                                    <button type="submit" 
-                                                        class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
-                                                        Update
-                                                    </button>
-                                                </form>
-                                            <% } else { %>
-                                                <span class="text-gray-500 text-sm">No further actions</span>
+                                                            <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Pagination Controls -->
+                                    <div class="flex justify-center mt-8 gap-2">
+                                        <% if (currentPage> 1) { %>
+                                            <a href="?page=<%= currentPage - 1 %>"
+                                                class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+                                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                                            </a>
                                             <% } %>
-                                        </td>
-                                    </tr>
-                                    
-                                <% }) %>
-                            <% }) %>
-                        </tbody>
-                    </table>
-                </div>
-
-
-
-
-                
-
-                <!-- Pagination Controls -->
-                <div class="flex justify-center mt-6">
-                    <% if (currentPage > 1) { %>
-                        <a href="?page=<%= currentPage - 1 %>" class="px-4 py-2 bg-blue-500 text-white rounded mr-2">Previous</a>
-                    <% } %>
-                    <% for (let i = 1; i <= totalPages; i++) { %>
-                        <a href="?page=<%= i %>" class="px-4 py-2 <%= currentPage === i ? 'bg-gray-500' : 'bg-blue-500' %> text-white rounded mx-1"><%= i %></a>
-                    <% } %>
-                    <% if (currentPage < totalPages) { %>
-                        <a href="?page=<%= currentPage + 1 %>" class="px-4 py-2 bg-blue-500 text-white rounded ml-2">Next</a>
-                    <% } %>
+                                                <% for (let i=1; i <=totalPages; i++) { %>
+                                                    <a href="?page=<%= i %>"
+                                                        class="w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-all <%= currentPage === i ? 'btn-premium' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' %>">
+                                                        <%= i %>
+                                                    </a>
+                                                    <% } %>
+                                                        <% if (currentPage < totalPages) { %>
+                                                            <a href="?page=<%= currentPage + 1 %>"
+                                                                class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+                                                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                                                            </a>
+                                                            <% } %>
+                                    </div>
                 </div>
             </div>
-        </div>
     </div>
 </body>
+
 </html>

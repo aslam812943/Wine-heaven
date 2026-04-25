@@ -1,57 +1,118 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <title>Admin Login | Wine Heaven</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --maroon: #6b0f1a;
+            --maroon-dk: #4a0a12;
+            --gold: #c9a84c;
+            --bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            /* background: linear-gradient(135deg, #18080e 0%, #2d0a0e 100%); */
+            min-height: screen;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .heading-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-dk) 100%);
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-premium:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(107, 15, 26, 0.4);
+        }
+
+        .input-focus:focus {
+            outline: none;
+            border-color: var(--maroon);
+            box-shadow: 0 0 0 2px rgba(107, 15, 26, 0.2);
+        }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
-    <div class="container max-w-md mx-auto p-6 bg-white rounded-lg shadow-xl">
-        <h1 class="text-3xl font-bold text-[#272343] mb-8 text-center">Admin Login</h1>
-        <% if (error_msg) { %>
-            <p style="color: red;"><%= error_msg %></p>
-        <% } %>
-        <% if (success_msg) { %>
-            <p style="color: green;"><%= success_msg %></p>
-        <% } %>
-        
-        <form action="/admin/Dashboard" method="POST" class="space-y-6">
-            <div class="space-y-2">
-                <label for="email" class="block text-sm font-medium text-[#272343]">Email:</label>
-                <input 
-                    type="email" 
-                    id="username" 
-                    name="email" 
-                    value="admin77@gmail.com"
-                    required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#272343] focus:border-transparent outline-none transition"
-                >
+
+<body class="min-h-screen">
+    <div class="glass-card p-10 w-full max-w-md mx-6">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-maroon mb-4 shadow-lg">
+                <i class="fa-solid fa-wine-bottle text-white text-3xl"></i>
             </div>
-            
-            <div class="space-y-2">
-                <label for="password" class="block text-sm font-medium text-[#272343]">Password:</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    name="password" 
-                    value="admin@aslam12"
-                    required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#272343] focus:border-transparent outline-none transition"
-                >
+            <h1 class="text-4xl font-bold text-gray-800 heading-font mb-2">Wine Heaven</h1>
+            <p class="text-[10px] uppercase tracking-[4px] text-maroon font-bold">Admin Portal</p>
+        </div>
+
+        <% if (typeof error_msg !=='undefined' && error_msg) { %>
+            <div class="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-lg">
+                <p class="text-sm text-rose-600 font-medium tracking-tight">
+                    <%= error_msg %>
+                </p>
             </div>
-            
-            <div>
-                <button 
-                    type="submit"
-                    class="w-full bg-[#272343] text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition duration-200 ease-in-out focus:ring-2 focus:ring-offset-2 focus:ring-[#272343]"
-                >
-                    Login
-                </button>
-            </div>
-        </form>
+            <% } %>
+
+                <form action="/admin/Dashboard" method="POST" class="space-y-6">
+                    <div class="space-y-1.5">
+                        <label for="email"
+                            class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Secure
+                            Email</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+                                <i class="fa-solid fa-envelope text-xs"></i>
+                            </span>
+                            <input type="email" name="email" value="admin77@gmail.com" required
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-maroon focus:border-transparent outline-none transition-all text-gray-700 font-medium"
+                                placeholder="admin@wineheaven.com">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="password"
+                            class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Access
+                            Key</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+                                <i class="fa-solid fa-key text-xs"></i>
+                            </span>
+                            <input type="password" name="password" value="admin@aslam12" required
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-maroon focus:border-transparent outline-none transition-all text-gray-700 font-medium"
+                                placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full btn-premium py-3.5 rounded-xl text-xs font-bold uppercase tracking-[2px] shadow-lg">
+                        Authorize Access
+                    </button>
+                </form>
+
+                <div class="mt-8 text-center">
+                    <p class="text-[10px] text-gray-400 font-medium">© 2026 Wine Heaven Global. All rights reserved.</p>
+                </div>
     </div>
 </body>
+
 </html>

@@ -1,228 +1,339 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard | Wine Heaven</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <%- include('../partials/adminSidebar.ejs') %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
 
-    <div class="lg:ml-64 p-6">
-        <div class="flex flex-wrap justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">Admin Dashboard</h1>
-            
-            <form action="/admin/dashboard" method="get" class="flex flex-wrap space-y-2 sm:space-y-0 sm:space-x-4">
-                <select name="year" class="p-2 border rounded w-full sm:w-auto">
-                    <% years.forEach(year => { %>
-                        <option value="<%= year %>" <%= year === selectedYear ? 'selected' : '' %>>
-                            <%= year %>
-                        </option>
-                    <% }) %>
-                </select>
-                <select name="month" class="p-2 border rounded w-full sm:w-auto">
-                    <% months.forEach(month => { %>
-                        <option value="<%= month %>" <%= month === selectedMonth ? 'selected' : '' %>>
-                            <%= new Date(2000, month - 1).toLocaleString('default', { month: 'long' }) %>
-                        </option>
-                    <% }) %>
-                </select>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded w-full sm:w-auto hover:bg-blue-600">
-                    Apply
-                </button>
-            </form>
-        </div>
-
-        <!-- Total Statistics Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-gray-500">Total Revenue</h3>
-                <p class="text-2xl font-bold text-green-600">$<%= totalStats.totalRevenue.toFixed(2) %></p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-gray-500">Total Orders</h3>
-                <p class="text-2xl font-bold text-blue-600"><%= totalStats.totalOrders %></p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-gray-500">Users</h3>
-                <p class="text-2xl font-bold text-purple-600"><%= totalStats.totalUsers %></p>
-            </div>
-        </div>
-
-        <!-- Charts -->
-        <div class="grid grid-cols-1 gap-6">
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-semibold mb-4">Daily Sales</h2>
-                <canvas id="salesChart"></canvas>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-6 w-full mt-6"> <!-- Grid with 2 columns -->
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-semibold mb-4">Top Products</h2>
-                <canvas id="productsChart" class="mt-6 w-[300px] h-[200px]"></canvas> <!-- First canvas -->
-            </div>
-        
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-semibold mb-4">Top Categories</h2>
-                <canvas id="categoriesChart" class="mt-6 w-[300px] h-[200px]"></canvas> <!-- Second canvas -->
-            </div>
-        </div>
-        
-        
-
-<!-- Graph for Categories -->
-
-
-    </div>
-    
-    <script>
-        // Helper function to handle chart rendering
-        function renderChart(ctx, chartData, chartOptions) {
-            return new Chart(ctx, {
-                type: chartData.type,
-                data: {
-                    labels: chartData.labels,
-                    datasets: chartData.datasets
-                },
-                options: chartOptions
-            });
+    <style>
+        :root {
+            --maroon: #6b0f1a;
+            --maroon-dk: #4a0a12;
+            --gold: #c9a84c;
+            --bg: #f8f9fa;
         }
 
-        // Sales Chart
-        const salesData = <%- JSON.stringify(dailySales) %>;
-        const salesCtx = document.getElementById('salesChart').getContext('2d');
-        renderChart(salesCtx, {
-            type: 'line',
-            labels: salesData.map(item => item._id),
-            datasets: [{
-                label: 'Daily Revenue',
-                data: salesData.map(item => item.totalRevenue),
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.5
-            }]
-        }, {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Revenue ($)'
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: #1a1a1a;
+        }
+
+        .heading-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            font-size: 1.5rem;
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-dk) 100%);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(107, 15, 26, 0.2);
+        }
+
+        .btn-premium:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 15, 26, 0.3);
+        }
+
+        .filter-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B0F1A'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25rem;
+            padding-right: 2.5rem;
+        }
+    </style>
+</head>
+
+<body class="bg-[#f8f9fa]">
+    <%- include('../partials/adminSidebar.ejs', { activePage: 'dashboard' }) %>
+
+        <div class="lg:ml-64 p-6 pt-24 md:pt-6">
+            <!-- Header Section -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 heading-font">Admin Dashboard</h1>
+                    <p class="text-gray-500 text-sm mt-1">Welcome back! Here's what's happening today.</p>
+                </div>
+
+                <form action="/admin/dashboard" method="get" class="flex flex-wrap gap-3 w-full md:w-auto">
+                    <div class="relative w-full sm:w-32">
+                        <select name="year"
+                            class="filter-select w-full p-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-maroon focus:border-transparent outline-none text-sm font-medium">
+                            <% years.forEach(year=> { %>
+                                <option value="<%= year %>" <%=year===selectedYear ? 'selected' : '' %>>
+                                    <%= year %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <div class="relative w-full sm:w-40">
+                        <select name="month"
+                            class="filter-select w-full p-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-maroon focus:border-transparent outline-none text-sm font-medium">
+                            <% months.forEach(month=> { %>
+                                <option value="<%= month %>" <%=month===selectedMonth ? 'selected' : '' %>>
+                                    <%= new Date(2000, month - 1).toLocaleString('default', { month: 'long' }) %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-premium px-6 py-2.5 rounded-xl text-sm font-bold w-full sm:w-auto">
+                        Apply Filter
+                    </button>
+                </form>
+            </div>
+
+            <!-- Statistics Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="glass-card p-6 flex items-center gap-5">
+                    <div class="stat-icon bg-emerald-100 text-emerald-600">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Total Revenue</h3>
+                        <p class="text-2xl font-bold text-gray-800">₹<%= totalStats.totalRevenue.toLocaleString() %>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 flex items-center gap-5">
+                    <div class="stat-icon bg-amber-100 text-amber-600">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Total Orders</h3>
+                        <p class="text-2xl font-bold text-gray-800">
+                            <%= totalStats.totalOrders %>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 flex items-center gap-5">
+                    <div class="stat-icon bg-indigo-100 text-indigo-600">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Active Users</h3>
+                        <p class="text-2xl font-bold text-gray-800">
+                            <%= totalStats.totalUsers %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Analytics Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Daily Sales Chart -->
+                <div class="lg:col-span-2 glass-card p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-maroon"></i>
+                            Revenue Analytics
+                        </h2>
+                    </div>
+                    <div class="h-[300px]">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Products/Categories distribution -->
+                <div class="lg:col-span-1 flex flex-col gap-8">
+                    <div class="glass-card p-6 h-full">
+                        <h2 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-amber-500"></i>
+                            Top Products
+                        </h2>
+                        <div class="relative h-[250px] flex items-center justify-center">
+                            <canvas id="productsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                <div class="glass-card p-6">
+                    <h2 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group text-maroon"></i>
+                        Category Distribution
+                    </h2>
+                    <div class="h-[250px] lg:h-[300px] flex items-center justify-center">
+                        <canvas id="categoriesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Placeholder or Quick Links -->
+                <div
+                    class="glass-card p-6 bg-gradient-to-br from-[#18080e] to-[#4a0a12] text-white overflow-hidden relative">
+                    <i
+                        class="fa-solid fa-wine-glass-empty absolute -right-10 -bottom-10 text-[200px] text-white opacity-5"></i>
+                    <h2 class="text-xl font-bold mb-4 heading-font text-gold">Quick Actions</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <a href="/admin/products/add"
+                            class="bg-white/10 hover:bg-white/20 p-4 rounded-xl border border-white/10 transition-colors flex flex-col items-center gap-2">
+                            <i class="fa-solid fa-plus-circle text-gold text-xl"></i>
+                            <span class="text-sm font-medium">Add Product</span>
+                        </a>
+                        <a href="/admin/coupons"
+                            class="bg-white/10 hover:bg-white/20 p-4 rounded-xl border border-white/10 transition-colors flex flex-col items-center gap-2">
+                            <i class="fa-solid fa-ticket-simple text-gold text-xl"></i>
+                            <span class="text-sm font-medium">New Offer</span>
+                        </a>
+                        <a href="/admin/sales-report"
+                            class="bg-white/10 hover:bg-white/20 p-4 rounded-xl border border-white/10 transition-colors flex flex-col items-center gap-2">
+                            <i class="fa-solid fa-file-pdf text-gold text-xl"></i>
+                            <span class="text-sm font-medium">Get Report</span>
+                        </a>
+                        <a href="/admin/orders"
+                            class="bg-white/10 hover:bg-white/20 p-4 rounded-xl border border-white/10 transition-colors flex flex-col items-center gap-2">
+                            <i class="fa-solid fa-truck text-gold text-xl"></i>
+                            <span class="text-sm font-medium">Track Orders</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JSON Data for Charts -->
+        <script id="dailySalesData" type="application/json"><%- JSON.stringify(dailySales) %></script>
+        <script id="topProductsData" type="application/json"><%- JSON.stringify(topProducts) %></script>
+        <script id="topCategoriesData" type="application/json"><%- JSON.stringify(topCategories) %></script>
+
+        <script>
+            // Theme Colors
+            const colors = {
+                maroon: '#6b0f1a',
+                gold: '#c9a84c',
+                amber: '#f59e0b',
+                emerald: '#10b981',
+                indigo: '#6366f1',
+                palette: ['#6b0f1a', '#c9a84c', '#18080e', '#8b1e2b', '#d4af37']
+            };
+
+           
+            const getJsonData = (id) => JSON.parse(document.getElementById(id).textContent);
+
+            // Sales Chart
+            const salesData = getJsonData('dailySalesData');
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            const salesGradient = salesCtx.createLinearGradient(0, 0, 0, 400);
+            salesGradient.addColorStop(0, 'rgba(107, 15, 26, 0.4)');
+            salesGradient.addColorStop(1, 'rgba(107, 15, 26, 0.0)');
+
+            new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: salesData.map(item => item._id),
+                    datasets: [{
+                        label: 'Daily Revenue',
+                        data: salesData.map(item => item.totalRevenue),
+                        borderColor: colors.maroon,
+                        backgroundColor: salesGradient,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: colors.maroon,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { borderDash: [5, 5] }
+                        },
+                        x: { grid: { display: false } }
                     }
                 }
-            }
-        });
+            });
 
-        // Graph for Top Products (Doughnut)
-        const topProducts = <%- JSON.stringify(topProducts) %>;
-        const productNames = topProducts.map(product => product.productDetails.name);
-        const productQuantities = topProducts.map(product => product.totalQuantity);
-        const productRevenues = topProducts.map(product => product.totalRevenue);
-
-        renderChart(document.getElementById('productsChart').getContext('2d'), {
-            type: 'doughnut',
-            labels: productNames,
-            datasets: [
-                {
-                    label: 'Quantity',
-                    data: productQuantities,
-                    backgroundColor: [
-    'rgba(240, 128, 128, 0.5)',  // Light Coral
-    'rgba(0, 191, 255, 0.5)',    // Deep Sky Blue
-    'rgba(60, 179, 113, 0.5)',   // Medium Sea Green
-    'rgba(255, 165, 0, 0.5)',    // Orange
-    'rgba(123, 104, 238, 0.5)'   // Medium Slate Blue
-],
-borderColor: [
-    'rgba(240, 128, 128, 1)',    // Coral
-    'rgba(0, 191, 255, 1)',      // Sky Blue
-    'rgba(60, 179, 113, 1)',     // Sea Green
-    'rgba(255, 165, 0, 1)',      // Orange
-    'rgba(123, 104, 238, 1)'     // Slate Blue
-],
-borderWidth: 2,
-
-
+            // Top Products Doughnut
+            const topProducts = getJsonData('topProductsData');
+            new Chart(document.getElementById('productsChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: topProducts.map(p => p.productDetails.name),
+                    datasets: [{
+                        data: topProducts.map(p => p.totalQuantity),
+                        backgroundColor: colors.palette,
+                        hoverOffset: 15,
+                        borderWidth: 0
+                    }]
                 },
-                {
-                    label: 'Revenue',
-                    data: productRevenues,
-                    backgroundColor: [
-    'rgba(240, 128, 128, 0.5)',  // Light Coral
-    'rgba(0, 191, 255, 0.5)',    // Deep Sky Blue
-    'rgba(60, 179, 113, 0.5)',   // Medium Sea Green
-    'rgba(255, 165, 0, 0.5)',    // Orange
-    'rgba(123, 104, 238, 0.5)'   // Medium Slate Blue
-],
-borderColor: [
-    'rgba(240, 128, 128, 1)',    // Coral
-    'rgba(0, 191, 255, 1)',      // Sky Blue
-    'rgba(60, 179, 113, 1)',     // Sea Green
-    'rgba(255, 165, 0, 1)',      // Orange
-    'rgba(123, 104, 238, 1)'     // Slate Blue
-],
-                    borderWidth: 2,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, boxWidth: 10, font: { size: 10 } }
+                        }
+                    }
                 }
-            ]
-        }, {
-            responsive: true
-        });
+            });
 
-        // Graph for Top Categories (Doughnut)
-        const topCategories = <%- JSON.stringify(topCategories) %>;
-        const categoryNames = topCategories.map(category => category.categoryDetails.name);
-        const categoryQuantities = topCategories.map(category => category.totalQuantity);
-        const categoryRevenues = topCategories.map(category => category.totalRevenue);
-
-        renderChart(document.getElementById('categoriesChart').getContext('2d'), {
-            type: 'doughnut',
-            labels: categoryNames,
-            datasets: [
-                {
-                    label: 'Quantity',
-                    data: categoryQuantities,
-                    backgroundColor: [
-    'rgba(240, 128, 128, 0.5)',  // Light Coral
-    'rgba(0, 191, 255, 0.5)',    // Deep Sky Blue
-    'rgba(60, 179, 113, 0.5)',   // Medium Sea Green
-    'rgba(255, 165, 0, 0.5)',    // Orange
-    'rgba(123, 104, 238, 0.5)'   // Medium Slate Blue
-],
-borderColor: [
-    'rgba(240, 128, 128, 1)',    // Coral
-    'rgba(0, 191, 255, 1)',      // Sky Blue
-    'rgba(60, 179, 113, 1)',     // Sea Green
-    'rgba(255, 165, 0, 1)',      // Orange
-    'rgba(123, 104, 238, 1)'     // Slate Blue
-],
-                    borderWidth: 2,
+            // Categories Chart
+            const topCategories = getJsonData('topCategoriesData');
+            new Chart(document.getElementById('categoriesChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: topCategories.map(c => c.categoryDetails.name),
+                    datasets: [{
+                        label: 'Revenue by Category',
+                        data: topCategories.map(c => c.totalRevenue),
+                        backgroundColor: colors.palette.slice(0, topCategories.length),
+                        borderRadius: 8,
+                        barThickness: 40
+                    }]
                 },
-                {
-                    label: 'Revenue',
-                    data: categoryRevenues,
-                    backgroundColor: [
-    'rgba(240, 128, 128, 0.5)',  // Light Coral
-    'rgba(0, 191, 255, 0.5)',    // Deep Sky Blue
-    'rgba(60, 179, 113, 0.5)',   // Medium Sea Green
-    'rgba(255, 165, 0, 0.5)',    // Orange
-    'rgba(123, 104, 238, 0.5)'   // Medium Slate Blue
-],
-borderColor: [
-    'rgba(240, 128, 128, 1)',    // Coral
-    'rgba(0, 191, 255, 1)',      // Sky Blue
-    'rgba(60, 179, 113, 1)',     // Sea Green
-    'rgba(255, 165, 0, 1)',      // Orange
-    'rgba(123, 104, 238, 1)'     // Slate Blue
-],
-                    borderWidth: 2,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                        x: { grid: { display: false } }
+                    }
                 }
-            ]
-        }, {
-            responsive: true
-        });
-    </script>
+            });
+        </script>
 </body>
+
 </html>

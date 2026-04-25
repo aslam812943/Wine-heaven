@@ -1,148 +1,211 @@
-<!DOCTYPE html>
-<html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offers List</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Offer Management | Wine Heaven</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --maroon: #6b0f1a;
+            --maroon-dk: #4a0a12;
+            --gold: #c9a84c;
+            --bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+        }
+
+        .heading-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-dk) 100%);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .status-active {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #10b98130;
+        }
+
+        .status-blocked {
+            background: #fff1f2;
+            color: #e11d48;
+            border: 1px solid #f43f5e30;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100">
-
-    <!-- Sidebar -->
+<body class="bg-[#f8f9fa]">
     <%- include('../partials/adminSidebar.ejs') %>
 
-        <!-- Main Content -->
-        <div class=" ml-0 md:ml-64 p-6">
-            <div class="container mx-auto">
-                <h1 class="text-3xl font-bold mb-6">Offers List</h1>
-
-
-               
-
-                <!-- Add Offer Button -->
-                <a href="/admin/offers/add"
-                    class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition mb-6 inline-block">Add
-                    New Offer</a>
-                    <% if (error_msg) { %>
-                        <p class="text-red-500 text-center"><%= error_msg %></p>
-                    <% } %>
-                    <% if (success_msg) { %>
-                        <p class="text-green-500 text-center"><%= success_msg %></p>
-                    <% } %>
-
-                <!-- Offers Table -->
-                <div class="overflow-x-auto bg-white shadow-md rounded-lg">
-                    <table class="table-auto w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-800 text-white">
-                                <th class="px-4 py-3 border">#</th>
-                                <th class="px-4 py-3 border">Offer Name</th>
-                                <th class="px-4 py-3 border">Type</th>
-                                <th class="px-4 py-3 border">Target</th>
-                                <th class="px-4 py-3 border">Discount</th>
-                                <th class="px-4 py-3 border">Status</th>
-                                <th class="px-4 py-3 border">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            <% offers.forEach((offer, index)=> { %>
-                                <tr class="hover:bg-gray-100">
-                                    <td class="px-4 py-3 border">
-                                        <%= index + 1 %>
-                                    </td>
-                                    <td class="px-4 py-3 border">
-                                        <%= offer.offerName %>
-                                    </td>
-                                    <td class="px-4 py-3 border">
-                                        <%= offer.offerCategory ? 'Category' : 'Product' %>
-                                    </td>
-                                    <td class="px-4 py-3 border">
-                                        <%= offer.offerCategory ? offer.offerCategory.name : offer.offerProduct.name %>
-                                    </td>
-                                    <td class="px-4 py-3 border">
-                                        <%= offer.discountPercentage %>%
-                                    </td>
-                                    <td class="px-4 py-3 border">
-                                        <% if (offer.isActive) { %>
-                                            <span
-                                                class="bg-green-200 text-green-800 px-2 py-1 rounded text-sm">Active</span>
-                                            <% } else { %>
-                                                <span
-                                                    class="bg-red-200 text-red-800 px-2 py-1 rounded text-sm">Inactive</span>
-                                                <% } %>
-                                    </td>
-                                    <td class="px-4 py-3 border">
-                                        <div class="flex space-x-2">
-                                            <!-- Delete Form -->
-                                            <form action="/admin/offers/Delete/<%= offer._id %>" method="POST">
-                                                <button type="submit"
-                                                    class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition text-sm">Delete</button>
-                                            </form>
-
-                                            <!-- Activate/Deactivate Button -->
-                                            <% if (offer.isActive) { %>
-                                                <form action="/admin/offers/deactivate/<%= offer._id %>" method="POST">
-                                                    <button type="submit"
-                                                        class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition text-sm">Deactivate</button>
-                                                </form>
-                                                <% } else { %>
-                                                    <form action="/admin/offers/activate/<%= offer._id %>"
-                                                        method="POST">
-                                                        <button type="submit"
-                                                            class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition text-sm">Activate</button>
-                                                    </form>
-                                                    <% } %>
-                                                    
-                                                    <a href="/admin/offerEdit/<%= offer._id %>">
-                                                    <button 
-                                                    class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition text-sm"
-                                                    aria-label="Edit">
-                                                    Edit
-                                                  </button>
-                                                </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <% }) %>
-
-                              
-
-                        </tbody>
-                    </table>
-                 
+        <div class="lg:ml-64 p-6 pt-24 md:pt-6">
+            <div class="glass-card p-8">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 heading-font">Offer Management</h1>
+                        <p class="text-gray-500 text-sm mt-1">Configure and manage special offers and discounts.</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <a href="/admin/offers/add"
+                            class="btn-premium px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg">
+                            <i class="fa-solid fa-plus-circle"></i> Create Offer
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="flex justify-center mt-6">
-                <!-- Previous Button -->
-                <% if (currentPage > 1) { %>
-                    <a href="/admin/offers?page=<%= currentPage - 1 %>&limit=<%= limit %>"
-                       class="px-4 py-2 mx-1 bg-gray-300 text-black rounded hover:bg-gray-400">
-                        Previous
-                    </a>
-                <% } %>
-            
-                <!-- Page Numbers -->
-                <% for (let i = 1; i <= totalpage; i++) { %>
-                    <a href="/admin/offers?page=<%= i %>&limit=<%= limit %>"
-                       class="px-4 py-2 mx-1 rounded <%= i === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black hover:bg-gray-300' %>">
-                        <%= i %>
-                    </a>
-                <% } %>
-            
-                <!-- Next Button -->
-                <% if (currentPage < totalpage) { %>
-                    <a href="/admin/offers?page=<%= currentPage + 1 %>&limit=<%= limit %>"
-                       class="px-4 py-2 mx-1 bg-gray-300 text-black rounded hover:bg-gray-400">
-                        Next
-                    </a>
-                <% } %>
-            </div>
-            
-        </div>
-      
 
+                <% if (typeof error_msg !=='undefined' && error_msg) { %>
+                    <p class="text-rose-500 bg-rose-50 p-3 rounded-lg mb-4 text-sm font-medium">
+                        <%= error_msg %>
+                    </p>
+                    <% } %>
+                        <% if (typeof success_msg !=='undefined' && success_msg) { %>
+                            <p class="text-emerald-500 bg-emerald-50 p-3 rounded-lg mb-4 text-sm font-medium">
+                                <%= success_msg %>
+                            </p>
+                            <% } %>
+
+                                <div class="overflow-x-auto rounded-xl border border-gray-100">
+                                    <table class="min-w-full bg-white whitespace-nowrap">
+                                        <thead>
+                                            <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                                                <th class="py-4 px-6 text-left font-bold">#</th>
+                                                <th class="py-4 px-6 text-left font-bold">Offer Details</th>
+                                                <th class="py-4 px-6 text-left font-bold">Type</th>
+                                                <th class="py-4 px-6 text-left font-bold">Target</th>
+                                                <th class="py-4 px-6 text-left font-bold">Discount</th>
+                                                <th class="py-4 px-6 text-left font-bold">Status</th>
+                                                <th class="py-4 px-6 text-left font-bold">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100">
+                                            <% offers.forEach((offer, index)=> { %>
+                                                <tr class="hover:bg-gray-50/50 transition-colors">
+                                                    <td class="py-4 px-6 text-sm text-gray-400 font-mono">
+                                                        <%= (currentPage - 1) * limit + index + 1 %>
+                                                    </td>
+                                                    <td class="py-4 px-6">
+                                                        <span class="font-semibold text-gray-700 capitalize">
+                                                            <%= offer.offerName %>
+                                                        </span>
+                                                    </td>
+                                                    <td class="py-4 px-6">
+                                                        <span
+                                                            class="px-2 py-1 bg-indigo-50 text-indigo-600 rounded text-[10px] font-bold uppercase">
+                                                            <%= offer.offerCategory ? 'Category' : 'Product' %>
+                                                        </span>
+                                                    </td>
+                                                    <td class="py-4 px-6 text-sm font-medium text-maroon">
+                                                        <%= offer.offerCategory ? offer.offerCategory.name :
+                                                            (offer.offerProduct ? offer.offerProduct.name
+                                                            : 'Unknown Target' ) %>
+                                                    </td>
+                                                    <td class="py-4 px-6 font-bold text-gray-800 italic">
+                                                        <%= offer.discountPercentage %>% OFF
+                                                    </td>
+                                                    <td class="py-4 px-6">
+                                                        <span
+                                                            class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-tight <%= offer.isActive ? 'status-active' : 'status-blocked' %>">
+                                                            <%= offer.isActive ? 'Active' : 'Inactive' %>
+                                                        </span>
+                                                    </td>
+                                                    <td class="py-4 px-6">
+                                                        <div class="flex items-center gap-2">
+                                                            <!-- <a href="/admin/offerEdit/<%= offer._id %>"
+                                                                class="p-2 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors"
+                                                                title="Edit">
+                                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                            </a> -->
+                                                            <% if (offer.isActive) { %>
+                                                                <form action="/admin/offers/deactivate/<%= offer._id %>"
+                                                                    method="POST" class="inline">
+                                                                    <button type="submit"
+                                                                        class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                                                                        title="Deactivate">
+                                                                        <i class="fa-solid fa-circle-pause"></i>
+                                                                    </button>
+                                                                </form>
+                                                                <% } else { %>
+                                                                    <form
+                                                                        action="/admin/offers/activate/<%= offer._id %>"
+                                                                        method="POST" class="inline">
+                                                                        <button type="submit"
+                                                                            class="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
+                                                                            title="Activate">
+                                                                            <i class="fa-solid fa-circle-play"></i>
+                                                                        </button>
+                                                                    </form>
+                                                                    <% } %>
+                                                                        <form
+                                                                            action="/admin/offers/Delete/<%= offer._id %>"
+                                                                            method="POST" class="inline">
+                                                                            <button type="submit"
+                                                                                class="p-2 text-gray-400 hover:bg-gray-100 rounded-lg transition-colors"
+                                                                                title="Delete">
+                                                                                <i
+                                                                                    class="fa-solid fa-trash-can text-sm"></i>
+                                                                            </button>
+                                                                        </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Pagination -->
+                                <div class="flex justify-center mt-8 gap-2">
+                                    <% if (currentPage> 1) { %>
+                                        <a href="/admin/offers?page=<%= currentPage - 1 %>&limit=<%= limit %>"
+                                            class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+                                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                                        </a>
+                                        <% } %>
+                                            <% for (let i=1; i <=totalpage; i++) { %>
+                                                <a href="/admin/offers?page=<%= i %>&limit=<%= limit %>"
+                                                    class="w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-all <%= i === currentPage ? 'btn-premium' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' %>">
+                                                    <%= i %>
+                                                </a>
+                                                <% } %>
+                                                    <% if (currentPage < totalpage) { %>
+                                                        <a href="/admin/offers?page=<%= currentPage + 1 %>&limit=<%= limit %>"
+                                                            class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+                                                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                                                        </a>
+                                                        <% } %>
+                                </div>
+
+                                <div class="mt-8 flex justify-end">
+                                    <a href="/admin/Dashboard"
+                                        class="text-xs font-bold text-gray-400 hover:text-maroon transition-colors flex items-center gap-2">
+                                        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                                    </a>
+                                </div>
+            </div>
+        </div>
 </body>
 
 </html>

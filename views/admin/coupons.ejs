@@ -1,97 +1,179 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupon Management | Wine Heaven</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <title>Coupons</title>
+    <style>
+        :root {
+            --maroon: #6b0f1a;
+            --maroon-dk: #4a0a12;
+            --gold: #c9a84c;
+            --bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+        }
+
+        .heading-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-dk) 100%);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+
+<body class="bg-[#f8f9fa]">
     <%- include('../partials/adminSidebar.ejs') %>
 
-    <!-- Main Container -->
-    <div class="ml-0 md:ml-64 p-6">
-        <div class="container mx-auto">
-            <!-- Title -->
-            <h1 class="text-3xl font-bold mb-6">All Coupons</h1>
-
-            <!-- Add Coupon Button -->
-            <a href="/admin/coupons/add" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition mb-6 inline-block">
-                Add New Coupon
-            </a>
-
-            <!-- Coupon Table -->
-            <% if (coupons.length > 0) { %>
-                <div class="overflow-x-auto bg-white shadow-md rounded-lg">
-                    <table class="table-auto w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-800 text-white">
-                                <th class="px-4 py-3 border">Code</th>
-                                <th class="px-4 py-3 border">Discount Type</th>
-                                <th class="px-4 py-3 border">Discount Amount</th>
-                                <th class="px-4 py-3 border">Minimum Purchase</th>
-                                <th class="px-4 py-3 border">Valid From</th>
-                                <th class="px-4 py-3 border">Valid Until</th>
-                                <th class="px-4 py-3 border">Usage Limit</th>
-                                <th class="px-4 py-3 border">Used Count</th>
-                                <th class="px-4 py-3 border">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            <% coupons.forEach(coupon => { %>
-                                <tr class="hover:bg-gray-100">
-                                    <td class="px-4 py-3 border"><%= coupon.code %></td>
-                                    <td class="px-4 py-3 border"><%= coupon.discountType %></td>
-                                    <td class="px-4 py-3 border"><%= coupon.discountAmount %></td>
-                                    <td class="px-4 py-3 border"><%= coupon.minimumPurchase || 'N/A' %></td>
-                                    <td class="px-4 py-3 border"><%= new Date(coupon.validFrom).toLocaleDateString() %></td>
-                                    <td class="px-4 py-3 border"><%= new Date(coupon.validUntil).toLocaleDateString() %></td>
-                                    <td class="px-4 py-3 border"><%= coupon.usageLimit || 'Unlimited' %></td>
-                                    <td class="px-4 py-3 border"><%= coupon.usedCount %></td>
-                                    <td class="px-4 py-3 border">
-                                        <div class="flex space-x-2">
-                                            <a href="coupon/delete/<%= coupon._id %>" 
-                                               class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition text-sm">Delete</a>
-                                               
-                                               <a href="coupon/edit/<%= coupon._id %>" 
-                                                class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition text-sm">Edit</a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        </tbody>
-                    </table>
+        <div class="lg:ml-64 p-6 pt-24 md:pt-6">
+            <div class="glass-card p-8">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 heading-font">Coupon Management</h1>
+                        <p class="text-gray-500 text-sm mt-1">Create and manage discount coupons for your customers.</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <a href="/admin/coupons/add"
+                            class="btn-premium px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg">
+                            <i class="fa-solid fa-plus-circle"></i> Add New Coupon
+                        </a>
+                    </div>
                 </div>
-            <% } else { %>
-                <!-- No Coupons Available -->
-                <p class="text-center text-gray-600 mt-6">No coupons available.</p>
-            <% } %>
 
-            <!-- Pagination -->
-            <div class="flex justify-center mt-6">
-                <% if (currentPage > 1) { %>
-                    <a href="/admin/coupons?page=<%= currentPage - 1 %>&limit=<%= limit %>"
-                       class="px-4 py-2 mx-1 bg-gray-300 text-black rounded hover:bg-gray-400">
-                        Previous
-                    </a>
-                <% } %>
+                <% if (coupons.length> 0) { %>
+                    <div class="overflow-x-auto rounded-xl border border-gray-100">
+                        <table class="min-w-full bg-white whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                                    <th class="py-4 px-6 text-left font-bold">Code</th>
+                                    <th class="py-4 px-6 text-left font-bold">Type</th>
+                                    <th class="py-4 px-6 text-left font-bold">Discount</th>
+                                    <th class="py-4 px-6 text-left font-bold">Requirement</th>
+                                    <th class="py-4 px-6 text-left font-bold">Validity</th>
+                                    <th class="py-4 px-6 text-left font-bold">Usage</th>
+                                    <th class="py-4 px-6 text-left font-bold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <% coupons.forEach(coupon=> { %>
+                                    <tr class="hover:bg-gray-50/50 transition-colors">
+                                        <td class="py-4 px-6">
+                                            <span
+                                                class="px-3 py-1 bg-maroon/5 text-maroon font-bold rounded-lg border border-maroon/10">
+                                                <%= coupon.code %>
+                                            </span>
+                                        </td>
+                                        <td class="py-4 px-6 text-sm text-gray-600 capitalize">
+                                            <%= coupon.discountType %>
+                                        </td>
+                                        <td class="py-4 px-6 font-bold text-gray-800">
+                                            <%= coupon.discountType==='percentage' ? coupon.discountAmount + '%' : '₹' +
+                                                coupon.discountAmount %>
+                                        </td>
+                                        <td class="py-4 px-6 text-sm text-gray-500">
+                                            Min Spend: ₹<%= coupon.minimumPurchase || '0' %>
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <div class="flex flex-col text-[10px] font-medium">
+                                                <span class="text-emerald-600">FROM: <%= new
+                                                        Date(coupon.validFrom).toLocaleDateString() %></span>
+                                                <span class="text-rose-600">UNTIL: <%= new
+                                                        Date(coupon.validUntil).toLocaleDateString() %></span>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <div class="flex items-center gap-2">
+                                                <div class="text-xs font-bold text-gray-700">
+                                                    <%= coupon.usedCount %> / <%= coupon.usageLimit || '∞' %>
+                                                </div>
+                                                <div class="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                                    <div class="h-full bg-maroon rounded-full"
+                                                        style="--w: <%= coupon.usageLimit ? (coupon.usedCount / coupon.usageLimit * 100) : 0 %>%; width: var(--w)">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <div class="flex items-center gap-2">
+                                                <a href="coupon/edit/<%= coupon._id %>"
+                                                    class="p-2 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors"
+                                                    title="Edit">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </a>
+                                                <a href="coupon/delete/<%= coupon._id %>"
+                                                    class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                                                    title="Delete">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } else { %>
+                        <div class="text-center py-12">
+                            <i class="fa-solid fa-ticket-simple text-6xl text-gray-100 mb-4 h-15 w-15"></i>
+                            <p class="text-gray-400 font-medium tracking-tight">No active coupons available.</p>
+                        </div>
+                        <% } %>
 
-                <% for (let i = 1; i <= totalpage; i++) { %>
-                    <a href="/admin/coupons?page=<%= i %>&limit=<%= limit %>"
-                       class="px-4 py-2 mx-1 rounded <%= i === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black hover:bg-gray-300' %>">
-                        <%= i %>
-                    </a>
-                <% } %>
+                            <!-- Pagination -->
+                            <div class="flex justify-center mt-8 gap-2">
+                                <% if (currentPage> 1) { %>
+                                    <a href="/admin/coupons?page=<%= currentPage - 1 %>&limit=<%= limit %>"
+                                        class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+                                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                                    </a>
+                                    <% } %>
+                                        <% for (let i=1; i <=totalpage; i++) { %>
+                                            <a href="/admin/coupons?page=<%= i %>&limit=<%= limit %>"
+                                                class="w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-all <%= i === currentPage ? 'btn-premium' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' %>">
+                                                <%= i %>
+                                            </a>
+                                            <% } %>
+                                                <% if (currentPage < totalpage) { %>
+                                                    <a href="/admin/coupons?page=<%= currentPage + 1 %>&limit=<%= limit %>"
+                                                        class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">
+                                                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                                                    </a>
+                                                    <% } %>
+                            </div>
 
-                <% if (currentPage < totalpage) { %>
-                    <a href="/admin/coupons?page=<%= currentPage + 1 %>&limit=<%= limit %>"
-                       class="px-4 py-2 mx-1 bg-gray-300 text-black rounded hover:bg-gray-400">
-                        Next
-                    </a>
-                <% } %>
+                            <div class="mt-8 flex justify-end">
+                                <a href="/admin/Dashboard"
+                                    class="text-xs font-bold text-gray-400 hover:text-maroon transition-colors flex items-center gap-2">
+                                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                                </a>
+                            </div>
             </div>
         </div>
-    </div>
 </body>
+</body>
+
 </html>

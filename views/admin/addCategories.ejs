@@ -1,168 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Category</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Add Category | Wine Heaven</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <style>
+        :root {
+            --maroon: #6b0f1a;
+            --maroon-dk: #4a0a12;
+            --gold: #c9a84c;
+            --bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+        }
+
+        .heading-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-dk) 100%);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(107, 15, 26, 0.3);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            color: #374151;
+            transition: all 0.2s;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-input:focus {
+            border-color: var(--maroon);
+            box-shadow: 0 0 0 3px rgba(107, 15, 26, 0.1);
+            background: white;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
         #cropperContainer {
             display: none;
         }
+
         #croppedImagePreviewContainer {
             display: none;
+        }
+
+        .upload-zone {
+            border: 2px dashed #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f9fafb;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--maroon);
+            background: rgba(107, 15, 26, 0.02);
+        }
+
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
         }
     </style>
 </head>
 
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="bg-[#f8f9fa]">
     <%- include('../partials/adminSidebar.ejs') %>
-    <!-- <% if (success_msg) { %>
+        <div class="lg:ml-64 p-6 pt-24 md:pt-6">
+            <div class="max-w-xl mx-auto">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 heading-font">Add Category</h1>
+                        <p class="text-sm text-gray-500 mt-1">Create a new product category.</p>
+                    </div>
+                    <a href="/category"
+                        class="bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left text-xs"></i> Back
+                    </a>
+                </div>
+
+                <% if (typeof error_msg !=='undefined' && error_msg) { %>
+                    <div class="mb-4 p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-lg">
+                        <p class="text-sm text-rose-600 font-medium">
+                            <%= error_msg %>
+                        </p>
+                    </div>
+                    <% } %>
+                        <% if (typeof success_msg !=='undefined' && success_msg) { %>
+                            <div class="mb-4 p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg">
+                                <p class="text-sm text-emerald-600 font-medium">
+                                    <%= success_msg %>
+                                </p>
+                            </div>
+                            <% } %>
+
+                                <div class="glass-card p-8">
+                                    <form id="form-category" action="/category/add" method="POST"
+                                        enctype="multipart/form-data" onsubmit="return validateForm()">
+                                        <div class="space-y-5">
+                                            <div>
+                                                <label class="form-label">Category Name</label>
+                                                <input type="text" id="name" name="name" maxlength="22"
+                                                    class="form-input" placeholder="e.g. Red Wine">
+                                                <p id="name-error" class="error-msg hidden">Name must be at least 3
+                                                    chars and start with uppercase.</p>
+                                            </div>
+
+                                            <div>
+                                                <label class="form-label">Category Image</label>
+                                                <label class="upload-zone block" for="image">
+                                                    <i
+                                                        class="fa-solid fa-cloud-arrow-up text-2xl text-gray-400 mb-2"></i>
+                                                    <p class="text-sm font-semibold text-gray-500">Click to upload image
+                                                    </p>
+                                                    <p class="text-[10px] text-gray-400 mt-1">PNG, JPG accepted</p>
+                                                    <input type="file" id="image" name="image" accept="image/*">
+                                                </label>
+                                                <p id="image-error" class="error-msg hidden">Please upload a category
+                                                    image.</p>
+                                            </div>
+
+                                            <div id="cropperContainer" class="space-y-3">
+                                                <label class="form-label">Crop Your Image</label>
+                                                <div class="rounded-xl overflow-hidden border border-gray-100">
+                                                    <img id="cropperImage" style="max-width: 100%;" alt="Crop" />
+                                                </div>
+                                                <button type="button" onclick="cropImage()"
+                                                    class="btn-premium w-full py-3 rounded-xl text-xs font-bold uppercase tracking-widest">
+                                                    <i class="fa-solid fa-crop-simple mr-2"></i> Crop & Confirm
+                                                </button>
+                                            </div>
+
+                                            <div id="croppedImagePreviewContainer" class="space-y-2">
+                                                <label class="form-label">Cropped Preview</label>
+                                                <div
+                                                    class="rounded-xl overflow-hidden w-32 h-32 border border-gray-100">
+                                                    <img id="croppedImagePreview" class="w-full h-full object-cover"
+                                                        alt="Preview" />
+                                                </div>
+                                                <p class="text-[10px] text-emerald-600 font-bold"><i
+                                                        class="fa-solid fa-check-circle mr-1"></i>Image cropped and
+                                                    ready</p>
+                                            </div>
+
+                                            <input type="hidden" id="croppedImage" name="croppedImage">
+
+                                            <button type="submit"
+                                                class="btn-premium w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg">
+                                                <i class="fa-solid fa-layer-group mr-2"></i> Create Category
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
         <script>
-            Swal.fire({
-                title: 'Success!',
-                text: '<%= success_msg %>',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-        </script>
-    <% } %>
-</div>
+            let cropper;
+            const imageInput = document.getElementById('image');
+            const cropperImage = document.getElementById('cropperImage');
+            const cropperContainer = document.getElementById('cropperContainer');
+            const croppedImagePreview = document.getElementById('croppedImagePreview');
+            const croppedImagePreviewContainer = document.getElementById('croppedImagePreviewContainer');
 
-    <% if (error_msg) { %>
-        <script>
-            Swal.fire({
-                title: 'Error!',
-                text: '<%= error_msg %>',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        </script>
-    <% } %> -->
-    <div class="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
-
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Add Category</h2>
-        <% if (error_msg) { %>
-            <p class="text-red-500 text-center"><%= error_msg %></p>
-        <% } %>
-        <% if (success_msg) { %>
-            <p class="text-green-500 text-center"><%= success_msg %></p>
-        <% } %>
-
-        <form id="form-category" action="/category/add" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
-            <div class="mb-4">
-                <label for="name" class="block text-gray-700">Category Name:</label>
-                <input type="text" id="name" name="name" maxlength="22" class="border border-gray-300 rounded-md p-2 w-full">
-                <p id="name-error" class="text-red-500 text-sm mt-1 hidden">Category name must be at least 3 characters long, cannot start with a space, and must start with an uppercase letter.</p>
-            </div>
-            <div class="mb-4">
-                <label for="image" class="block text-gray-700">Category Image:</label>
-                <input type="file" id="image" name="image" accept="image/*" class="border border-gray-300 rounded-md p-2 w-full">
-                <p id="image-error" class="text-red-500 text-sm mt-1 hidden">Please upload an image for the category.</p>
-            </div>
-            <div id="cropperContainer" class="mb-4">
-                <h3 class="text-gray-700">Crop Image:</h3>
-                <img id="cropperImage" style="max-width: 100%;" alt="Cropper Image"/>
-                <button type="button" onclick="cropImage()" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 mt-2">Crop Image</button>
-            </div>
-            <div id="croppedImagePreviewContainer" class="mb-4">
-                <h3 class="text-gray-700">Cropped Image Preview:</h3>
-                <img id="croppedImagePreview" style="max-width: 100%; border: 1px solid #ccc; padding: 5px;" alt="Cropped Image Preview"/>
-            </div>
-            <input type="hidden" id="croppedImage" name="croppedImage">
-            <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700">Add Category</button>
-        </form>
-       
-       
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script>
-        
-        let cropper;
-
-        const nameInput = document.getElementById('name');
-        const imageInput = document.getElementById('image');
-        const nameError = document.getElementById('name-error');
-        const imageError = document.getElementById('image-error');
-        const cropperImage = document.getElementById('cropperImage');
-        const cropperContainer = document.getElementById('cropperContainer');
-        const croppedImagePreview = document.getElementById('croppedImagePreview');
-        const croppedImagePreviewContainer = document.getElementById('croppedImagePreviewContainer');
-
-        function validateForm() {
-            let isValid = true;
-
-            // Reset error messages
-            nameError.classList.add('hidden');
-            imageError.classList.add('hidden');
-
-            // Validate category name
-            const nameValue = nameInput.value.trim();
-            if (nameValue.length < 3 || nameValue.charAt(0) === ' ' || nameValue.charAt(0) !== nameValue.charAt(0).toUpperCase()) {
-                nameError.classList.remove('hidden');
-                isValid = false;
+            function validateForm() {
+                let isValid = true;
+                const nameValue = document.getElementById('name').value.trim();
+                const nameError = document.getElementById('name-error');
+                const imageError = document.getElementById('image-error');
+                nameError.classList.add('hidden');
+                imageError.classList.add('hidden');
+                if (nameValue.length < 3 || nameValue.charAt(0) !== nameValue.charAt(0).toUpperCase()) {
+                    nameError.classList.remove('hidden'); isValid = false;
+                }
+                if (!imageInput.files || imageInput.files.length === 0 || !document.getElementById('croppedImage').value) {
+                    imageError.classList.remove('hidden'); isValid = false;
+                }
+                return isValid;
             }
 
-            // Validate image upload
-            if (!imageInput.files || imageInput.files.length === 0 || !document.getElementById('croppedImage').value) {
-                imageError.classList.remove('hidden');
-                isValid = false;
-            }
-
-            return isValid; // Prevent form submission if validation fails
-        }
-
-        imageInput.addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    cropperImage.src = event.target.result;
-                    cropperContainer.style.display = 'block';
-                    croppedImagePreviewContainer.style.display = 'none';
-                    if (cropper) {
-                        cropper.destroy(); // Destroy the previous cropper instance
-                    }
-                    cropper = new Cropper(cropperImage, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        autoCropArea: 0.8,
-                    });
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        function cropImage() {
-            if (cropper) {
-                const canvas = cropper.getCroppedCanvas({
-                    width: 300,
-                    height: 300,
-                });
-                canvas.toBlob((blob) => {
+            imageInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
                     const reader = new FileReader();
-                    reader.onloadend = () => {
-                        const base64data = reader.result;
-                        document.getElementById('croppedImage').value = base64data; // Store cropped image
-                        croppedImagePreview.src = base64data; // Show cropped image preview
-                        croppedImagePreviewContainer.style.display = 'block';
+                    reader.onload = function (event) {
+                        cropperImage.src = event.target.result;
+                        cropperContainer.style.display = 'block';
+                        croppedImagePreviewContainer.style.display = 'none';
+                        if (cropper) cropper.destroy();
+                        cropper = new Cropper(cropperImage, { aspectRatio: 1, viewMode: 1, autoCropArea: 0.8 });
                     };
-                    reader.readAsDataURL(blob);
-                });
-            }
-        }
+                    reader.readAsDataURL(file);
+                }
+            });
 
-        // Ensure that the cropped image is set in the hidden field when the form is submitted
-        document.getElementById('form-category').addEventListener('submit', function(event) {
-            if (!document.getElementById('croppedImage').value) {
-                event.preventDefault(); // Prevent submission if cropped image is not set
-                alert("Please crop the image before submitting.");
+            function cropImage() {
+                if (cropper) {
+                    const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
+                    canvas.toBlob((blob) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            document.getElementById('croppedImage').value = reader.result;
+                            croppedImagePreview.src = reader.result;
+                            croppedImagePreviewContainer.style.display = 'block';
+                            cropperContainer.style.display = 'none';
+                        };
+                        reader.readAsDataURL(blob);
+                    });
+                }
             }
-        });
-
-        
-    </script>
+        </script>
 </body>
-</html> 
+
+</html>
