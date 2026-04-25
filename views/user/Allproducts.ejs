@@ -313,10 +313,19 @@
                                                 class="bar-action" title="Add to Wishlist">
                                                 <i class="fa-regular fa-heart"></i>
                                             </button>
-                                            <button onclick="addToCart('<%= product._id%>', this)" class="bar-action"
-                                                title="Add to Cart">
-                                                <i class="fa-solid fa-cart-shopping"></i>
-                                            </button>
+
+                                            <% if (typeof cartProductIds !=='undefined' &&
+                                                cartProductIds.includes(product._id.toString())) { %>
+                                                <button onclick="window.location.href='/cart'"
+                                                    class="bar-action text-emerald-500" title="Go to Cart">
+                                                    <i class="fa-solid fa-check-double"></i>
+                                                </button>
+                                                <% } else { %>
+                                                    <button onclick="addToCart('<%= product._id%>', this)"
+                                                        class="bar-action" title="Add to Cart">
+                                                        <i class="fa-solid fa-cart-plus"></i>
+                                                    </button>
+                                                    <% } %>
                                         </div>
                                     </div>
                                     <div class="product-info">
@@ -382,9 +391,19 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success',
-                                text: 'Product added to cart successfully!',
-                                confirmButtonColor: '#600018',
+                                text: 'Product added to cart!',
+                                showConfirmButton: false,
+                                timer: 1000
                             });
+
+                            
+                            element.innerHTML = '<i class="fa-solid fa-check-double"></i>';
+                            element.classList.add('text-emerald-500');
+                            element.title = 'Go to Cart';
+                            element.onclick = (e) => {
+                                e.stopPropagation();
+                                window.location.href = '/cart';
+                            };
                         } else {
                             const error = await response.json();
                             Swal.fire({

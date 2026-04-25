@@ -4,157 +4,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Success</title>
+    <title>Acquisition Interrupted | Wine Heaven</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'wine-maroon': '#6b0f1a',
+                        'wine-gold': '#c9a84c',
+                        'wine-cream': '#fdf8f2',
+                        'wine-black': '#0a0202',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --wine-maroon: #6b0f1a;
+            --wine-gold: #c9a84c;
+            --wine-cream: #fdf8f2;
+            --wine-black: #0a0202;
+        }
+
+        body {
+            background-color: var(--wine-cream);
+            font-family: 'Inter', sans-serif;
+            color: var(--wine-black);
+            overflow-x: hidden;
+        }
+
+        .playfair {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(107, 15, 26, 0.05);
+            box-shadow: 0 20px 50px rgba(107, 15, 26, 0.05);
+        }
+
+        .failed-accent {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-premium {
+            background: var(--wine-maroon);
+            color: white;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .btn-premium:hover {
+            background: var(--wine-black);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(107, 15, 26, 0.1);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid rgba(107, 15, 26, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--wine-cream);
+            border-color: var(--wine-gold);
+        }
+
+        .receipt-line {
+            border-bottom: 1px dashed rgba(107, 15, 26, 0.1);
+        }
+    </style>
 </head>
 
-<body class="bg-gray-50">
-    <%-include('../partials/userHeader.ejs')%>
-        <div class="min-h-screen flex items-center justify-center p-4 mt-10">
-            <div class="max-w-3xl w-full bg-white rounded-lg shadow-lg p-6 md:p-8">
-                <!-- Success Header -->
-                <div class="text-center mb-8">
-                    <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
+<body class="min-h-screen selection:bg-wine-maroon/10">
+    <%- include('../partials/userHeader.ejs') %>
+
+        <main class="max-w-4xl mx-auto px-4 pt-32 pb-20">
+            <div class="glass-card rounded-[2.5rem] overflow-hidden" data-aos="fade-up" data-aos-duration="1200">
+
+                <!-- Failed Hero -->
+                <div class="relative py-16 text-center overflow-hidden">
+                    <div class="absolute inset-0 bg-red-500/[0.02] -z-10"></div>
+
+                    <div
+                        class="inline-flex items-center justify-center w-24 h-24 failed-accent rounded-[2rem] text-white text-4xl mb-8 transform hover:scale-110 transition-transform duration-500 shadow-xl">
+                        <i class="fas fa-times"></i>
                     </div>
 
-                    <h1 class="text-3xl font-bold text-gray-800">Order Pending!</h1>
-                    <p class="text-gray-600 mt-2">Order ID: #<%= order._id %>
-                    </p>
-                </div>
-
-                <!-- Order Summary -->
-                <div class="border-t border-b border-gray-200 py-6 mb-6">
-                    <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
-
-                    <!-- Items List -->
                     <div class="space-y-4">
-                        <% order.items.forEach(item=> { %>
-                            <div class="flex items-center space-x-4">
-                                <img src="<%= item.productId.images[0] && item.productId.images[0].startsWith('http') ? item.productId.images[0] : '/uploads/' + item.productId.images[0] %>"
-                                    alt="<%= item.productName %>" class="w-16 h-16 object-cover rounded">
-                                <div class="flex-1">
-                                    <h3 class="font-medium">
-                                        <%= item.productName %>
-                                    </h3>
-                                    <p class="text-gray-800">category :<%= item.productId.category.name %>
-                                    </p>
-                                    <p class="text-gray-600">Quantity: <%= item.productCount %>
-                                    </p>
-                                    <p class="text-gray-800">Price :
-                                        <span class="line-through text-gray-500">₹<%=
-                                                item.productId.price*item.productCount %></span>
-                                        <span class="ml-2 text-gray-600">₹<%=
-                                                (item.productPrice*item.productCount).toFixed(0) %>.00</span>
-                                    </p>
-
-                                </div>
-                                <div
-                                    class="text-sm px-3 py-1 rounded-full <%= item.productStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' %>">
-                                    <%= item.productStatus %>
-                                </div>
-                            </div>
-                            <% }); %>
+                        <span class="text-wine-gold uppercase tracking-[0.4em] text-[10px] font-bold">Acquisition
+                            Pending</span>
+                        <h1 class="playfair text-5xl font-bold text-wine-black">Payment Interrupted</h1>
+                        <p class="text-sm text-gray-400 font-bold tracking-widest uppercase mt-4">
+                            Order Identity: <span class="text-wine-maroon">#<%= order._id %></span>
+                        </p>
                     </div>
                 </div>
 
-                <!-- Payment Details -->
-                <div class="space-y-3 mb-6">
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Subtotal</span>
-                        <span class="font-medium">₹<%= (Number(order.totalAmount) + Number(order.discount) -
-                                100).toFixed(0) %>.00</span>
+                <!-- Content Area -->
+                <div class="px-8 md:px-16 pb-16">
+                    <!-- Status Alert -->
+                    <div class="bg-amber-50 border border-amber-100 rounded-2xl p-6 mb-12 flex items-start gap-4">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                            <i class="fas fa-circle-exclamation"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-amber-900 text-sm">Action Required</h4>
+                            <p class="text-xs text-amber-700 mt-1 leading-relaxed">Your selection has been reserved, but
+                                the transaction was not completed. You can finalize your acquisition now or revisit it
+                                from your profile later.</p>
+                        </div>
                     </div>
-                    <div class="space-y-3 mb-6">
-                        <div class="flex justify-between">
-                            <span class="text-red-600">Shipping</span>
-                            <span class="font-medium text-red-600">₹ 100.00</span>
+
+                    <!-- Summary Section -->
+                    <div class="space-y-8">
+                        <div class="flex items-center gap-4">
+                            <h2 class="playfair text-2xl font-bold text-wine-black">Reserved Items</h2>
+                            <div class="h-[1px] bg-wine-gold/20 flex-grow"></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-6">
+                            <% order.items.forEach(item=> { %>
+                                <div
+                                    class="flex items-center gap-6 p-4 rounded-2xl hover:bg-white/50 transition-colors group">
+                                    <div
+                                        class="w-20 h-20 rounded-xl bg-wine-maroon/5 p-3 shrink-0 flex items-center justify-center transition-transform group-hover:scale-105">
+                                        <img src="<%= (item.productId && item.productId.images && item.productId.images.length > 0) ? (item.productId.images[0].startsWith('http') ? item.productId.images[0] : '/uploads/' + item.productId.images[0]) : (item.productImage && item.productImage.startsWith('http') ? item.productImage : '/uploads/' + item.productImage) %>"
+                                            alt="<%= item.productName %>"
+                                            class="w-full h-full object-contain mix-blend-multiply drop-shadow-lg">
+                                    </div>
+                                    <div class="flex-grow min-w-0">
+                                        <div class="flex justify-between items-start">
+                                            <h3 class="font-bold text-wine-black truncate pr-4">
+                                                <%= item.productName %>
+                                            </h3>
+                                            <div
+                                                class="text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest bg-amber-100 text-amber-700">
+                                                <%= item.productStatus %>
+                                            </div>
+                                        </div>
+                                        <p class="text-[10px] text-wine-gold font-bold uppercase tracking-widest mt-1">
+                                            <%= item.productId.category.name %>
+                                        </p>
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span
+                                                class="text-xs font-bold text-gray-400 uppercase tracking-widest">Quantity:
+                                                <%= item.productCount %></span>
+                                            <div class="space-x-2">
+                                                <span class="text-[11px] text-gray-300 line-through">₹<%=
+                                                        (item.productId.price * item.productCount).toFixed(0) %></span>
+                                                <span class="text-sm font-bold text-wine-maroon">₹<%=
+                                                        (Number(item.productPrice) *
+                                                        Number(item.productCount)).toFixed(0) %></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                        </div>
+                    </div>
+
+                    <!-- Price Breakdown -->
+                    <div class="mt-12 bg-wine-maroon/[0.03] rounded-[2rem] p-8 space-y-4">
+                        <div class="flex justify-between items-center px-2">
+                            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Subtotal
+                                Value</span>
+                            <span class="font-bold text-wine-black">₹<%= (Number(order.totalAmount) +
+                                    Number(order.discount) - 100).toFixed(0) %></span>
+                        </div>
+                        <div class="flex justify-between items-center px-2">
+                            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Concierge
+                                Delivery</span>
+                            <span class="font-bold text-wine-black">₹100</span>
                         </div>
                         <% if(order.discount> 0) { %>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Discount</span>
-                                <span class="font-medium text-green-600">-₹<%= order.discount.toFixed(0) %>.00</span>
+                            <div class="flex justify-between items-center px-2 text-emerald-600">
+                                <span class="text-[11px] font-bold uppercase tracking-widest">Member Privilege</span>
+                                <span class="font-bold">-₹<%= order.discount.toFixed(0) %></span>
                             </div>
                             <% } %>
-                                <div class="flex justify-between text-lg font-semibold">
-                                    <span>Total</span>
-                                    <span>₹<%= order.totalAmount .toFixed(0) %>.00</span>
+                                <div
+                                    class="pt-6 mt-2 border-t border-wine-maroon/5 flex justify-between items-end px-2">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-wine-gold uppercase tracking-[0.2em] mb-1">
+                                            Total Due</p>
+                                        <p class="playfair text-3xl font-bold text-wine-black">Repayment Amount</p>
+                                    </div>
+                                    <span class="text-4xl font-bold text-wine-maroon">₹<%= order.totalAmount.toFixed(0)
+                                            %></span>
                                 </div>
                     </div>
 
-                    <!-- Order Details -->
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h3 class="font-semibold mb-2">Payment Information</h3>
-                            <p class="text-gray-600">Method: <%= order.paymentMethod %>
-                            </p>
-                            <p class="text-gray-600">Status: <%= order.paymentStatus %>
-                            </p>
+                    <!-- Logistics & Meta -->
+                    <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div class="space-y-6">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-wine-gold/10 flex items-center justify-center text-wine-gold">
+                                    <i class="fas fa-credit-card text-sm"></i>
+                                </div>
+                                <h3 class="font-bold text-wine-black uppercase tracking-widest text-xs">Payment
+                                    Information</h3>
+                            </div>
+                            <div class="space-y-2 pl-11">
+                                <p class="text-sm font-medium text-gray-500">Method: <span
+                                        class="text-wine-black font-bold uppercase tracking-widest text-[11px] ml-2">
+                                        <%= order.paymentMethod %>
+                                    </span></p>
+                                <p class="text-sm font-medium text-gray-500">Status: <span
+                                        class="text-amber-600 font-bold uppercase tracking-widest text-[11px] ml-2">
+                                        <%= order.paymentStatus %>
+                                    </span></p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="font-semibold mb-2">Shipping Information</h3>
-                            <!-- <p class="text-gray-600">Status: <%= order.orderStatus %></p> -->
-                            <% if(order.shippingAddress && order.shippingAddress.length> 0) { %>
-                                <p class="text-gray-600">name: <%= order.shippingAddress[0].name %>
-                                </p>
-                                <p class="text-gray-600">state: <%= order.shippingAddress[0].state %>
-                                </p>
-                                <p class="text-gray-600">city: <%= order.shippingAddress[0].city %>
-                                </p>
-                                <p class="text-gray-600">address: <%= order.shippingAddress[0].address %>
-                                </p>
-                                <p class="text-gray-600">pincode: <%= order.shippingAddress[0].pincode %>
-                                </p>
-                                <p class="text-gray-600">mobile: <%= order.shippingAddress[0].mobile %>
-                                </p>
-                                <% } %>
+
+                        <div class="space-y-6">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-wine-gold/10 flex items-center justify-center text-wine-gold">
+                                    <i class="fas fa-truck-fast text-sm"></i>
+                                </div>
+                                <h3 class="font-bold text-wine-black uppercase tracking-widest text-xs">Intended
+                                    Destination</h3>
+                            </div>
+                            <div class="space-y-2 pl-11">
+                                <% if(order.shippingAddress && order.shippingAddress.length> 0) { %>
+                                    <p class="text-sm font-bold text-wine-black">
+                                        <%= order.shippingAddress[0].name %>
+                                    </p>
+                                    <p class="text-xs text-gray-500 leading-relaxed uppercase tracking-widest">
+                                        <%= order.shippingAddress[0].address %>, <%= order.shippingAddress[0].city %>,
+                                                <%= order.shippingAddress[0].state %> - <%=
+                                                        order.shippingAddress[0].pincode %>
+                                    </p>
+                                    <% } %>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-8 space-x-4 flex justify-center">
-                        <!-- <a href="/orders" class="bg-gold px-6 py-3 rounded-lg font-medium transition-all duration-200"> -->
-                        <button onclick="paynow('<%= order._id %>', this)"> Buy Now</button>
-
-                        <a href="/orders" class="bg-gold px-6 py-3 rounded-lg font-medium transition-all duration-200">
-                            View Orders
-                        </a>
-
-                        <a href="/wines"
-                            class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition-all duration-200">
-                            Continue Shopping
+                    <!-- Actions -->
+                    <div class="mt-20 flex flex-col sm:flex-row gap-4">
+                        <button id="paynow-btn" onclick="paynow('<%= order._id %>', this)"
+                            class="btn-premium flex-[2] py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-center text-sm shadow-xl gold-glow">
+                            Complete Acquisition Now
+                        </button>
+                        <a href="/orders"
+                            class="btn-secondary flex-1 py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-center text-sm text-wine-black">
+                            View Selection History
                         </a>
                     </div>
                 </div>
             </div>
+
+            <div class="mt-12 text-center" data-aos="fade-up" data-aos-delay="400">
+                <a href="/wines"
+                    class="text-[10px] text-wine-gold font-bold uppercase tracking-[0.4em] hover:text-wine-maroon transition-colors italic">
+                    Return to the Gallery for other selections
+                </a>
+            </div>
+        </main>
+
+        <%- include('../partials/userFooter.ejs') %>
+
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <script>
+                AOS.init({ duration: 1000, once: true, easing: 'ease-out-cubic' });
 
                 async function placeOrder(orderData) {
-                    console.log('Attempting to place order...');
-
                     try {
                         const response = await fetch('/api/place-pending-order', {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(orderData),
                         });
-
-                        if (!response.ok) {
-                            const errorResponse = await response.json();
-                            throw new Error(errorResponse.message || 'Order placement failed');
-                        }
-
-                        const result = await response.json();
-                        console.log('Order placement response:', result);
-                        return result;
+                        if (!response.ok) throw new Error('Order placement failed');
+                        return await response.json();
                     } catch (error) {
-                        console.error('Error during order placement:', error.message);
+                        console.error(error);
                         throw error;
                     }
                 }
@@ -163,90 +303,57 @@
                     try {
                         if (element) {
                             element.disabled = true;
-                            element.textContent = 'Processing...';
+                            element.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Initializing Securing...';
                         }
 
                         const orderResponse = await fetch(`/api/order/${orderId}`);
                         const orderData = await orderResponse.json();
 
-                        if (!orderData || !orderData.totalAmount) {
-                            throw new Error('Invalid order data');
-                        }
+                        const response = await fetch(`/payment-render/${orderData.totalAmount}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                        });
+                        const paymentData = await response.json();
 
-                        async function initiateRazorpayPayment(orderData) {
-                            const response = await fetch(`/payment-render/${orderData.totalAmount}`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                            });
+                        const options = {
+                            key: "<%= process.env.RAZOR_KEY_ID %>",
+                            amount: orderData.totalAmount * 100,
+                            currency: "INR",
+                            name: "Wine Heaven",
+                            description: "Order Repayment",
+                            order_id: paymentData.orderID,
+                            handler: async function (response) {
+                                orderData.razorpay_payment_id = response.razorpay_payment_id;
+                                orderData.razorpay_order_id = response.razorpay_order_id;
+                                orderData.razorpay_signature = response.razorpay_signature;
 
-                            if (!response.ok) {
-                                throw new Error('Payment initialization failed');
-                            }
+                                const orderResult = await placeOrder(orderData);
+                                if (orderResult.success) {
+                                    window.location.href = "/order-confirmation";
+                                } else {
+                                    throw new Error(orderResult.message || 'Verification failed');
+                                }
+                            },
+                            theme: { color: "#6b0f1a" },
+                        };
 
-                            const paymentData = await response.json();
+                        const rzp1 = new Razorpay(options);
+                        rzp1.open();
 
-                            return new Promise((resolve, reject) => {
-                                const options = {
-                                    key: "<%= process.env.RAZOR_KEY_ID %>",
-                                    amount: orderData.totalAmount * 100,
-                                    currency: "INR",
-                                    name: "Wine Heaven",
-                                    description: "Order Repayment",
-                                    order_id: paymentData.orderID,
-                                    handler: function (response) {
-                                        orderData.razorpay_payment_id = response.razorpay_payment_id;
-                                        orderData.razorpay_order_id = response.razorpay_order_id;
-                                        orderData.razorpay_signature = response.razorpay_signature;
-                                        resolve(orderData);
-                                    },
-                                    modal: {
-                                        ondismiss: function () {
-                                            reject(new Error('Payment cancelled'));
-                                        },
-                                    },
-                                    theme: {
-                                        color: "#600018",
-                                    },
-                                };
-
-                                const rzp1 = new Razorpay(options);
-                                rzp1.open();
-                            });
-                        }
-
-                        const paidOrderData = await initiateRazorpayPayment(orderData);
-                        const orderResult = await placeOrder(paidOrderData);
-
-                        if (orderResult.success) {
-                            console.log('Order successfully placed. Redirecting to confirmation page...');
-                            window.location.href = "/order-confirmation";
-                        } else {
-                            throw new Error(orderResult.message || 'Order placement unsuccessful');
-                        }
                     } catch (error) {
-                        console.error('Payment Error:', error);
-
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Payment Failed',
-                                text: error.message || 'Something went wrong!',
-                                confirmButtonColor: '#600018',
-                            });
-                        } else {
-                            alert('Payment failed: ' + (error.message || 'Unknown error'));
-                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Transaction Interrupted',
+                            text: error.message || 'Please try again',
+                            confirmButtonColor: '#600018',
+                        });
                     } finally {
                         if (element) {
                             element.disabled = false;
-                            element.textContent = 'Buy Now';
+                            element.textContent = 'Complete Acquisition Now';
                         }
                     }
                 }
-
-
             </script>
 </body>
 

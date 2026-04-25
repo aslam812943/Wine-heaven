@@ -20,8 +20,8 @@ exports.home = async (req, res) => {
 
         const validProducts = products.filter(product => product.category && !product.category.isBlocked && !product.category.isDeleted);
         const offers = await Offer.find({ isActive: true })
-        .populate('offerCategory')
-        .populate('offerProduct');
+            .populate('offerCategory')
+            .populate('offerProduct');
 
         return res.render('user/home', {
             categories,
@@ -141,10 +141,19 @@ exports.Allproducts = async (req, res) => {
         const product = products.filter(product => product.category && !product.category.isBlocked && !product.category.isDeleted)
         const totalPages = Math.ceil(totalProducts / limit);
 
+        let cartProductIds = [];
+        if (req.session.userId) {
+            const cart = await Cart.findOne({ userId: req.session.userId });
+            if (cart) {
+                cartProductIds = cart.items.map(item => item.productId.toString());
+            }
+        }
+
         res.render('user/Allproducts', {
             products: product,
             categories,
             query: req.query,
+            cartProductIds,
             pagination: {
                 currentPage: page,
                 totalPages: totalPages,

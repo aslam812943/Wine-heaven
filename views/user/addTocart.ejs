@@ -360,7 +360,7 @@
               });
               Toast.fire({ icon: 'success', title: 'Cart updated' });
             } else {
-             
+
               input.value = currentQty;
               Swal.fire('Error', data.message || 'Failed to update quantity', 'error');
             }
@@ -376,7 +376,7 @@
           removeButtons.forEach(button => {
             button.addEventListener('click', async (e) => {
               const productId = button.getAttribute('data-product-id');
-              const row = button.closest('[data-product-id]');
+              const row = button.closest('.item-row');
 
               const result = await Swal.fire({
                 title: '<span class="playfair">Remove from Selection?</span>',
@@ -387,38 +387,74 @@
                 confirmButtonText: 'Yes, Remove It',
                 cancelButtonText: 'Keep It',
                 background: '#fdf8f2',
-                customClass: { popup: 'rounded-[1.5rem]' }
+                customClass: { popup: 'rounded-[2.5rem]' }
               });
 
               if (result.isConfirmed) {
                 try {
+                 
+                  const originalContent = button.innerHTML;
+                  button.disabled = true;
+                  button.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i>';
+
                   const response = await fetch('/cart/remove', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ productId })
                   });
 
+                  if (!response.ok) throw new Error('Failed to remove item');
+
                   const data = await response.json();
+
                   if (data.success) {
-                    row.style.transform = 'translateX(100px)';
+                  
+                    row.style.transition = 'all 0.5s ease';
+                    row.style.transform = 'translateX(50px)';
                     row.style.opacity = '0';
+
                     setTimeout(() => {
                       row.remove();
+
                       if (data.cartEmpty) {
                         location.reload();
                       } else {
-                        document.querySelectorAll('.summary-subtotal').forEach(el => el.textContent = `₹${data.subtotal.toFixed(0)}`);
-                        document.querySelectorAll('.summary-total').forEach(el => el.textContent = `₹${data.total.toFixed(0)}`);
+                        
+                        const subtotalVal = parseFloat(data.subtotal).toFixed(0);
+                        const totalVal = parseFloat(data.total).toFixed(0);
+
+                        document.querySelectorAll('.summary-subtotal').forEach(el => el.textContent = `₹${subtotalVal}`);
+                        document.querySelectorAll('.summary-total').forEach(el => el.textContent = `₹${totalVal}`);
+
+                     
                         const countBadge = document.querySelector('.cart-count-badge');
                         if (countBadge) {
-                          const currentCount = document.querySelectorAll('.item-row').length;
-                          countBadge.textContent = `Shopping Bag (${currentCount})`;
+                          const remainingItems = document.querySelectorAll('.item-row').length;
+                          countBadge.textContent = `Shopping Bag (${remainingItems})`;
                         }
                       }
-                    }, 300);
+
+                      Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Selection updated',
+                        showConfirmButton: false,
+                        timer: 1500
+                      });
+                    }, 500);
+                  } else {
+                    throw new Error(data.message || 'Removal failed');
                   }
                 } catch (err) {
-                  console.error(err);
+                  button.disabled = false;
+                  button.innerHTML = '<i class="fas fa-trash-alt text-sm"></i>';
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Update Failed',
+                    text: err.message || 'Could not update your selection.',
+                    confirmButtonColor: '#6b0f1a'
+                  });
                 }
               }
             });

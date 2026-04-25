@@ -137,10 +137,10 @@ exports.removeFromCart = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Cart not found' });
         }
 
-        cart.items = cart.items.filter(item => item.productId._id.toString() !== productId);
+        cart.items = cart.items.filter(item => item.productId && item.productId._id.toString() !== productId);
         await cart.save();
 
-        const subtotal = cart.items.reduce((sum, item) => sum + (item.productPrice * item.productCount), 0);
+        const subtotal = cart.items.reduce((sum, item) => sum + ((item.productPrice || 0) * (item.productCount || 0)), 0);
         const total = subtotal + 100;
         cart.payableAmount = total;
         await cart.save();
