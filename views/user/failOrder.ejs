@@ -36,8 +36,8 @@
                     <div class="space-y-4">
                         <% order.items.forEach(item=> { %>
                             <div class="flex items-center space-x-4">
-                                <img src="/uploads/<%= item.productId.images[0] %>" alt="<%= item.productName %>"
-                                    class="w-16 h-16 object-cover rounded">
+                                <img src="<%= item.productId.images[0] && item.productId.images[0].startsWith('http') ? item.productId.images[0] : '/uploads/' + item.productId.images[0] %>"
+                                    alt="<%= item.productName %>" class="w-16 h-16 object-cover rounded">
                                 <div class="flex-1">
                                     <h3 class="font-medium">
                                         <%= item.productName %>

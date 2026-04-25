@@ -242,8 +242,8 @@
                         <% wishlist.forEach((product, i)=> { %>
                             <div class="product-card" data-aos="fade-up" data-aos-delay="<%= 100 * (i % 4) %>">
                                 <div class="product-media">
-                                    <img src="/uploads/<%= product.firstImage %>" alt="<%= product.name %>"
-                                        loading="lazy">
+                                    <img src="<%= product.firstImage && product.firstImage.startsWith('http') ? product.firstImage : '/uploads/' + product.firstImage %>"
+                                        alt="<%= product.name %>" loading="lazy">
                                     <div class="card-actions-bar">
                                         <button onclick="removeFromWishlist('<%= product._id %>')"
                                             class="bar-action remove-btn" title="Remove">
@@ -310,7 +310,7 @@
                             background: '#fdf8f2'
                         });
 
-                        
+
                         const container = document.getElementById(`action-container-${productId}`);
                         if (container) {
                             container.innerHTML = `
@@ -367,7 +367,7 @@
                 }
             }
 
-         
+
             AOS.init({
                 duration: 1000,
                 once: true,

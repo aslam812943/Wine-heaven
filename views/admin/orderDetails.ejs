@@ -75,7 +75,7 @@
                                         <% order.items.forEach(item=> { %>
                                             <div
                                                 class="flex items-center gap-6 p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
-                                                <img src="/uploads/<%= item.productId.images[0] %>"
+                                                <img src="<%= item.productId.images[0] && item.productId.images[0].startsWith('http') ? item.productId.images[0] : '/uploads/' + item.productId.images[0] %>"
                                                     alt="<%= item.productName %>"
                                                     class="w-20 h-20 object-cover rounded-xl shadow-sm">
                                                 <div class="flex-1">
@@ -94,7 +94,7 @@
                                                                     item.productId.price %></span>
                                                             <span class="text-sm font-bold text-emerald-600">₹<%=
                                                                     (item.productId.priceAfterDiscount).toFixed(0) %>
-                                                                    </span>
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -209,7 +209,8 @@
                                                         <i class="fa-solid fa-phone text-xs text-maroon-dk"></i>
                                                         <span
                                                             class="text-xs font-bold text-gray-700 tracking-wider">MOB:
-                                                            <%= address.mobile %></span>
+                                                            <%= address.mobile %>
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <% }) %>

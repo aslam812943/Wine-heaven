@@ -146,7 +146,9 @@
                           class="absolute inset-0 bg-wine-maroon/5 rounded-2xl transition-all group-hover:bg-wine-maroon/10">
                         </div>
                         <% if (item.productId.images && item.productId.images.length> 0) { %>
-                          <img src="/uploads/<%= item.productId.images[0] %>" alt="<%= item.productId.name %>"
+                          <img
+                            src="<%= item.productId.images[0] && item.productId.images[0].startsWith('http') ? item.productId.images[0] : '/uploads/' + item.productId.images[0] %>"
+                            alt="<%= item.productId.name %>"
                             class="w-full h-full object-contain rounded-2xl mix-blend-multiply transition-transform group-hover:scale-110 duration-500">
                           <% } else { %>
                             <img src="/path/to/default/image.jpg" alt="Default Image"
@@ -332,7 +334,7 @@
             const data = await response.json();
 
             if (data.success) {
-            
+
               const itemRow = input.closest('.item-row');
               if (itemRow) {
                 const itemTotalEl = itemRow.querySelector('.item-total-price');
@@ -348,7 +350,7 @@
               if (subtotalEl) subtotalEl.textContent = `₹${parseFloat(data.subtotal).toFixed(0)}`;
               if (totalEl) totalEl.textContent = `₹${parseFloat(data.total).toFixed(0)}`;
 
-           
+
               const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -358,12 +360,12 @@
               });
               Toast.fire({ icon: 'success', title: 'Cart updated' });
             } else {
-              // Revert on error
+             
               input.value = currentQty;
               Swal.fire('Error', data.message || 'Failed to update quantity', 'error');
             }
           } catch (err) {
-       
+
             input.value = currentQty;
             Swal.fire('Error', 'Connection failed', 'error');
           }

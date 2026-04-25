@@ -369,7 +369,7 @@
                                 <div class="flex gap-6 items-start group">
                                     <div
                                         class="w-20 h-20 rounded-2xl bg-wine-maroon/5 p-3 shrink-0 relative overflow-hidden flex items-center justify-center transition-transform group-hover:scale-105">
-                                        <img src="/uploads/<%= item.productId.images[0] %>"
+                                        <img src="<%= item.productId.images[0] && item.productId.images[0].startsWith('http') ? item.productId.images[0] : '/uploads/' + item.productId.images[0] %>"
                                             alt="<%= item.productId.name %>"
                                             class="w-full h-full object-contain mix-blend-multiply drop-shadow-lg">
                                     </div>
