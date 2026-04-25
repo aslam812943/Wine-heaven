@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
             max-width: 100%;
             max-height: 400px;
         }
+
         #crop-modal {
             display: none;
             position: fixed;
@@ -24,17 +26,20 @@
             justify-content: center;
             align-items: center;
         }
+
         #crop-modal .modal-content {
             background: #fff;
             padding: 20px;
             border-radius: 8px;
         }
+
         .img-wrapper {
             position: relative;
             display: inline-block;
             margin-right: 10px;
             margin-bottom: 10px;
         }
+
         .delete-button {
             position: absolute;
             top: 5px;
@@ -50,97 +55,128 @@
             line-height: 18px;
             font-size: 14px;
         }
+
         .cropped-image {
             width: 100px;
             height: 100px;
             object-fit: cover;
             margin: 5px;
         }
+
         .hidden {
             display: none;
         }
+
         .text-red-500 {
             color: red;
         }
     </style>
 </head>
+
 <body>
     <div class="container mx-auto p-6">
         <%- include('../partials/adminSidebar.ejs') %>
-        <div class=" ml-0 md:ml-64">
-        <h2 class="text-2xl font-semibold mb-4">Edit Product</h2>
+            <div class=" ml-0 md:ml-64">
+                <h2 class="text-2xl font-semibold mb-4">Edit Product</h2>
 
-        <% if (error_msg) { %><p class="text-red-500"><%= error_msg %></p><% } %>
-        <% if (success_msg) { %><p class="text-green-500"><%= success_msg %></p><% } %>
-        <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data" id="productForm">
-            <div class="mb-4">
-                <label for="name" class="block">Product Name</label>
-                <input type="text" name="name" id="name" value="<%= product.name %>" class="w-full border p-2" required>
-            </div>
-            <div class="mb-4">
-                <label for="price" class="block">Price</label>
-                <input type="number" name="price" id="price" value="<%= product.price %>" class="w-full border p-2" required min="0">
-            </div>
-            <div class="mb-4">
-                <label for="category" class="block">Category</label>
-                <select name="category" id="category" class="w-full border p-2" required>
-                    <% categories.forEach(category => { %>
-                        <option value="<%= category._id %>" <%= product.category.toString() === category._id.toString() ? 'selected' : '' %>><%= category.name %></option>
-                    <% }) %>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="stock" class="block">Stock</label>
-                <input type="number" name="stock" id="stock" value="<%= product.stock %>" class="w-full border p-2" required min="0">
-            </div>
-            <div class="mb-4">
-                <label for="discount" class="block">Discount</label>
-                <input id="discount" value="<%= product.discount %>" type="number" name="discount" class="w-full border p-2">
-                <p id="discount-error" class="error-message hidden">Discount must be 0 or greater.</p>
-            </div>
-            <div class="mb-4">
-                <label for="description" class="block">Description</label>
-                <textarea name="description" id="description" class="w-full border p-2" required><%= product.description %></textarea>
-            </div>
-            <div class="mb-4">
-                <label for="images" class="block">Upload New Images (if any are deleted)</label>
-                <input type="file" id="imageInput" accept="image/*" class="w-full border p-2" multiple>
-                <input type="hidden" name="croppedImages" id="croppedImages">
-                <input type="hidden" name="deletedImages" id="deletedImages">
-                <p id="image-error" class="text-red-500 text-sm mt-1 hidden">Please ensure there are exactly 3 images uploaded or retained.</p>
-            </div>
-            <div id="crop-modal" class="flex">
-                <div class="modal-content">
-                    <img id="imagePreview" src="" alt="Image Preview" class="preview-container">
-                    <div class="mt-4 text-right">
-                        <button type="button" onclick="cropImage()" class="bg-blue-500 text-white px-4 py-2 rounded">Crop</button>
-                        <button type="button" onclick="closeCropModal()" class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
-                    </div>
-                </div>
-            </div>
-            <div class="flex">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Update Product</button>
-            </div>
-        </form>
+                <% if (error_msg) { %>
+                    <p class="text-red-500">
+                        <%= error_msg %>
+                    </p>
+                    <% } %>
+                        <% if (success_msg) { %>
+                            <p class="text-green-500">
+                                <%= success_msg %>
+                            </p>
+                            <% } %>
+                                <form action="/admin/products/edit/<%= product._id %>" method="POST"
+                                    enctype="multipart/form-data" id="productForm">
+                                    <div class="mb-4">
+                                        <label for="name" class="block">Product Name</label>
+                                        <input type="text" name="name" id="name" value="<%= product.name %>"
+                                            class="w-full border p-2" required>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="price" class="block">Price</label>
+                                        <input type="number" name="price" id="price" value="<%= product.price %>"
+                                            class="w-full border p-2" required min="0">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="category" class="block">Category</label>
+                                        <select name="category" id="category" class="w-full border p-2" required>
+                                            <% categories.forEach(category=> { %>
+                                                <option value="<%= category._id %>"
+                                                    <%=product.category.toString()===category._id.toString()
+                                                    ? 'selected' : '' %>><%= category.name %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="stock" class="block">Stock</label>
+                                        <input type="number" name="stock" id="stock" value="<%= product.stock %>"
+                                            class="w-full border p-2" required min="0">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="discount" class="block">Discount</label>
+                                        <input id="discount" value="<%= product.discount %>" type="number"
+                                            name="discount" class="w-full border p-2">
+                                        <p id="discount-error" class="error-message hidden">Discount must be 0 or
+                                            greater.</p>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="description" class="block">Description</label>
+                                        <textarea name="description" id="description" class="w-full border p-2"
+                                            required><%= product.description %></textarea>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="images" class="block">Upload New Images (if any are deleted)</label>
+                                        <input type="file" id="imageInput" accept="image/*" class="w-full border p-2"
+                                            multiple>
+                                        <input type="hidden" name="croppedImages" id="croppedImages">
+                                        <input type="hidden" name="deletedImages" id="deletedImages">
+                                        <p id="image-error" class="text-red-500 text-sm mt-1 hidden">Please ensure there
+                                            are exactly 3 images uploaded or retained.</p>
+                                    </div>
+                                    <div id="crop-modal" class="flex">
+                                        <div class="modal-content">
+                                            <img id="imagePreview" src="" alt="Image Preview" class="preview-container">
+                                            <div class="mt-4 text-right">
+                                                <button type="button" onclick="cropImage()"
+                                                    class="bg-blue-500 text-white px-4 py-2 rounded">Crop</button>
+                                                <button type="button" onclick="closeCropModal()"
+                                                    class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex">
+                                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Update
+                                            Product</button>
+                                    </div>
+                                </form>
 
-        <h3 class="mt-6">Existing Images</h3>
-        <div class="flex flex-wrap" id="existingImages">
-            <% if (product.images && product.images.length > 0) { %>
-                <% product.images.forEach((image, index) => { %>
-                    <div class="img-wrapper" data-public-id="<%= image.public_id %>" data-index="<%= index %>">
-                        <img src="/uploads/<%=image%>" alt="Product Image" class="h-32 w-32 object-cover">
-                        <button type="button" class="delete-button" onclick="markImageForDeletion(this, '<%= index %>')">X</button>
-                    </div>
-                <% }) %>
-            <% } else { %>
-                <span class="text-gray-500">No images uploaded for this product.</span>
-            <% } %>
-        </div>
+                                <h3 class="mt-6">Existing Images</h3>
+                                <div class="flex flex-wrap" id="existingImages">
+                                    <% if (product.images && product.images.length> 0) { %>
+                                        <% product.images.forEach((image, index)=> { %>
+                                            <div class="img-wrapper" data-public-id="<%= image.public_id %>"
+                                                data-index="<%= index %>">
+                                                <img src="<%= image.startsWith('http') ? image : '/uploads/' + image %>"
+                                                    alt="Product Image" class="h-32 w-32 object-cover">
+                                                <button type="button" class="delete-button"
+                                                    onclick="markImageForDeletion(this, '<%= index %>')">X</button>
+                                            </div>
+                                            <% }) %>
+                                                <% } else { %>
+                                                    <span class="text-gray-500">No images uploaded for this
+                                                        product.</span>
+                                                    <% } %>
+                                </div>
 
-        <h3 class="mt-6">New Images</h3>
-        <div class="flex flex-wrap" id="newImages"></div>
+                                <h3 class="mt-6">New Images</h3>
+                                <div class="flex flex-wrap" id="newImages"></div>
+            </div>
     </div>
-</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <script>
@@ -150,7 +186,7 @@
         let deletedImagesArray = [];
         let newImageIndex = 0;
 
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             let isValid = true;
             const totalImages = document.querySelectorAll('#existingImages .img-wrapper').length + croppedImagesArray.length;
 
@@ -171,16 +207,16 @@
             document.getElementById('deletedImages').value = JSON.stringify(deletedImagesArray);
         });
 
-        document.getElementById('imageInput').addEventListener('change', function(event) {
+        document.getElementById('imageInput').addEventListener('change', function (event) {
             const files = event.target.files;
             if (files.length) {
                 for (let i = 0; i < files.length; i++) {
                     const reader = new FileReader();
-                    reader.onload = function(event) {
+                    reader.onload = function (event) {
                         document.getElementById('crop-modal').style.display = 'flex';
                         const img = document.getElementById('imagePreview');
                         img.src = event.target.result;
-                        img.onload = function() {
+                        img.onload = function () {
                             cropper = new Cropper(img, {
                                 aspectRatio: 1,
                                 viewMode: 1,
@@ -193,27 +229,25 @@
         });
 
         function cropImage() {
-    const canvas = cropper.getCroppedCanvas();
-    canvas.toBlob(function(blob) {
-        const url = URL.createObjectURL(blob);
+            const canvas = cropper.getCroppedCanvas();
+            canvas.toBlob(function (blob) {
+                const url = URL.createObjectURL(blob);
 
-        // Generate a new unique ID for the image
-        const imageId = `new-${newImageIndex++}`;
-        croppedImagesArray.push({ id: imageId, url: url });
+                const imageId = `new-${newImageIndex++}`;
+                croppedImagesArray.push({ id: imageId, url: url });
 
-        // Update the frontend to show the new image
-        const imgWrapper = document.createElement('div');
-        imgWrapper.className = 'img-wrapper';
-        imgWrapper.dataset.imageId = imageId; // Save the ID for later use
-        imgWrapper.innerHTML = `
+                const imgWrapper = document.createElement('div');
+                imgWrapper.className = 'img-wrapper';
+                imgWrapper.dataset.imageId = imageId; 
+                imgWrapper.innerHTML = `
             <img src="${url}" alt="Cropped Image" class="cropped-image">
             <button type="button" class="delete-button" onclick="removeCroppedImage(this, '${imageId}')">X</button>
         `;
-        document.getElementById('newImages').appendChild(imgWrapper);
-    });
+                document.getElementById('newImages').appendChild(imgWrapper);
+            });
 
-    closeCropModal();
-}
+            closeCropModal();
+        }
 
 
 
@@ -230,12 +264,13 @@
         }
 
         function removeCroppedImage(button, imageId) {
-  
-  const wrapper = button.parentElement;
-  wrapper.remove();
 
-  croppedImagesArray = croppedImagesArray.filter(image => image.id !== imageId);
-}
+            const wrapper = button.parentElement;
+            wrapper.remove();
+
+            croppedImagesArray = croppedImagesArray.filter(image => image.id !== imageId);
+        }
     </script>
 </body>
+
 </html>

@@ -306,8 +306,8 @@
                             <% products.forEach((product, i)=> { %>
                                 <div class="product-card" data-aos="fade-up" data-aos-delay="<%= 100 * (i % 4) %>">
                                     <div class="product-media">
-                                        <img src="/uploads/<%= product.images[0] %>" alt="<%= product.name %>"
-                                            loading="lazy">
+                                        <img src="<%= product.images[0].startsWith('http') ? product.images[0] : '/uploads/' + product.images[0] %>"
+                                            alt="<%= product.name %>" loading="lazy">
                                         <div class="card-actions-bar">
                                             <button onclick="addToWishlist('<%= product._id%>', this)"
                                                 class="bar-action" title="Add to Wishlist">
@@ -456,7 +456,7 @@
 
 
 
-             
+
                 AOS.init({
                     duration: 1000,
                     once: true,

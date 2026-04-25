@@ -727,7 +727,9 @@
             ══════════════════════════════════ -->
             <div class="gallery" data-aos="fade-right">
                 <div class="main-img-shell">
-                    <img id="mainImage" src="/uploads/<%= product.images[0] %>" alt="<%= product.name %>">
+                    <img id="mainImage"
+                        src="<%= product.images[0].startsWith('http') ? product.images[0] : '/uploads/' + product.images[0] %>"
+                        alt="<%= product.name %>">
                     <div class="img-badges">
                         <% if (product.stock <=0) { %>
                             <span class="ibadge ibadge-gray"><i class="fa-solid fa-ban"></i> Sold Out</span>
@@ -748,10 +750,11 @@
 
                 <!-- Thumbnails -->
                 <div class="thumbs">
-                    <% product.images.forEach((img, i)=> { %>
-                        <div class="thumb <%= i === 0 ? 'active' : '' %>"
-                            onclick="swapImage('/uploads/<%= img %>', this)">
-                            <img src="/uploads/<%= img %>" alt="View <%= i+1 %>">
+                    <% product.images.forEach((img, i)=> {
+                        const thumbPath = img.startsWith('http') ? img : '/uploads/' + img;
+                        %>
+                        <div class="thumb <%= i === 0 ? 'active' : '' %>" onclick="swapImage('<%= thumbPath %>', this)">
+                            <img src="<%= thumbPath %>" alt="View <%= i+1 %>">
                         </div>
                         <% }); %>
                 </div>
@@ -797,7 +800,8 @@
                     <div class="stock-indicator <%= product.stock > 0 ? 'in-stock' : 'out-stock' %>">
                         <div class="stock-dot"></div>
                         <span>
-                            <%= product.stock > 0 ? product.stock + " limited editions available" : "Currently unavailable in our boutique" %>
+                            <%= product.stock> 0 ? product.stock + " limited editions available" : "Currently
+                                unavailable in our boutique" %>
                         </span>
                     </div>
                 </div>

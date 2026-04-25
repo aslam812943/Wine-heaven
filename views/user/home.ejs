@@ -301,12 +301,12 @@
             scroll-behavior: smooth;
             padding: 20px 0 40px;
             scrollbar-width: none;
-           
+
         }
 
         .categories-inner::-webkit-scrollbar {
             display: none;
-      
+
         }
 
         .category-card {
@@ -405,7 +405,7 @@
 
         .product-media {
             height: 280px;
-          
+
             position: relative;
             overflow: hidden;
             background: #fdfdfd;
@@ -415,7 +415,7 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-          
+
             padding: 20px;
             transition: transform 0.6s ease;
         }
@@ -424,7 +424,7 @@
             transform: scale(1.05) translateY(-5px);
         }
 
-   
+
         .card-actions-bar {
             position: absolute;
             bottom: 12px;
@@ -582,7 +582,8 @@
                 <% products.forEach((product, i)=> { %>
                     <div class="product-card" data-aos="fade-up" data-aos-delay="<%= 100 * (i % 4) %>">
                         <div class="product-media">
-                            <img src="/uploads/<%= product.images[0] %>" alt="<%= product.name %>" loading="lazy">
+                            <img src="<%= product.images[0].startsWith('http') ? product.images[0] : '/uploads/' + product.images[0] %>"
+                                alt="<%= product.name %>" loading="lazy">
                             <div class="card-actions-bar">
                                 <button onclick="addToWishlist('<%= product._id%>', this)" class="bar-action"
                                     title="Add to Wishlist">
@@ -719,7 +720,7 @@
         // --- SEAMLESS INFINITE SCROLL FOR CATEGORIES ---
         const categoriesInner = document.querySelector('.categories-inner');
         if (categoriesInner) {
-        
+
             const items = [...categoriesInner.children];
             items.forEach(item => {
                 const clone = item.cloneNode(true);
@@ -737,7 +738,7 @@
                 if (!isHovered) {
                     scrollAmount += scrollSpeed;
 
-                    
+
                     const originalWidth = categoriesInner.scrollWidth / 2;
 
                     if (scrollAmount >= originalWidth) {
