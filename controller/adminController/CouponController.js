@@ -78,6 +78,7 @@ exports.addCoupon = async (req, res) => {
         });
 
         await coupon.save();
+        req.flash('success', 'Coupon added successfully');
         res.redirect('/admin/coupons');
     } catch (error) {
 
@@ -95,6 +96,7 @@ exports.deleteCoupon = async (req, res) => {
 
         const { id } = req.params;
         await Coupon.findByIdAndDelete(id)
+        req.flash('success', 'Coupon deleted successfully');
         res.redirect('/admin/coupons');
 
     } catch (error) {
@@ -109,6 +111,7 @@ exports.deleteOffer = async (req, res) => {
     try {
         const { id } = req.params;
         await Offer.findByIdAndDelete(id)
+        req.flash('success', 'Offer deleted successfully');
         res.redirect('/admin/offers')
 
     } catch (error) {
@@ -164,7 +167,6 @@ exports.PostAddOffer = async (req, res) => {
     try {
         let { offerName, offerCategory, offerProduct, discountPercentage, offerType } = req.body;
 
-
         let offer;
         if (offerType === 'product') {
             offer = new Offer({
@@ -173,9 +175,6 @@ exports.PostAddOffer = async (req, res) => {
                 offerProduct,
                 offerType
             });
-
-            await offer.save();
-
         } else {
             offer = new Offer({
                 offerName,
@@ -183,16 +182,12 @@ exports.PostAddOffer = async (req, res) => {
                 offerCategory,
                 offerType
             });
-
-            await offer.save();
-
         }
 
-
-
+        await offer.save();
+        req.flash('success', 'Offer added successfully');
         res.redirect('/admin/offers');
     } catch (error) {
-
         res.status(500).send('Failed to add offer');
     }
 };
@@ -243,6 +238,7 @@ exports.offerdeactivate = async (req, res) => {
             });
         }
 
+        req.flash('success', 'Offer activated successfully');
         res.redirect('/admin/offers');
     } catch (error) {
 
@@ -295,6 +291,7 @@ exports.offerActivate = async (req, res) => {
             });
         }
 
+        req.flash('success', 'Offer deactivated successfully');
         res.redirect('/admin/offers');
     } catch (error) {
 
@@ -344,6 +341,7 @@ exports.postEditCoupon = async (req, res) => {
         }
 
         await Coupon.findByIdAndUpdate(couponid, req.body)
+        req.flash('success', 'Coupon updated successfully');
         res.redirect('/admin/coupons')
     } catch (error) {
 
@@ -380,7 +378,7 @@ exports.postEditOffer = async (req, res) => {
 
 
         await Offer.findByIdAndUpdate(id, req.body)
-
+        req.flash('success', 'Offer updated successfully');
         res.redirect("/admin/offers")
 
 

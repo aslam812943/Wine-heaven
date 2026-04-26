@@ -655,29 +655,14 @@
                 });
 
                 if (response.ok) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Selection Added',
-                        text: 'This vintage has been added to your cart.',
-                        confirmButtonColor: '#6b0f1a',
-                        background: '#fdf8f2'
-                    });
+                    showToast('success', 'Selection Added to cart');
                 } else {
                     const error = await response.json();
-                    Swal.fire({
-                        icon: 'info',
-                        text: error.message || 'Unable to add this selection.',
-                        confirmButtonColor: '#6b0f1a'
-                    });
+                    showToast('info', error.message || 'Unable to add this selection.');
                 }
             } catch (error) {
                 console.error("Fetch error:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'System Error',
-                    text: 'An unexpected error occurred.',
-                    confirmButtonColor: '#6b0f1a'
-                });
+                showToast('error', 'An unexpected error occurred.');
             }
         }
 
@@ -691,29 +676,14 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    Swal.fire({
-                        icon: data.action === 'added' ? 'success' : 'info',
-                        title: data.action === 'added' ? 'Added to Curator List' : 'Selection Removed',
-                        text: data.message,
-                        confirmButtonColor: '#6b0f1a',
-                    });
+                    showToast(data.action === 'added' ? 'success' : 'info', data.message);
                 } else {
                     const error = await response.json();
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: error.message || 'Failed to update your list.',
-                        confirmButtonColor: '#6b0f1a',
-                    });
+                    showToast('error', error.message || 'Failed to update your list.');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'System Error',
-                    text: 'An unexpected error occurred.',
-                    confirmButtonColor: '#6b0f1a',
-                });
+                showToast('error', 'An unexpected error occurred.');
             }
         }
 

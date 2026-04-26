@@ -170,10 +170,15 @@
                                 </p>
                             </div>
                             <div class="p-6 text-right md:text-left">
-                                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Status
+                                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Overall
+                                    Order Status
                                 </p>
-                                <span
-                                    class="status-badge <%= orders.orderStatus === 'Pending' ? 'status-pending' : 'status-delivered' %>">
+                                <span class="status-badge <%= 
+                                    orders.orderStatus === 'Pending' ? 'status-pending' : 
+                                    orders.orderStatus === 'Confirmed' ? 'status-confirmed' : 
+                                    orders.orderStatus === 'Shipped' ? 'status-shipped' : 
+                                    orders.orderStatus === 'Delivered' ? 'status-delivered' : 'status-cancelled'
+                                %>">
                                     <%= orders.orderStatus %>
                                 </span>
                             </div>
@@ -219,15 +224,20 @@
                                                             <h4 class="font-bold text-gray-900 text-lg">
                                                                 <%= item.productName %>
                                                             </h4>
-                                                            <span class="status-badge <%= 
-                                                            item.productStatus === 'Pending' ? 'status-pending' : 
-                                                            item.productStatus === 'Confirmed' ? 'status-confirmed' : 
-                                                            item.productStatus === 'Shipped' ? 'status-shipped' : 
-                                                            item.productStatus === 'Delivered' ? 'status-delivered' : 
-                                                            item.productStatus === 'Cancelled' ? 'status-cancelled' : 'status-returned'
-                                                        %>">
-                                                                <%= item.productStatus %>
-                                                            </span>
+                                                            <div class="flex flex-col items-end">
+                                                                <p
+                                                                    class="text-[9px] text-gray-400 uppercase tracking-widest font-bold mb-1">
+                                                                    Item Status</p>
+                                                                <span class="status-badge <%= 
+                                                                    item.productStatus === 'Pending' ? 'status-pending' : 
+                                                                    item.productStatus === 'Confirmed' ? 'status-confirmed' : 
+                                                                    item.productStatus === 'Shipped' ? 'status-shipped' : 
+                                                                    item.productStatus === 'Delivered' ? 'status-delivered' : 
+                                                                    item.productStatus === 'Cancelled' ? 'status-cancelled' : 'status-returned'
+                                                                %>">
+                                                                    <%= item.productStatus %>
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                         <p class="text-xs text-gray-400 mt-1">Quantity: <span
                                                                 class="font-bold text-gray-900">

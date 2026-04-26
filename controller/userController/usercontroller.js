@@ -54,9 +54,9 @@ exports.signupGet = (req, res) => {
 
 exports.signuppost = async (req, res) => {
     try {
-        const { name, email, password,confirmPassword } = req.body;
+        const { name, email, password, confirmPassword } = req.body;
 
-        if(password !==confirmPassword){
+        if (password !== confirmPassword) {
             req.flash('error', 'ConfirmPassword Not Match');
             return res.redirect('/signup');
         }
@@ -82,13 +82,13 @@ exports.signuppost = async (req, res) => {
         });
 
         req.session.user_email = email;
-        // await user.save();
+      
 
 
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         user.otp = otp;
-        user.otpExpires = Date.now() + 300000; // 5 minutes from now
+        user.otpExpires = Date.now() + 300000; 
         await sendOtp(email, otp);
         await user.save();
 
@@ -264,7 +264,7 @@ exports.loginPost = async (req, res) => {
             return res.redirect('/verify-otp');
         }
 
-        // Store only the user ID in the session
+       
         req.session.userId = user._id;
         req.session.user_email = user.email;
 
@@ -279,6 +279,7 @@ exports.loginPost = async (req, res) => {
 
             await wallet.save();
         }
+        req.flash('success', 'Logged in successfully!');
         return res.redirect('/');
     } catch (error) {
 
@@ -337,7 +338,7 @@ exports.forgetpasswordPost = async (req, res) => {
 
         const token = crypto.randomBytes(20).toString('hex')
         user.resetPasswordToken = token;
-        user.resetPasswordExpires = Date.now() + 3600000  // 1 house
+        user.resetPasswordExpires = Date.now() + 3600000  
         await user.save();
         const PORT = process.env.PORT || 3005;
         const resetLink = `https://wineheaven.store/reset-password?token=${token}&email=${email}`;
@@ -405,13 +406,13 @@ exports.resetPasswordGet = async (req, res) => {
 
 exports.resentPasswordPost = async (req, res) => {
     try {
-        const { token, email, password,confirmPassword } = req.body;
+        const { token, email, password, confirmPassword } = req.body;
 
 
-if(password !== confirmPassword){
-    req.flash('error', 'ConfirmPassword Not Match ');
-        res.redirect('back') 
-}
+        if (password !== confirmPassword) {
+            req.flash('error', 'ConfirmPassword Not Match ');
+            res.redirect('back')
+        }
 
         const user = await User.findOne({
             email,
@@ -437,8 +438,8 @@ if(password !== confirmPassword){
         req.flash('success', 'password changed ');
         res.redirect('login')
     } catch (error) {
-        
-        
+
+
         res.status(500).send(error.message);
 
     }
@@ -463,10 +464,10 @@ exports.contactpage = async (req, res) => {
     }
 }
 
-exports.blockuserpage = async (req,res)=>{
-    try{
-res.render('user/userBlock')
-    }catch(error){
+exports.blockuserpage = async (req, res) => {
+    try {
+        res.render('user/userBlock')
+    } catch (error) {
 
     }
 }

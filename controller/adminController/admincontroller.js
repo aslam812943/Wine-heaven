@@ -228,6 +228,7 @@ exports.blockUser = async (req, res) => {
     try {
         const userId = req.params.id;
         await User.findByIdAndUpdate(userId, { isBlocked: true });
+        req.flash('success', 'User blocked successfully');
         res.redirect('/admin/customers');
 
     } catch (error) {
@@ -245,6 +246,7 @@ exports.unblockUser = async (req, res) => {
     try {
         const userId = req.params.id;
         await User.findByIdAndUpdate(userId, { isBlocked: false });
+        req.flash('success', 'User unblocked successfully');
         res.redirect('/admin/customers')
     } catch (error) {
 

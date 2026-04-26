@@ -84,6 +84,7 @@ exports.addProductPost = async (req, res) => {
 
         await product.save();
 
+        req.flash('success', 'Product added successfully');
         res.status(200).json({ success: true, message: 'Product added successfully' });
     } catch (error) {
         if (!res.headersSent) {
@@ -121,7 +122,7 @@ exports.updateProductPost = async (req, res) => {
     try {
         const product = await Product.findById(productId);
         if (!product) {
-            req.flash('error_msg', 'Product not found');
+            req.flash('error', 'Product not found');
             return res.redirect('/admin/products');
         }
 
@@ -172,7 +173,7 @@ exports.updateProductPost = async (req, res) => {
             await updateCartsWithNewPrice(productId, priceAfterDiscount);
         }
 
-        req.flash('success_msg', 'Product updated successfully');
+        req.flash('success', 'Product updated successfully');
         return res.json({ success: true, message: 'Product updated successfully' });
 
     } catch (error) {
@@ -191,7 +192,7 @@ exports.updateProductPost = async (req, res) => {
             }
         }
 
-        req.flash('error_msg', 'Error updating product. Please try again.');
+        req.flash('error', 'Error updating product. Please try again.');
         return res.redirect(`/admin/products/edit/${productId}`);
     }
 };
@@ -218,7 +219,7 @@ exports.Blockedproduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (!product) {
-            req.flash('error_msg', 'Product not found');
+            req.flash('error', 'Product not found');
             return res.redirect('/admin/products');
         }
 
@@ -226,12 +227,11 @@ exports.Blockedproduct = async (req, res) => {
         product.isBlocked = !product.isBlocked;
         await product.save();
 
-        req.flash('success_msg', `Product has been ${product.isBlocked ? 'blocked' : 'unblocked'} successfully`);
+        req.flash('success', `Product has been ${product.isBlocked ? 'blocked' : 'unblocked'} successfully`);
         res.redirect('/admin/products');
     } catch (error) {
 
-        req.flash('error_msg', 'Something went wrong');
+        req.flash('error', 'Something went wrong');
         res.redirect('/admin/products');
     }
 };
-

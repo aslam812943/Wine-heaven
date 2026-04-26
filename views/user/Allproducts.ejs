@@ -388,15 +388,9 @@
                         });
 
                         if (response.ok) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: 'Product added to cart!',
-                                showConfirmButton: false,
-                                timer: 1000
-                            });
+                            showToast('success', 'Product added to cart!');
 
-                            
+
                             element.innerHTML = '<i class="fa-solid fa-check-double"></i>';
                             element.classList.add('text-emerald-500');
                             element.title = 'Go to Cart';
@@ -406,21 +400,11 @@
                             };
                         } else {
                             const error = await response.json();
-                            Swal.fire({
-                                icon: 'info',
-                                //  title: 'Error',
-                                text: error.message || 'Failed to add product to cart.',
-                                confirmButtonColor: '#600018'
-                            });
+                            showToast('info', error.message || 'Failed to add product to cart.');
                         }
                     } catch (error) {
                         console.error("Fetch error:", error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'An unexpected error occurred.',
-                            confirmButtonColor: '#600018'
-                        });
+                        showToast('error', 'An unexpected error occurred.');
                     }
 
 
@@ -439,33 +423,14 @@
 
                         if (response.ok) {
                             const data = await response.json();
-                            Swal.fire({
-                                icon: data.action === 'added' ? 'success' : 'info',
-                                title: data.action === 'added'
-                                    ? 'Added to Wishlist'
-                                    : 'Removed from Wishlist',
-                                text: data.message,
-                                showConfirmButton: false,
-                                timer: 1000,
-                                // confirmButtonColor: '#600018',
-                            });
+                            showToast(data.action === 'added' ? 'success' : 'info', data.message);
                         } else {
                             const error = await response.json();
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: error.message || 'Failed to update the wishlist.',
-                                confirmButtonColor: '#600018',
-                            });
+                            showToast('error', error.message || 'Failed to update the wishlist.');
                         }
                     } catch (error) {
                         console.error('Error:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Unexpected Error',
-                            text: 'An unexpected error occurred.',
-                            confirmButtonColor: '#600018',
-                        });
+                        showToast('error', 'An unexpected error occurred.');
                     }
 
 

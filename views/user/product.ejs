@@ -615,17 +615,12 @@
                                     body: JSON.stringify({ productId })
                                 });
                                 if (res.ok) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Added to Cart!',
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    });
+                                    showToast('success', 'Added to Cart!');
 
-                                    
+
                                     cartBtn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Go to Cart';
                                     cartBtn.onclick = () => window.location.href = '/cart';
-                                    cartBtn.id = ''; 
+                                    cartBtn.id = '';
                                     cartBtn.classList.remove('btn-add');
                                     cartBtn.style.background = 'var(--maroon)';
                                     cartBtn.style.color = 'white';
@@ -650,13 +645,16 @@
                         if (wishBtn) {
                             wishBtn.addEventListener('click', async () => {
                                 const productId = document.getElementById('productIdWish').value;
-                                const res = await fetch('/wishlistt', {
+                                const response = await fetch('/wishlistt', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ productId })
                                 });
-                                if (res.ok) {
-                                    Swal.fire({ icon: 'success', title: 'Wishlist Updated!' });
+                                if (response.ok) {
+                                    showToast('success', 'Wishlist Updated!');
+                                } else {
+                                    const error = await response.json();
+                                    showToast('error', error.message || 'Failed to update the wishlist.');
                                 }
                             });
                         }

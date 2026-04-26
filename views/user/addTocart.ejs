@@ -311,12 +311,7 @@
           const maxAllowed = Math.min(5, stock);
 
           if (newQty > maxAllowed) {
-            Swal.fire({
-              title: '<span class="playfair">Stock Limit</span>',
-              text: `Maximum ${maxAllowed} units allowed for this selection.`,
-              icon: 'info',
-              confirmButtonColor: '#6b0f1a'
-            });
+            showToast('info', `Maximum ${maxAllowed} units allowed for this selection.`);
             return;
           }
 
@@ -351,23 +346,16 @@
               if (totalEl) totalEl.textContent = `₹${parseFloat(data.total).toFixed(0)}`;
 
 
-              const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 800,
-                timerProgressBar: false
-              });
-              Toast.fire({ icon: 'success', title: 'Cart updated' });
+              showToast('success', 'Cart updated');
             } else {
 
               input.value = currentQty;
-              Swal.fire('Error', data.message || 'Failed to update quantity', 'error');
+              showToast('error', data.message || 'Failed to update quantity');
             }
           } catch (err) {
 
             input.value = currentQty;
-            Swal.fire('Error', 'Connection failed', 'error');
+            showToast('error', 'Connection failed');
           }
         }
 
@@ -392,7 +380,7 @@
 
               if (result.isConfirmed) {
                 try {
-                 
+
                   const originalContent = button.innerHTML;
                   button.disabled = true;
                   button.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i>';
@@ -408,7 +396,7 @@
                   const data = await response.json();
 
                   if (data.success) {
-                  
+
                     row.style.transition = 'all 0.5s ease';
                     row.style.transform = 'translateX(50px)';
                     row.style.opacity = '0';
@@ -419,14 +407,14 @@
                       if (data.cartEmpty) {
                         location.reload();
                       } else {
-                        
+
                         const subtotalVal = parseFloat(data.subtotal).toFixed(0);
                         const totalVal = parseFloat(data.total).toFixed(0);
 
                         document.querySelectorAll('.summary-subtotal').forEach(el => el.textContent = `₹${subtotalVal}`);
                         document.querySelectorAll('.summary-total').forEach(el => el.textContent = `₹${totalVal}`);
 
-                     
+
                         const countBadge = document.querySelector('.cart-count-badge');
                         if (countBadge) {
                           const remainingItems = document.querySelectorAll('.item-row').length;
@@ -434,14 +422,7 @@
                         }
                       }
 
-                      Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Selection updated',
-                        showConfirmButton: false,
-                        timer: 1500
-                      });
+                      showToast('success', 'Selection updated');
                     }, 500);
                   } else {
                     throw new Error(data.message || 'Removal failed');
@@ -449,12 +430,7 @@
                 } catch (err) {
                   button.disabled = false;
                   button.innerHTML = '<i class="fas fa-trash-alt text-sm"></i>';
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Update Failed',
-                    text: err.message || 'Could not update your selection.',
-                    confirmButtonColor: '#6b0f1a'
-                  });
+                  showToast('error', err.message || 'Could not update your selection.');
                 }
               }
             });

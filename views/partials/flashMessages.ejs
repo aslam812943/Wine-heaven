@@ -1,0 +1,59 @@
+<% if (success_msg && success_msg.length> 0) { %>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+        Toast.fire({
+            icon: 'success',
+            title: '<%= success_msg %>'
+        });
+    </script>
+    <% } %>
+
+        <% if (error_msg && error_msg.length> 0) { %>
+            <script>
+                const ToastError = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+                ToastError.fire({
+                    icon: 'error',
+                    title: '<%= error_msg %>'
+                });
+            </script>
+            <% } %>
+
+                <script>
+                    window.showToast = (icon, title) => {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        });
+                        Toast.fire({
+                            icon: icon,
+                            title: title
+                        });
+                    };
+                </script>

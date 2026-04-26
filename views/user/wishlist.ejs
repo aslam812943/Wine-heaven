@@ -302,13 +302,7 @@
                     });
 
                     if (response.ok) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Selection Added',
-                            text: 'This vintage has been added to your cart.',
-                            confirmButtonColor: '#600018',
-                            background: '#fdf8f2'
-                        });
+                        showToast('success', 'Selection Added to cart');
 
 
                         const container = document.getElementById(`action-container-${productId}`);
@@ -321,20 +315,11 @@
                         }
                     } else {
                         const error = await response.json();
-                        Swal.fire({
-                            icon: 'info',
-                            text: error.message || 'Unable to add this selection.',
-                            confirmButtonColor: '#600018'
-                        });
+                        showToast('info', error.message || 'Unable to add this selection.');
                     }
                 } catch (error) {
                     console.error("Fetch error:", error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'System Error',
-                        text: 'An unexpected error occurred.',
-                        confirmButtonColor: '#600018'
-                    });
+                    showToast('error', 'An unexpected error occurred.');
                 }
             }
 

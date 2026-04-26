@@ -33,7 +33,7 @@ exports.listCategories = async (req, res) => {
 
 exports.renderAddpage = (req, res) => {
     try {
-        
+
         res.render('admin/addCategories');
     } catch (error) {
         console.error("Render Add Page Error:", error);
@@ -45,11 +45,11 @@ exports.renderAddpage = (req, res) => {
 
 exports.addCategory = async (req, res) => {
     try {
-     
+
         const { name, croppedImage } = req.body;
 
         if (!name || !croppedImage) {
-          
+
             req.flash('error', 'Please provide all required fields.');
             return res.redirect('/category/add');
         }
@@ -61,7 +61,7 @@ exports.addCategory = async (req, res) => {
         });
 
         if (existingCategory) {
-   
+
             req.flash('error', 'This category already exists.');
             return res.redirect('/category/add');
         }
@@ -78,7 +78,7 @@ exports.addCategory = async (req, res) => {
                 const result = await cloudinary.uploader.upload(tmpFilePath);
                 imageUrl = result.secure_url;
                 fs.unlinkSync(tmpFilePath);
-         
+
             } catch (uploadError) {
                 req.flash('error', 'Error uploading image. Please try again.');
                 return res.redirect('/category/add');
@@ -91,11 +91,11 @@ exports.addCategory = async (req, res) => {
         });
 
         await category.save();
-     
+
         req.flash('success', 'Category added successfully!');
         return res.redirect('/category');
     } catch (error) {
-       
+
         req.flash('error', 'An error occurred while adding the category: ' + error.message);
         return res.redirect('/category/add');
     }
@@ -193,6 +193,7 @@ exports.deleteCategory = async (req, res) => {
     try {
         const { id } = req.params;
         await Category.findByIdAndUpdate(id, { isDeleted: true });
+        req.flash('success', 'Category deleted successfully');
         res.redirect('/category');
     } catch (error) {
         console.error(error);
@@ -207,6 +208,7 @@ exports.blockCategory = async (req, res) => {
     try {
         const categoryId = req.params.id;
         await Category.findByIdAndUpdate(categoryId, { isBlocked: true });
+        req.flash('success', 'Category blocked successfully');
         res.redirect('/category');
 
     } catch (error) {
@@ -225,6 +227,7 @@ exports.unblockCategory = async (req, res) => {
     try {
         const categoryId = req.params.id;
         await Category.findByIdAndUpdate(categoryId, { isBlocked: false });
+        req.flash('success', 'Category unblocked successfully');
         res.redirect('/category')
     } catch (error) {
         res.status(500).send('Server error');
