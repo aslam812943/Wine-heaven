@@ -356,6 +356,8 @@
             text-decoration: none;
             opacity: 0.85;
             transition: opacity 0.3s ease, transform 0.3s ease;
+            cursor: pointer;
+            user-select: none;
         }
 
         .hero-scroll:hover {
@@ -371,6 +373,7 @@
             position: relative;
             background: rgba(14, 2, 6, 0.4);
             backdrop-filter: blur(6px);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .hero-scroll-dot {
@@ -383,6 +386,17 @@
             left: 50%;
             transform: translateX(-50%);
             animation: heroScrollDrop 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hero-scroll.is-active-scrolling .hero-scroll-track {
+            border-color: var(--wine-gold);
+            box-shadow: 0 0 16px rgba(201, 168, 76, 0.65), inset 0 0 8px rgba(201, 168, 76, 0.25);
+        }
+
+        .hero-scroll.is-active-scrolling .hero-scroll-dot {
+            background: #fff;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
         }
 
         @keyframes heroScrollDrop {
@@ -398,6 +412,89 @@
             100% {
                 transform: translate(-50%, 15px);
                 opacity: 0;
+            }
+        }
+
+        /* Floating Showcase Tour Badge */
+        #slow-scroll-indicator {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 9999;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 18px;
+            background: rgba(12, 2, 5, 0.88);
+            border: 1px solid rgba(201, 168, 76, 0.4);
+            border-radius: 999px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(201, 168, 76, 0.18);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            color: #fdf8f2;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            opacity: 0;
+            transform: translateY(18px) scale(0.96);
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        #slow-scroll-indicator.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .slow-scroll-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--wine-gold);
+            box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.7);
+            animation: slowScrollPulse 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+            flex-shrink: 0;
+        }
+
+        @keyframes slowScrollPulse {
+            to {
+                box-shadow: 0 0 0 10px rgba(201, 168, 76, 0);
+            }
+        }
+
+        .slow-scroll-stop-btn {
+            background: rgba(201, 168, 76, 0.15);
+            border: 1px solid rgba(201, 168, 76, 0.45);
+            color: var(--wine-gold);
+            padding: 4px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .slow-scroll-stop-btn:hover {
+            background: var(--wine-gold);
+            color: #0a0202;
+            transform: scale(1.04);
+        }
+
+        @media (max-width: 600px) {
+            #slow-scroll-indicator {
+                bottom: 18px;
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%) translateY(18px) scale(0.96);
+            }
+            #slow-scroll-indicator.visible {
+                transform: translateX(-50%) translateY(0) scale(1);
             }
         }
 
@@ -531,7 +628,7 @@
         </div>
 
         <!-- Scroll Indicator -->
-        <a href="#categories" id="scrollLink" class="hero-scroll" aria-label="Scroll to wine collection">
+        <a href="#categories" id="scrollLink" class="hero-scroll" aria-label="Slowly explore wine collection" title="Click to slowly explore top to bottom">
             <div class="hero-scroll-track">
                 <div class="hero-scroll-dot"></div>
             </div>
@@ -887,11 +984,12 @@
             easing: 'ease-out-cubic'
         });
 
-        // Smooth Scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        // Smooth Scroll for generic anchor links (excluding #scrollLink)
+        document.querySelectorAll('a[href^="#"]:not(#scrollLink)').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 const targetId = this.getAttribute('href');
+                if (!targetId || targetId === '#') return;
                 const targetElement = document.querySelector(targetId);
 
                 if (targetElement) {
@@ -902,6 +1000,147 @@
                 }
             });
         });
+
+        // ══════════════ SLOW SHOWCASE AUTO-SCROLL ══════════════
+        (function initSlowScroll() {
+            const scrollBtn = document.getElementById('scrollLink');
+            if (!scrollBtn) return;
+
+            let isSlowScrolling = false;
+            let slowScrollAnimId = null;
+            let lastFrameTime = null;
+            let exactScrollY = 0;
+            const SLOW_SCROLL_SPEED = 95; // Pixels per second: comfortable slow pace to view all sections, cards & bottles
+
+            function stopSlowScroll() {
+                if (!isSlowScrolling) return;
+                isSlowScrolling = false;
+                if (slowScrollAnimId) {
+                    cancelAnimationFrame(slowScrollAnimId);
+                    slowScrollAnimId = null;
+                }
+                lastFrameTime = null;
+
+                scrollBtn.classList.remove('is-active-scrolling');
+
+                const badge = document.getElementById('slow-scroll-indicator');
+                if (badge) {
+                    badge.classList.remove('visible');
+                    setTimeout(() => {
+                        if (!isSlowScrolling && badge.parentNode) {
+                            badge.parentNode.removeChild(badge);
+                        }
+                    }, 400);
+                }
+
+                window.removeEventListener('wheel', onUserScrollInterrupt);
+                window.removeEventListener('touchmove', onUserScrollInterrupt);
+                window.removeEventListener('keydown', onUserKeyInterrupt);
+            }
+
+            function onUserScrollInterrupt() {
+                stopSlowScroll();
+            }
+
+            function onUserKeyInterrupt(e) {
+                const interruptKeys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ', 'Spacebar'];
+                if (interruptKeys.includes(e.key)) {
+                    stopSlowScroll();
+                }
+            }
+
+            function startSlowScroll() {
+                if (isSlowScrolling) {
+                    stopSlowScroll();
+                    return;
+                }
+
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                const currentY = window.scrollY || window.pageYOffset;
+
+                // If already at or very near bottom, scroll smoothly back to top
+                if (currentY >= maxScroll - 30) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+
+                isSlowScrolling = true;
+                lastFrameTime = performance.now();
+                exactScrollY = currentY;
+
+                scrollBtn.classList.add('is-active-scrolling');
+
+                // Create or reveal the floating stop badge
+                let badge = document.getElementById('slow-scroll-indicator');
+                if (!badge) {
+                    badge = document.createElement('div');
+                    badge.id = 'slow-scroll-indicator';
+                    badge.innerHTML = `
+                        <span class="slow-scroll-pulse"></span>
+                        <span>Showcase Tour Active</span>
+                        <button type="button" class="slow-scroll-stop-btn" title="Stop slow scroll">
+                            <i class="fa-solid fa-pause"></i> Pause
+                        </button>
+                    `;
+                    document.body.appendChild(badge);
+
+                    const stopBtn = badge.querySelector('.slow-scroll-stop-btn');
+                    if (stopBtn) {
+                        stopBtn.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            stopSlowScroll();
+                        });
+                    }
+                }
+
+                requestAnimationFrame(() => {
+                    if (badge) badge.classList.add('visible');
+                });
+
+                // Attach interrupt listeners after a tiny delay so the triggering click doesn't cancel it
+                setTimeout(() => {
+                    if (!isSlowScrolling) return;
+                    window.addEventListener('wheel', onUserScrollInterrupt, { passive: true });
+                    window.addEventListener('touchmove', onUserScrollInterrupt, { passive: true });
+                    window.addEventListener('keydown', onUserKeyInterrupt, { passive: true });
+                }, 150);
+
+                function step(timestamp) {
+                    if (!isSlowScrolling) return;
+
+                    if (!lastFrameTime) lastFrameTime = timestamp;
+                    const elapsedSec = (timestamp - lastFrameTime) / 1000;
+                    lastFrameTime = timestamp;
+
+                    // Cap elapsedSec to 0.1s to prevent big jumps if browser lags or tab blurs
+                    const safeElapsed = Math.min(elapsedSec, 0.1);
+                    exactScrollY += SLOW_SCROLL_SPEED * safeElapsed;
+
+                    const currentMax = document.documentElement.scrollHeight - window.innerHeight;
+
+                    if (exactScrollY >= currentMax) {
+                        window.scrollTo(0, currentMax);
+                        stopSlowScroll();
+                        return;
+                    }
+
+                    window.scrollTo(0, exactScrollY);
+                    slowScrollAnimId = requestAnimationFrame(step);
+                }
+
+                slowScrollAnimId = requestAnimationFrame(step);
+            }
+
+            scrollBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (isSlowScrolling) {
+                    stopSlowScroll();
+                } else {
+                    startSlowScroll();
+                }
+            });
+        })();
 
         async function addtocart(productId, target) {
             try {
